@@ -1,2 +1,75 @@
 @import "tailwindcss";
-html,body{ scroll-behavior:smooth; background:#0b1220; color:#e5e7eb; }
+
+/* base */
+:root{
+  --bg: #0e1424;          /* dark navy (not pure black) */
+  --fg: #e5e7eb;
+  --muted: #94a3b8;
+  --cyan: #22d3ee;
+  --violet: #a78bfa;
+}
+
+html, body{
+  scroll-behavior: smooth;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* nicer text selection */
+::selection{
+  background: color-mix(in srgb, var(--cyan) 20%, transparent);
+}
+
+/* small helpers */
+.border-top{ border-top: 1px solid color-mix(in srgb, white 10%, transparent); }
+.card{
+  border: 1px solid color-mix(in srgb, white 10%, transparent);
+  background: color-mix(in srgb, white 5%, transparent);
+  border-radius: 1rem;
+}
+
+/* ---------- Animated “wires” (dori) ---------- */
+@keyframes shimmer {
+  0%   { background-position: 0% 50% }
+  50%  { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+@keyframes driftY {
+  0%,100% { transform: translateY(-4px); }
+  50%     { transform: translateY(4px); }
+}
+
+/* a thin gradient line with glow */
+.wire{
+  position:absolute;
+  height:2px;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--cyan) 35%, transparent));
+  background: linear-gradient(90deg, rgba(34,211,238,.0), rgba(34,211,238,.8), rgba(167,139,250,.8), rgba(34,211,238,.0));
+  background-size: 300% 100%;
+  animation: shimmer 5s linear infinite, driftY 6s ease-in-out infinite;
+  border-radius: 999px;
+  opacity:.6;
+}
+/* placements */
+.wire-left   { left: -10%; right: 55%; top: 22%;  }
+.wire-center { left: 15%;  right: 15%; top: 48%;  animation-duration:6s,7.5s; }
+.wire-right  { left: 60%;  right: -10%; top: 72%; }
+
+/* optional subtle grid overlay (used in hero) */
+.hero-grid{
+  background-image:
+    radial-gradient(ellipse at top, rgba(255,255,255,.18), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 36px);
+  background-size: 100% 100%, 100% 36px;
+  opacity:.18;
+}
+
+/* tiny utility for gradient glow buttons */
+.btn-glow{
+  box-shadow: 0 0 0 0 rgba(34,211,238,0);
+  transition: box-shadow .3s ease, transform .2s ease;
+}
+.btn-glow:hover{
+  box-shadow: 0 0 24px -6px rgba(34,211,238,.45);
+  transform: translateY(-1px);
+}

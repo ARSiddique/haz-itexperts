@@ -2,7 +2,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { site } from "@/lib/siteConfig";
-
+import FABs from "@/components/FABs";
+import AutoBot from "@/components/AutoBot";
 export const metadata = {
   title: `${site.name} — Managed IT & Cybersecurity`,
   description: "Managed IT, co-managed IT, and cybersecurity for SMEs in Pakistan.",
@@ -15,6 +16,8 @@ export default function RootLayout({ children }) {
         <Header />
         <main>{children}</main>
         <Footer />
+        <AutoBot/>
+        <FABs/>
       </body>
     </html>
   );
