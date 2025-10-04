@@ -1,7 +1,12 @@
+// app/blog/[slug]/page.jsx
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import { POSTS } from "@/lib/blogData";
+
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export async function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -23,17 +28,29 @@ export default function BlogPost({ params }) {
 
   return (
     <>
+      {/* ========== HERO ========== */}
       <PageHero eyebrow={p.category} title={p.title} sub={p.excerpt} />
+
+      {/* ========== BODY ========== */}
       <article className="max-w-3xl mx-auto px-4 pb-24 prose prose-invert prose-p:leading-relaxed prose-headings:scroll-mt-24">
-        <img
-          src={p.cover}
-          alt={p.title}
-          className="w-full h-72 object-cover rounded-2xl border border-white/10 mb-6"
-        />
-        <div className="text-sm text-slate-400 mb-6">
-          {new Date(p.date).toLocaleDateString()} • {p.minutes} min read
+        <div className="relative w-full h-72 mb-6 rounded-2xl overflow-hidden border border-white/10">
+          <Image
+            src={p.cover}
+            alt={p.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 1024px"
+            priority
+          />
         </div>
-        {/* Simple markdown-ish rendering (our body is plain markdown-safe text) */}
+
+        <div className="text-sm text-slate-400 mb-6">
+         {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "numeric", day: "numeric" })
+   .format(new Date(p.date))} • {p.minutes} min read
+
+        </div>
+
+        {/* simple markdown-ish rendering */}
         {p.body.split("\n").map((line, i) =>
           line.startsWith("### ") ? (
             <h3 key={i}>{line.replace(/^### /, "")}</h3>
@@ -52,7 +69,8 @@ export default function BlogPost({ params }) {
             <p key={i}>{line}</p>
           )
         )}
-        {/* Back link */}
+
+        {/* back link */}
         <Reveal className="mt-10">
           <a
             href="/blog"
