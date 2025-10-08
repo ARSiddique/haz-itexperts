@@ -70,9 +70,9 @@ export default function ContactPage({ searchParams }) {
                 </a>
                 <CopyButton text={phone} className="ms-2" />
               </div>
-              <div className="mt-2 text-sm inline-flex items-center gap-2 opacity-90">
+              {/* <div className="mt-2 text-sm inline-flex items-center gap-2 opacity-90">
                 <MapPin className="w-4 h-4" /> {address}
-              </div>
+              </div> */}
               <div className="mt-4 flex gap-2">
                 <Link href="/get-quote" className="rounded-lg px-3 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">Get Quote</Link>
                 <Link href="/assessment" className="rounded-lg px-3 py-2 text-sm bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center gap-2">Free IT assessment <ArrowRight className="h-4 w-4"/></Link>
