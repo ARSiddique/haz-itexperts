@@ -1,63 +1,64 @@
-// app/page.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-// SERVER COMPONENT (no "use client") — SSR markup with client-side effects
-// ─────────────────────────────────────────────────────────────────────────────
-
+// app/page.jsx  (SSR, fully updated)
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
 
-import BackToTop from "@/components/BackToTop";
-import AutoBot from "@/components/AutoBot";
 import HomeFX from "@/components/HomeFX";
-
 import { site } from "@/lib/siteConfig";
 import {
   Shield, Server, Cloud, Wrench, Smartphone, Users, ArrowRight,
   CheckCircle2, Cpu, Lock, LineChart, Image as ImageIcon, Sparkles
 } from "lucide-react";
 
-/* ── Collage (1–3 images with overlaps) ───────────────────────────────────── */
-function Collage({ items = [], heightClass = "h-80 md:h-96" }) {
+/* ───────────────── Collage (stable aspect + overlays) ───────────────── */
+function Collage({ items = [], priority = false, ratio = "aspect-[4/3]" }) {
   return (
-    <div className={`relative ${heightClass}`} data-reveal="up">
+    <div className={`relative ${ratio}`} data-reveal="up">
       {/* base */}
       {items[0] && (
-        <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 bg-black/20 group">
+        <div className="absolute inset-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 group">
           <Image
             src={items[0].src}
             alt={items[0].alt || ""}
             fill
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority={false}
+            sizes="(max-width:768px) 96vw, 560px"
           />
         </div>
       )}
+
       {/* offset right */}
       {items[1] && (
-        <div className="absolute right-3 -bottom-6 w-1/2 rounded-2xl overflow-hidden border border-white/10 shadow-xl rotate-[1.5deg] group">
-          <div className="relative h-48 md:h-56">
+        <div className="absolute right-3 -bottom-6 w-1/2">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-xl rotate-[1.5deg] group">
             <Image
               src={items[1].src}
               alt={items[1].alt || ""}
               fill
+              loading="lazy"
+              decoding="async"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-              sizes="(max-width: 768px) 50vw, 25vw"
+              sizes="(max-width:768px) 48vw, 280px"
             />
           </div>
         </div>
       )}
+
       {/* small badge left */}
       {items[2] && (
-        <div className="absolute -left-4 top-6 w-1/3 rounded-2xl overflow-hidden border border-white/10 shadow-lg -rotate-[2deg] group">
-          <div className="relative h-32 md:h-40">
+        <div className="absolute -left-4 top-6 w-1/3">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-lg -rotate-[2deg] group">
             <Image
               src={items[2].src}
               alt={items[2].alt || ""}
               fill
+              loading="lazy"
+              decoding="async"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-              sizes="(max-width: 768px) 33vw, 16vw"
+              sizes="(max-width:768px) 32vw, 180px"
             />
           </div>
         </div>
@@ -66,10 +67,9 @@ function Collage({ items = [], heightClass = "h-80 md:h-96" }) {
   );
 }
 
-/* ── UI helpers (server-safe) ─────────────────────────────────────────────── */
+/* ───────────────── server-safe helpers ───────────────── */
 const Section = ({ id, children, className = "" }) => (
   <section id={id} className="relative overflow-hidden">
-    {/* background haze + grid */}
     <div className="pointer-events-none absolute inset-0 -z-10">
       <div className="absolute -top-32 -left-24 size-80 rounded-full bg-cyan-500/15 blur-3xl" />
       <div className="absolute -bottom-32 -right-24 size-96 rounded-full bg-fuchsia-500/15 blur-3xl" />
@@ -124,17 +124,13 @@ const ServiceCard = ({ Icon, t, d, bullets = [] }) => (
   </div>
 );
 
-/* ── PAGE (SSR) ───────────────────────────────────────────────────────────── */
+/* ───────────────── PAGE ───────────────── */
 export default async function HomePage() {
-  // areas strictly from US config; fallback to DE/PA
-  const areas =
-    site.areas?.length ? site.areas : ["Wilmington, DE", "Philadelphia, PA", "Allentown, PA"];
+  const areas = site.areas?.length ? site.areas : ["Wilmington, DE", "Philadelphia, PA", "Allentown, PA"];
 
   return (
     <>
-      {/* =====================================================================
-         HERO SECTION
-         ===================================================================== */}
+      {/* ───────── HERO ───────── */}
       <section id="hero" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-24 -left-24 size-72 rounded-full bg-cyan-500/25 blur-3xl" />
@@ -164,8 +160,7 @@ export default async function HomePage() {
                 href="#services"
                 className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 inline-flex items-center gap-2 group"
               >
-                Explore services{" "}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Explore services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
 
@@ -182,7 +177,8 @@ export default async function HomePage() {
                 { src: "/media/hero-1.jpg", alt: "Fiber optics" },
                 { src: "/media/hero-2.jpg", alt: "Cloud & devices" },
               ]}
-              heightClass="h-80 md:h-96"
+              ratio="aspect-[16/10] md:aspect-[16/9]"
+              priority
             />
           </div>
         </div>
@@ -190,9 +186,7 @@ export default async function HomePage() {
         <div className="section-divider h-px w-full bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
       </section>
 
-      {/* =====================================================================
-         ABOUT SECTION
-         ===================================================================== */}
+      {/* ───────── ABOUT ───────── */}
       <Section id="about" className="py-16">
         <Title k="About" sub="We keep your business running — and secure" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
@@ -225,6 +219,7 @@ export default async function HomePage() {
                 { src: "/media/dashboard.jpg", alt: "Monitoring" },
                 { src: "/media/team.jpg", alt: "IT team" },
               ]}
+              ratio="aspect-[4/3] md:aspect-[16/10]"
             />
           </div>
         </div>
@@ -245,11 +240,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-fuchsia-400/40 to-transparent" />
-
-      {/* =====================================================================
-         SERVICES SECTION
-         ===================================================================== */}
+      {/* ───────── SERVICES ───────── */}
       <Section id="services" className="py-16">
         <Title k="Services" sub="Everything an SMB needs — nothing you don’t" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
@@ -283,11 +274,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-
-      {/* =====================================================================
-         CASE STUDIES / WINS SECTION
-         ===================================================================== */}
+      {/* ───────── WINS ───────── */}
       <Section id="wins" className="py-16">
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
@@ -315,11 +302,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-fuchsia-400/40 to-transparent" />
-
-      {/* =====================================================================
-         PROCESS SECTION
-         ===================================================================== */}
+      {/* ───────── PROCESS ───────── */}
       <Section id="process" className="py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
@@ -344,24 +327,26 @@ export default async function HomePage() {
 
           <div
             className="rounded-2xl overflow-hidden border border-white/10 group"
-            data-parallax="y" data-speed="0.1" data-reveal="up"
+            data-parallax="y"
+            data-speed="0.1"
+            data-reveal="up"
           >
-            <Image
-              src="/media/work-2.jpg"
-              alt="Onsite work"
-              width={1200}
-              height={640}
-              className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            />
+            <div className="relative w-full aspect-[16/16]">
+              <Image
+                src="/media/work-2.jpg"
+                alt="Onsite work"
+                fill
+                loading="lazy"
+                decoding="async"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                sizes="(max-width:768px) 96vw, 640px"
+              />
+            </div>
           </div>
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-
-      {/* =====================================================================
-         TRUST SECTION
-         ===================================================================== */}
+      {/* ───────── TRUST ───────── */}
       <Section id="trust" className="py-16">
         <Title k="Trust" sub="Security-first and SLA-backed" />
         <div className="grid md:grid-cols-3 gap-4">
@@ -381,11 +366,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-fuchsia-400/40 to-transparent" />
-
-      {/* =====================================================================
-         GALLERY SECTION
-         ===================================================================== */}
+      {/* ───────── GALLERY PREVIEW ───────── */}
       <Section id="gallery" className="py-16">
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
@@ -394,14 +375,22 @@ export default async function HomePage() {
             ["/media/rack.jpg", "Rack & cabling"],
             ["/media/dashboard.jpg", "Monitoring"],
           ].map(([src, cap]) => (
-            <figure key={src} className="rounded-2xl overflow-hidden border border-white/10 group" data-reveal="up">
-              <Image
-                src={src}
-                alt={cap}
-                width={900}
-                height={500}
-                className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-              />
+            <figure
+              key={src}
+              className="rounded-2xl overflow-hidden border border-white/10 bg-white/5"
+              data-reveal="up"
+            >
+              <div className="relative w-full aspect-[3/2] md:aspect-[16/10] group">
+                <Image
+                  src={src}
+                  alt={cap}
+                  fill
+                  loading="lazy"
+                  decoding="async"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                  sizes="(max-width:768px) 96vw, 33vw"
+                />
+              </div>
               <figcaption className="px-3 py-2 text-xs text-slate-300 flex items-center gap-2">
                 <ImageIcon className="h-3.5 w-3.5 text-cyan-300" /> {cap}
               </figcaption>
@@ -418,11 +407,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <div className="section-divider h-px w-full my-12 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-
-      {/* =====================================================================
-         AREAS WE SERVE (US) SECTION
-         ===================================================================== */}
+      {/* ───────── AREAS ───────── */}
       <Section id="areas" className="pb-24">
         <Title k="Areas we serve" sub="Onsite & remote support in DE & PA" />
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -438,12 +423,8 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* =====================================================================
-         CLIENT-ONLY HELPERS (hydrate after SSR)
-         ===================================================================== */}
+      {/* client-only FX */}
       <Suspense fallback={null}><HomeFX /></Suspense>
-      <Suspense fallback={null}><BackToTop /></Suspense>
-      <Suspense fallback={null}><AutoBot /></Suspense>
     </>
   );
 }

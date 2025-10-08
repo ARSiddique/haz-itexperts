@@ -1,7 +1,7 @@
 // app/about/page.jsx
 // ─────────────────────────────────────────────────────────────────────────────
-// SERVER COMPONENT (no "use client") — SSR markup; interactivity via small
-// client islands (Reveal, AboutTabs). US MSP content for Supreme IT Experts.
+// SERVER COMPONENT (no "use client")
+// Clean version: no individual headshots. One big team image + text sections.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
@@ -9,18 +9,13 @@ import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import AboutTabs from "@/components/AboutTabs";
-import {
-  Users, ShieldCheck, Timer, Trophy, Target,
-  Building2, Handshake, Rocket, Leaf, BookOpen,
-  HeartHandshake, ChevronRight, Quote, Mail, Linkedin
-} from "lucide-react";
+import { Users, ShieldCheck, Timer, Building2, Quote, HeartHandshake, Leaf } from "lucide-react";
 
-/* ── PAGE (SSR) ───────────────────────────────────────────────────────────── */
-export default async function AboutPage() {
+export default function AboutPage() {
   return (
     <>
       {/* =====================================================================
-         HERO SECTION
+         HERO
          ===================================================================== */}
       <PageHero
         eyebrow="About us"
@@ -34,7 +29,7 @@ export default async function AboutPage() {
            =================================================================== */}
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            ["2019+", "Hands-on experience across US SMBs", <Building2 key="b" className="h-5 w-5 text-cyan-300" />],
+            ["2019+", "Hands-on experience across SMBs", <Building2 key="b" className="h-5 w-5 text-cyan-300" />],
             ["<15 min", "Priority-1 response target", <Timer key="t" className="h-5 w-5 text-cyan-300" />],
             ["24/7", "Helpdesk & monitoring", <ShieldCheck key="s" className="h-5 w-5 text-cyan-300" />],
           ].map(([k, v, Icon], i) => (
@@ -51,64 +46,32 @@ export default async function AboutPage() {
         </div>
 
         {/* ===================================================================
-           CEO NOTE + COLLAGE
+           NOTE + BIG TEAM IMAGE (single hero photo)
            =================================================================== */}
         <div className="grid lg:grid-cols-5 gap-8 mt-12 items-center">
           <Reveal className="lg:col-span-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">From our founder & CEO</div>
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">From our founder</div>
               <h2 className="text-2xl md:text-3xl font-semibold mt-2">
                 “IT isn’t just keeping the lights on — it’s about <span className="text-cyan-300">measurable outcomes</span>.”
               </h2>
               <p className="text-slate-300 mt-3">
-                We operate as a small but senior team with documented SOPs, visible KPIs, and security-first defaults.
-                Every month leadership sees what matters: uptime, response, coverage, and a clear view of risk.
+                We run lean with documented SOPs, visible KPIs, and security-first defaults. Leadership sees uptime,
+                response, coverage, and a clear view of risk — no fluff, just outcomes.
               </p>
-
-              <div className="mt-5 flex items-center gap-4">
-                <div className="h-14 w-14 rounded-full overflow-hidden border border-white/10">
-                  <Image src="/media/ceo.jpg" alt="CEO" width={56} height={56} className="h-full w-full object-cover" />
-                </div>
-                <div>
-                  <div className="font-semibold">Haziq Ahmed</div>
-                  <div className="text-slate-400 text-sm">Founder & CEO</div>
-                  <div className="flex gap-3 mt-1 text-sm">
-                    <a className="inline-flex items-center gap-1 text-cyan-300 hover:underline" href="mailto:ceo@supremeitexperts.com">
-                      <Mail className="h-4 w-4" /> Email
-                    </a>
-                    <a className="inline-flex items-center gap-1 text-cyan-300 hover:underline" href="#" target="_blank" rel="noreferrer">
-                      <Linkedin className="h-4 w-4" /> LinkedIn
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
           </Reveal>
 
+          {/* Single centerpiece team image (use your /public/media/team.jpg) */}
           <Reveal className="lg:col-span-2">
-            <div className="relative h-80">
-              {/* Base */}
-              <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 bg-black/20">
-                <Image src="/media/team.jpg" alt="Team" fill className="object-cover" />
-              </div>
-              {/* Overlay small */}
-              <div className="absolute -left-4 top-6 w-1/3 rounded-2xl overflow-hidden border border-white/10 shadow-lg -rotate-[2deg]">
-                <div className="relative h-32 md:h-36">
-                  <Image src="/media/work-1.jpg" alt="On-site" fill className="object-cover" />
-                </div>
-              </div>
-              {/* Offset */}
-              <div className="absolute right-3 -bottom-6 w-1/2 rounded-2xl overflow-hidden border border-white/10 shadow-xl rotate-[1.5deg]">
-                <div className="relative h-40 md:h-48">
-                  <Image src="/media/rack.jpg" alt="Rack" fill className="object-cover" />
-                </div>
-              </div>
+            <div className="relative h-80 rounded-2xl overflow-hidden border border-white/10 bg-black/20">
+              <Image src="/media/team.jpg" alt="Our team" fill className="object-cover" />
             </div>
           </Reveal>
         </div>
 
         {/* ===================================================================
-           TABS: MISSION / VALUES / SLAs  (client island)
+           TABS: MISSION / VALUES / SLAs  (client island; uses /media/dashboard.jpg)
            =================================================================== */}
         <Reveal className="mt-12">
           <AboutTabs />
@@ -122,8 +85,8 @@ export default async function AboutPage() {
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Milestones</div>
             <ol className="relative border-s border-white/10 ps-6 mt-4 space-y-7">
               {[
-                ["2019", "Company founded — first US SMB rollouts"],
-                ["2021", "EDR everywhere + baseline hardening playbooks"],
+                ["2019", "Company founded — first SMB rollouts"],
+                ["2021", "EDR everywhere + hardening baselines"],
                 ["2022", "24/7 helpdesk & monitoring; cloud migrations"],
                 ["2023", "vCIO practice; measurable KPI reporting"],
                 ["2024", "99.9% endpoint coverage; SOC-ready posture"],
@@ -143,90 +106,39 @@ export default async function AboutPage() {
         </Reveal>
 
         {/* ===================================================================
-           LEADERSHIP
+           HOW WE WORK (text-only instead of Leadership/Team)
            =================================================================== */}
         <Reveal className="mt-12">
-          <h2 className="text-xl font-semibold mb-4">Leadership</h2>
+          <h2 className="text-xl font-semibold mb-4">How we work</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: "Haziq Ahmed", role: "Founder & CEO", img: "/media/ceo.jpg", bio: "Strategy, security posture, and key accounts." },
-              { name: "Anaya Khan", role: "Head of Ops", img: "/media/ops.jpg", bio: "Helpdesk workflows, SLAs, and QA." },
-              { name: "Usman R.", role: "Principal Engineer", img: "/media/principal.jpg", bio: "Cloud/identity, MDM, and network architecture." },
-            ].map((p) => (
-              <div key={p.name} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="rounded-xl overflow-hidden border border-white/10">
-                  <Image src={p.img} alt={p.name} width={800} height={380} className="w-full h-44 object-cover" />
-                </div>
-                <div className="mt-3">
-                  <div className="font-semibold">{p.name}</div>
-                  <div className="text-sm text-slate-400">{p.role}</div>
-                  <p className="text-sm text-slate-300 mt-1">{p.bio}</p>
-                </div>
+              ["Security-first by default", "Hardening baselines, EDR/XDR, MDM, patching, and tested backups."],
+              ["SOPs → automation → KPIs", "Documented processes, then scripts, then visible results."],
+              ["Clear SLAs", "P1 in minutes, predictable turnaround for the rest."],
+              ["Roadmaps, not guesswork", "Quarterly vCIO, budgets, and a pipeline of improvements."],
+              ["Hands-on senior help", "No ticket ping-pong. People who’ve actually shipped."],
+              ["Outcome reporting", "Monthly leadership snapshots: risk, uptime, coverage, actions."],
+            ].map(([t, d]) => (
+              <div key={t} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <div className="font-medium">{t}</div>
+                <p className="text-sm text-slate-300 mt-1">{d}</p>
               </div>
             ))}
           </div>
         </Reveal>
 
         {/* ===================================================================
-           TEAM GRID (hover bios)
+           TEAM BUILDING / CSR (text-only)
            =================================================================== */}
         <Reveal className="mt-12">
-          <h2 className="text-xl font-semibold mb-4">The Team</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              ["Ali S.", "Senior SysAdmin", "/media/team-1.jpg"],
-              ["Mehak K.", "Security Engineer", "/media/team-2.jpg"],
-              ["Danish A.", "Cloud Engineer", "/media/team-3.jpg"],
-              ["Hasan B.", "NOC Lead", "/media/team-4.jpg"],
-              ["Ayesha T.", "Support Engineer", "/media/team-5.jpg"],
-              ["Zain U.", "MDM Specialist", "/media/team-6.jpg"],
-              ["Hiba M.", "Project Coordinator", "/media/team-7.jpg"],
-              ["Bilal F.", "Network Engineer", "/media/team-8.jpg"],
-            ].map(([n, r, src]) => (
-              <div key={n} className="relative rounded-2xl overflow-hidden border border-white/10 group">
-                <Image src={src} alt={n} width={800} height={480} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
-                <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition">
-                  <div className="text-sm font-semibold">{n}</div>
-                  <div className="text-xs text-slate-300">{r}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* ===================================================================
-           TEAM BUILDING / CSR
-           =================================================================== */}
-        <Reveal className="mt-12">
-          <div className="grid md:grid-cols-2 gap-6 items-center">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Team building & CSR</div>
-              <h3 className="text-lg font-semibold mt-1">We invest in people & community</h3>
-              <ul className="mt-3 space-y-2 text-sm text-slate-300">
-                <li className="flex gap-2"><HeartHandshake className="h-4 w-4 text-cyan-300" /> Quarterly offsites & skills workshops</li>
-                <li className="flex gap-2"><Leaf className="h-4 w-4 text-cyan-300" /> NGO support for digital literacy</li>
-                <li className="flex gap-2"><Users className="h-4 w-4 text-cyan-300" /> Mentorship for interns & grads</li>
-              </ul>
-              <div className="mt-4">
-                <Link
-                  href="/careers"
-                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
-                >
-                  Join our team <ChevronRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-            <div className="relative h-72">
-              <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10">
-                <Image src="/media/offsite-1.jpg" alt="Offsite" fill className="object-cover" />
-              </div>
-              <div className="absolute -left-4 -bottom-6 w-1/2 rounded-2xl overflow-hidden border border-white/10 shadow-xl rotate-[2deg]">
-                <div className="relative h-40">
-                  <Image src="/media/offsite-2.jpg" alt="Workshop" fill className="object-cover" />
-                </div>
-              </div>
-            </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Team building & CSR</div>
+            <h3 className="text-lg font-semibold mt-1">We invest in people & community</h3>
+            <ul className="mt-3 space-y-2 text-sm text-slate-300">
+              <li className="flex gap-2"><HeartHandshake className="h-4 w-4 text-cyan-300" /> Quarterly offsites & skills workshops</li>
+              <li className="flex gap-2"><Leaf className="h-4 w-4 text-cyan-300" /> NGO support for digital literacy</li>
+              <li className="flex gap-2"><Users className="h-4 w-4 text-cyan-300" /> Mentorship for interns & grads</li>
+            </ul>
           </div>
         </Reveal>
 
