@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
         <Footer />
 
         <BackToTop size={44} chatSize={56} gap={12} mode="hide" panelLift={360} z={80} />
-        <AutoBot />
+        {/* <AutoBot /> */}
         <FABs />
 
         <HomeFX /> {/* mount once — effects only */}
