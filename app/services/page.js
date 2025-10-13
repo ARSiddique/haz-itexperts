@@ -14,7 +14,7 @@ import PricingRoi from "@/components/PricingRoi";
 import {
   Shield, Server, Cloud, Wrench, Smartphone, Users,
   ArrowRight, ChevronRight, Sparkles,
-  Building2, CloudCog, Network, LineChart, CheckCircle2
+  Building2, CloudCog, Network, LineChart
 } from "lucide-react";
 
 /* small server-safe helper */
@@ -29,7 +29,7 @@ const Badge = ({ children, tone = "cyan" }) => (
 );
 
 export default async function ServicesPage() {
-  // ── Source of truth for services (can contain React icons; used in SSR card grid)
+  // ── Source of truth for services (now includes `href` for deep pages)
   const services = [
     {
       key: "managed",
@@ -42,6 +42,7 @@ export default async function ServicesPage() {
         ["Patch Management", "OS & app updates with pilot rings and rollback."],
         ["Monitoring", "Endpoints, servers, network, and cloud signals."],
       ],
+      href: "/services/managed-it",
     },
     {
       key: "security",
@@ -54,6 +55,7 @@ export default async function ServicesPage() {
         ["Identity", "MFA/SSO, conditional access, least-privilege."],
         ["Email", "Anti-spoofing/phishing, impersonation protection."],
       ],
+      href: "/services/cybersecurity",
     },
     {
       key: "cloud",
@@ -66,6 +68,7 @@ export default async function ServicesPage() {
         ["Governance", "Secure baselines, DLP, retention, logging."],
         ["FinOps", "License cleanup, storage policies, rightsizing."],
       ],
+      href: "/services/cloud-workspace",
     },
     {
       key: "projects",
@@ -78,6 +81,7 @@ export default async function ServicesPage() {
         ["Moves", "ISP, cabling, Wi-Fi heat maps, cutover plans."],
         ["Servers", "AD, file/print, virtualization, backup/DR."],
       ],
+      href: "/services/projects-consulting",
     },
     {
       key: "mdm",
@@ -90,6 +94,7 @@ export default async function ServicesPage() {
         ["Provisioning", "Autopilot/ABM zero-touch rollouts."],
         ["Health", "Drift detection, remediations, reporting."],
       ],
+      href: "/services/device-management",
     },
     {
       key: "vcio",
@@ -102,12 +107,13 @@ export default async function ServicesPage() {
         ["KPIs", "Board-friendly scorecards and actions."],
         ["Vendors", "Stack review, contracts, consolidation."],
       ],
+      href: "/services/vcio-strategy",
     },
   ];
 
-  // ── Plain JSON copy for client components (strip non-serializable fields like `icon`)
-  const servicesForClient = services.map(({ key, title, desc, bullets, deep }) => ({
-    key, title, desc, bullets, deep,
+  // ── Plain JSON copy for client islands (now includes `href`)
+  const servicesForClient = services.map(({ key, title, desc, bullets, deep, href }) => ({
+    key, title, desc, bullets, deep, href,
   }));
 
   return (
@@ -148,13 +154,14 @@ export default async function ServicesPage() {
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
         {/* ===================================================================
-           GRID OF SERVICES (overview cards)
+           GRID OF SERVICES (overview cards) — now clickable to deep pages
            =================================================================== */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          {services.map(({ key, icon: Icon, title, desc, bullets }) => (
+          {services.map(({ key, icon: Icon, title, desc, bullets, href }) => (
             <Reveal key={key}>
-              <a
+              <Link
                 id={key}
+                href={href}
                 className="block group p-6 rounded-2xl bg-gradient-to-br from-white/6 to-white/[0.03] border border-white/10 hover:border-cyan-300/30 transition relative overflow-hidden"
               >
                 <div className="absolute -right-10 -top-10 size-36 rounded-full bg-cyan-500/10 blur-2xl group-hover:scale-125 transition" />
@@ -174,15 +181,15 @@ export default async function ServicesPage() {
                   ))}
                 </ul>
                 <div className="mt-4 inline-flex items-center gap-2 text-sm text-cyan-300">
-                  Explore details <ChevronRight className="h-4 w-4" />
+                  View details <ChevronRight className="h-4 w-4" />
                 </div>
-              </a>
+              </Link>
             </Reveal>
           ))}
         </div>
 
         {/* ===================================================================
-           DEEP-DIVES (client island tabs)
+           DEEP-DIVES (client island tabs) — can also link out using href
            =================================================================== */}
         <Reveal className="mt-14">
           <ServicesTabs services={servicesForClient} />
