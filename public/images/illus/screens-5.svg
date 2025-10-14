@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#0b1220"/>
+  <rect x="120" y="140" width="960" height="540" rx="24" fill="#111827" stroke="#1f2937"/>
+  <g transform="translate(170,190)">
+    <rect width="400" height="60" rx="12" fill="#a78bfa"/>
+    <rect x="430" width="380" height="60" rx="12" fill="#22d3ee"/>
+  </g>
+  <g transform="translate(170,280)">
+    <rect width="300" height="260" rx="16" fill="#111827" stroke="#1f2937"/>
+    <rect x="20" y="24" width="260" height="18" rx="9" fill="#374151"/>
+    <rect x="20" y="54" width="220" height="18" rx="9" fill="#374151"/>
+    <rect x="20" y="84" width="200" height="18" rx="9" fill="#374151"/>
+  </g>
+  <g transform="translate(500,280)">
+    <rect width="530" height="260" rx="16" fill="#34d399"/>
+    <polyline points="30,210 120,140 210,160 300,90 390,120 500,60" fill="none" stroke="#0b1220" stroke-width="6"/>
+  </g>
+</svg>
