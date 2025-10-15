@@ -1,19 +1,27 @@
-// components/BlogClient.jsx
 "use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
-import { Search, Clock, ChevronRight, Flame } from "lucide-react";
+import { Search, Clock, ChevronRight, Flame, Tag, X } from "lucide-react";
 
-/* ---------- date helper (consistent SSR/CSR) ---------- */
+/* ---------- helpers ---------- */
 const fmtDate = (iso) =>
-  new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  }).format(new Date(iso));
+  new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" })
+    .format(new Date(iso));
+
+const SafeImage = ({ src, alt, ...rest }) => {
+  const [err, setErr] = useState(false);
+  return (
+    <Image
+      src={err ? "/images/illus/fallback.svg" : src}
+      alt={alt}
+      onError={() => setErr(true)}
+      {...rest}
+    />
+  );
+};
 
 /* ---------- card ---------- */
 function PostCard({ p }) {
@@ -22,7 +30,7 @@ function PostCard({ p }) {
       <Link href={`/blog/${p.slug}`} className="block">
         <div className="relative">
           <div className="relative w-full h-48">
-            <Image
+            <SafeImage
               src={p.cover}
               alt={p.title}
               fill
@@ -55,10 +63,7 @@ function PostCard({ p }) {
         <div className="px-5 pb-4">
           <div className="flex flex-wrap gap-2 text-[11px]">
             {p.tags.map((t) => (
-              <span
-                key={t}
-                className="px-2 py-0.5 rounded-lg border border-white/10 bg-white/5"
-              >
+              <span key={t} className="px-2 py-0.5 rounded-lg border border-white/10 bg-white/5">
                 {t}
               </span>
             ))}
@@ -75,22 +80,26 @@ export default function BlogClient({ posts }) {
     () => ["All", ...Array.from(new Set(posts.map((p) => p.category)))],
     [posts]
   );
+  const allTags = useMemo(
+    () => Array.from(new Set(posts.flatMap((p) => p.tags ?? []))).sort(),
+    [posts]
+  );
 
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useState(9);
+  const [activeTags, setActiveTags] = useState([]);
 
-  // newest first
   const sorted = useMemo(
     () => posts.slice().sort((a, b) => new Date(b.date) - new Date(a.date)),
     [posts]
   );
-
   const featured = useMemo(() => sorted.filter((p) => p.featured).slice(0, 1), [sorted]);
 
   const list = useMemo(() => {
     let arr = sorted;
     if (cat !== "All") arr = arr.filter((x) => x.category === cat);
+    if (activeTags.length) arr = arr.filter((x) => (x.tags ?? []).some(t => activeTags.includes(t)));
     const n = q.trim().toLowerCase();
     if (n) {
       arr = arr.filter(
@@ -101,7 +110,7 @@ export default function BlogClient({ posts }) {
       );
     }
     return arr;
-  }, [sorted, cat, q]);
+  }, [sorted, cat, q, activeTags]);
 
   const visible = list.slice(0, limit);
   const canMore = limit < list.length;
@@ -117,7 +126,7 @@ export default function BlogClient({ posts }) {
           >
             <div className="grid md:grid-cols-2">
               <div className="relative w-full h-64 md:h-full">
-                <Image
+                <SafeImage
                   src={featured[0].cover}
                   alt={featured[0].title}
                   fill
@@ -151,10 +160,7 @@ export default function BlogClient({ posts }) {
             {categories.map((c) => (
               <button
                 key={c}
-                onClick={() => {
-                  setCat(c);
-                  setLimit(6);
-                }}
+                onClick={() => { setCat(c); setLimit(9); }}
                 className={`px-3 py-1.5 rounded-lg text-xs border transition ${
                   cat === c
                     ? "border-cyan-300/40 text-cyan-300 bg-cyan-400/10"
@@ -166,35 +172,73 @@ export default function BlogClient({ posts }) {
             ))}
           </div>
 
-          <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2">
-            <Search className="h-4 w-4 text-cyan-300" />
-            <input
-              value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                setLimit(6);
-              }}
-              placeholder="Search posts…"
-              className="bg-transparent outline-none text-sm w-60"
-            />
-          </label>
+          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+            {/* TAG FILTERS */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-slate-400 inline-flex items-center gap-1">
+                <Tag className="h-3.5 w-3.5" /> Tags:
+              </span>
+              {allTags.map(t => {
+                const on = activeTags.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() =>
+                      setActiveTags(on ? activeTags.filter(x => x !== t) : [...activeTags, t])
+                    }
+                    className={`px-2 py-1 rounded-md text-[11px] border transition ${
+                      on ? "border-cyan-300/40 text-cyan-300 bg-cyan-400/10"
+                         : "border-white/10 text-slate-300 hover:bg-white/5"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+              {activeTags.length > 0 && (
+                <button
+                  onClick={() => setActiveTags([])}
+                  className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-md border border-white/10 hover:bg-white/5"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear
+                </button>
+              )}
+            </div>
+
+            {/* SEARCH */}
+            <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2">
+              <Search className="h-4 w-4 text-cyan-300" />
+              <input
+                value={q}
+                onChange={(e) => { setQ(e.target.value); setLimit(9); }}
+                placeholder="Search posts…"
+                className="bg-transparent outline-none text-sm w-60"
+              />
+            </label>
+          </div>
         </div>
       </Reveal>
 
       {/* GRID */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {visible.map((p) => (
-          <Reveal key={p.slug}>
-            <PostCard p={p} />
-          </Reveal>
-        ))}
-      </div>
+      {visible.length === 0 ? (
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-slate-300">
+          No posts match your filters — try clearing tags or search.
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          {visible.map((p) => (
+            <Reveal key={p.slug}>
+              <PostCard p={p} />
+            </Reveal>
+          ))}
+        </div>
+      )}
 
       {/* LOAD MORE */}
       {canMore && (
         <div className="mt-8 flex justify-center">
           <button
-            onClick={() => setLimit((n) => n + 6)}
+            onClick={() => setLimit((n) => n + 9)}
             className="rounded-lg px-4 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
           >
             Load more
