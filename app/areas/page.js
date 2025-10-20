@@ -1,9 +1,3 @@
-// SERVER COMPONENT — Areas We Serve (DE & PA)
-// - SSR filtering via ?region=&q=
-// - US-only (Wilmington, Philadelphia, Allentown)
-// - Map pins are links (no client JS)
-// - English-only content & copy
-
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
@@ -12,7 +6,6 @@ import {
   ChevronDown, Bus, Truck, CalendarDays, Laptop2, Server, Shield
 } from "lucide-react";
 
-/* ===== Data (US only) ===== */
 const REGIONS = [
   {
     key: "delaware",
@@ -40,12 +33,54 @@ const REGIONS = [
   },
 ];
 
-// keep tiers simple + consistent
 const TIER = {
   A: { label: "Tier A", note: "Metro, fastest dispatch",  bg: "bg-emerald-500/15", ring: "ring-emerald-400/30" },
   B: { label: "Tier B", note: "Extended metro, fast",     bg: "bg-cyan-500/15",    ring: "ring-cyan-400/30" },
   C: { label: "Tier C", note: "Route-based onsite",       bg: "bg-fuchsia-500/15", ring: "ring-fuchsia-400/30" },
 };
+
+const SHARED_SERVICES = [
+  {
+    title: "Managed IT (SupremeCare™)",
+    bullets: [
+      "Helpdesk with P1 ≤ 15 min",
+      "Proactive monitoring & patching",
+      "Asset & license management",
+    ],
+  },
+  {
+    title: "Cybersecurity (EDR/XDR + M365 Hardening)",
+    bullets: [
+      "99.9% endpoint coverage target",
+      "MFA/SSO, phishing defense",
+      "Baseline policies & auditing",
+    ],
+  },
+  {
+    title: "Cloud & Microsoft 365",
+    bullets: [
+      "Tenant security & governance",
+      "Exchange/SharePoint/Teams",
+      "Backups/DR for Microsoft 365",
+    ],
+  },
+  {
+    title: "Backups & DR",
+    bullets: [
+      "Endpoints & server backups",
+      "Tested recovery runbooks",
+      "BCP/DR drills",
+    ],
+  },
+  {
+    title: "Compliance Guidance",
+    bullets: [
+      "Lightweight HIPAA/PCI guidance",
+      "Shared responsibility model",
+      "Documentation & training",
+    ],
+  },
+];
 
 const normalize = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
 
@@ -64,7 +99,6 @@ function TierBadge({ tier }) {
   );
 }
 
-/* ===== Simple abstract map of DE/SE-PA with linked pins (SSR) ===== */
 function RegionMap({ regions, active }) {
   const buildHref = (key) => {
     const params = new URLSearchParams();
@@ -76,12 +110,9 @@ function RegionMap({ regions, active }) {
     <div className="relative rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.18),transparent_60%)]" />
       <svg viewBox="0 0 100 100" className="w-full h-[360px] md:h-[500px]">
-        {/* abstract “coastline” silhouette (Delaware + SE Pennsylvania-ish) */}
         <g className="fill-white/6 stroke-white/10">
           <path d="M28,20 C34,16 46,14 58,18 C68,21 76,28 82,36 C88,44 92,54 88,64 C84,72 76,78 66,82 C58,84 48,85 40,82 C28,78 22,70 18,60 C14,50 16,40 20,32 C22,26 24,22 28,20 Z" />
         </g>
-
-        {/* pins are links; no JS required */}
         {regions.map((r) =>
           r.cities.map((c) => (
             <a key={r.key + c.name} href={buildHref(r.key)}>
@@ -91,8 +122,6 @@ function RegionMap({ regions, active }) {
           ))
         )}
       </svg>
-
-      {/* region shortcuts + CTA (links, not buttons) */}
       <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {regions.map((r) => (
@@ -110,53 +139,38 @@ function RegionMap({ regions, active }) {
           ))}
         </div>
         <Link
-          href="/get-quote"
+          href="/contact"
           className="text-xs rounded-lg px-3 py-1.5 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
         >
-          Get Quote
+          Book a 20-min Assessment
         </Link>
       </div>
     </div>
   );
 }
 
-/* ===== PAGE (SSR) ===== */
 export default function AreasPage({ searchParams }) {
   const regionKey = (searchParams?.region ?? "delaware").toString();
   const q = (searchParams?.q ?? "").toString();
-
   const region = REGIONS.find((r) => r.key === regionKey) ?? REGIONS[0];
-
   const nq = normalize(q);
   const order = { A: 0, B: 1, C: 2 };
   const filtered = region.cities
     .filter((c) => !nq || normalize(c.name).includes(nq))
     .sort((a, b) => (order[a.tier] - order[b.tier]) || a.name.localeCompare(b.name));
 
-  const buildFormAction = (next = {}) => {
-    const params = new URLSearchParams();
-    params.set("region", next.region ?? region.key);
-    const qv = typeof next.q === "string" ? next.q : q;
-    if (qv) params.set("q", qv);
-    return `/areas?${params.toString()}`;
-  };
-
   return (
     <>
-      {/* ===== HERO ===== */}
       <PageHero
         eyebrow="Areas we serve"
         title="Onsite where it matters, remote everywhere"
         sub="We support businesses across Wilmington (DE), Greater Philadelphia (PA), and the Lehigh Valley (PA) with SLA-backed dispatch and 24/7 remote helpdesk."
       />
-
       <section className="max-w-6xl mx-auto px-4 pb-24">
-        {/* ===== MAP + CITY PANEL ===== */}
         <div className="grid md:grid-cols-2 gap-6 items-start">
           <Reveal>
             <RegionMap regions={REGIONS} active={region.key} />
           </Reveal>
-
           <Reveal>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
               <div className="flex items-center justify-between gap-3">
@@ -166,8 +180,6 @@ export default function AreasPage({ searchParams }) {
                 </div>
                 <Pill><ShieldCheck className="h-4 w-4 text-cyan-300" /> SLA-backed</Pill>
               </div>
-
-              {/* SSR search inside region (GET) */}
               <form action="/areas" method="get" className="mt-4">
                 <input type="hidden" name="region" value={region.key} />
                 <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2">
@@ -186,8 +198,6 @@ export default function AreasPage({ searchParams }) {
                   </button>
                 </div>
               </form>
-
-              {/* Cities list */}
               <div className="mt-4 grid gap-3">
                 {filtered.map((c) => (
                   <div
@@ -211,20 +221,18 @@ export default function AreasPage({ searchParams }) {
                     </div>
                   </div>
                 ))}
-
                 {filtered.length === 0 && (
                   <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300">
                     No matches — try a different name.
                   </div>
                 )}
               </div>
-
               <div className="mt-5 flex gap-2">
                 <Link
-                  href="/get-quote"
+                  href="/contact"
                   className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                 >
-                  Ask about coverage <ArrowRight className="h-4 w-4" />
+                  Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/contact"
@@ -236,8 +244,27 @@ export default function AreasPage({ searchParams }) {
             </div>
           </Reveal>
         </div>
-
-        {/* ===== Same stack promise ===== */}
+        <Reveal className="mt-12">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Every city, same value</div>
+            <h3 className="text-lg font-semibold">Services we deliver in Wilmington, Philadelphia & Allentown</h3>
+            <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
+              {SHARED_SERVICES.map((s) => (
+                <div key={s.title} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div className="font-medium">{s.title}</div>
+                  <ul className="mt-2 space-y-1 text-slate-300">
+                    {s.bullets.map((b) => <li key={b}>• {b}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4">
+              <Link href="/contact" className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">
+                Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </Reveal>
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Everywhere you are</div>
@@ -270,8 +297,6 @@ export default function AreasPage({ searchParams }) {
             </div>
           </div>
         </Reveal>
-
-        {/* ===== Weekly routes (DE & PA) ===== */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-center justify-between gap-3">
@@ -281,7 +306,6 @@ export default function AreasPage({ searchParams }) {
               </div>
               <Pill><Route className="h-4 w-4 text-cyan-300" /> Predictable coverage</Pill>
             </div>
-
             <div className="grid md:grid-cols-5 gap-4 mt-4 text-sm">
               {[
                 ["Mon", "Wilmington ↔ Philadelphia", "8:00–18:00", Bus],
@@ -300,14 +324,11 @@ export default function AreasPage({ searchParams }) {
                 </div>
               ))}
             </div>
-
             <p className="text-xs text-slate-400 mt-3">
               Note: Emergency/P1 onsite outside schedule is available per engineer availability. Remote support is 24/7.
             </p>
           </div>
         </Reveal>
-
-        {/* ===== Region accordion ===== */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5">
             {REGIONS.map((r) => {
@@ -330,7 +351,6 @@ export default function AreasPage({ searchParams }) {
                         </span>
                       ))}
                     </div>
-                    {/* jump to this region (no client JS) */}
                     <div className="mt-3">
                       <a href={href} className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
                         View this region
@@ -342,8 +362,6 @@ export default function AreasPage({ searchParams }) {
             })}
           </div>
         </Reveal>
-
-        {/* ===== CTA ===== */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -351,7 +369,7 @@ export default function AreasPage({ searchParams }) {
               <p className="text-slate-300">Remote coverage anywhere in the US. Onsite footprint expands with demand.</p>
             </div>
             <div className="flex gap-3">
-              <Link href="/get-quote" className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">Request coverage</Link>
+              <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">Book a 20-min Assessment</Link>
               <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20">Talk to us</Link>
             </div>
           </div>
