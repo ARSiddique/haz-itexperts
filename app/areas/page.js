@@ -366,7 +366,7 @@ export default function AreasPage({ searchParams }) {
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold">Not seeing your exact city?</h3>
-              <p className="text-slate-300">Remote coverage anywhere in the US. Onsite footprint expands with demand.</p>
+              <p className="text-slate-300">Remoteee coverage anywhere in the US. Onsite footprint expands with demand.</p>
             </div>
             <div className="flex gap-3">
               <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">Book a 20-min Assessment</Link>
