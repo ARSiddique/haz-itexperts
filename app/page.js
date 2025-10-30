@@ -1,20 +1,30 @@
-// app/page.jsx  (SSR, fully updated)
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-
 import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
+import dynamic from "next/dynamic";
 import {
-  Shield, Server, Cloud, Wrench, Smartphone, Users, ArrowRight,
-  CheckCircle2, Cpu, Lock, LineChart, Image as ImageIcon, Sparkles
+  Shield,
+  Server,
+  Cloud,
+  Wrench,
+  Smartphone,
+  Users,
+  ArrowRight,
+  CheckCircle2,
+  Cpu,
+  Lock,
+  LineChart,
+  Image as ImageIcon,
+  Sparkles,
 } from "lucide-react";
 
-/* ───────────────── Collage (stable aspect + overlays) ───────────────── */
-function Collage({ items = [], priority = false, ratio = "aspect-[4/3]" }) {
+function Collage({ items = [], priority = false, ratio = "aspect-[16/10] md:aspect-[16/9]" }) {
   return (
     <div className={`relative ${ratio}`} data-reveal="up">
-      {/* base */}
       {items[0] && (
         <div className="absolute inset-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 group">
           <Image
@@ -29,8 +39,6 @@ function Collage({ items = [], priority = false, ratio = "aspect-[4/3]" }) {
           />
         </div>
       )}
-
-      {/* offset right */}
       {items[1] && (
         <div className="absolute right-3 -bottom-6 w-1/2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-xl rotate-[1.5deg] group">
@@ -46,8 +54,6 @@ function Collage({ items = [], priority = false, ratio = "aspect-[4/3]" }) {
           </div>
         </div>
       )}
-
-      {/* small badge left */}
       {items[2] && (
         <div className="absolute -left-4 top-6 w-1/3">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-lg -rotate-[2deg] group">
@@ -67,7 +73,6 @@ function Collage({ items = [], priority = false, ratio = "aspect-[4/3]" }) {
   );
 }
 
-/* ───────────────── server-safe helpers ───────────────── */
 const Section = ({ id, children, className = "" }) => (
   <section id={id} className="relative overflow-hidden">
     <div className="pointer-events-none absolute inset-0 -z-10">
@@ -90,8 +95,7 @@ const Title = ({ k, sub }) => (
 
 const Stat = ({ k, v }) => (
   <div
-    className="rounded-xl border border-white/10 bg-white/[0.06] p-4 text-center transition
-               hover:-translate-y-0.5 hover:border-cyan-300/30"
+    className="rounded-xl border border-white/10 bg-white/[0.06] p-4 text-center transition hover:-translate-y-0.5 hover:border-cyan-300/30"
     data-reveal="up"
   >
     <div className="text-xl font-bold text-cyan-300">{k}</div>
@@ -101,8 +105,7 @@ const Stat = ({ k, v }) => (
 
 const ServiceCard = ({ Icon, t, d, bullets = [] }) => (
   <div
-    className="group p-6 rounded-2xl bg-white/[0.06] border border-white/10 transition
-               hover:-translate-y-1 hover:shadow-xl hover:border-cyan-300/30"
+    className="group p-6 rounded-2xl bg-white/[0.06] border border-white/10 transition hover:-translate-y-1 hover:shadow-xl hover:border-cyan-300/30"
     data-reveal="up"
   >
     <div className="flex items-center gap-3">
@@ -124,32 +127,35 @@ const ServiceCard = ({ Icon, t, d, bullets = [] }) => (
   </div>
 );
 
-/* ───────────────── PAGE ───────────────── */
-export default async function HomePage() {
-  const areas = site.areas?.length ? site.areas : ["Wilmington, DE", "Philadelphia, PA", "Allentown, PA"];
 
+const OfferPopup = dynamic(() => import("@/components/OfferPopup"), { ssr: false });
+export default function HomePage() {
+  const areas = site.areas?.length
+    ? site.areas
+    : ["Allentown, PA", "Lehigh Valley, PA", "Wilmington, DE", "Philadelphia, PA"];
   return (
     <>
-      {/* ───────── HERO ───────── */}
+    <OfferPopup />
       <section id="hero" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-24 -left-24 size-72 rounded-full bg-cyan-500/25 blur-3xl" />
           <div className="absolute -bottom-24 -right-24 size-80 rounded-full bg-fuchsia-500/20 blur-3xl" />
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-2 gap-10 items-center section-enter">
-          <div>
-            <div className="hero-fx text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
-              Next-gen Managed IT for US SMBs
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 items-center">
+          <div className="max-w-[62ch]">
+            <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
+              Managed IT for Allentown & the Lehigh Valley
             </div>
-            <h1 className="hero-fx text-4xl md:text-6xl font-extrabold mt-3 leading-tight bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
-              {site.tagline}
+            <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
+              Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
-            <p className="hero-fx mt-4 text-base md:text-lg text-slate-200 max-w-2xl">
-              24/7 helpdesk, proactive monitoring, and real security — at a fixed monthly fee.
+            <p className="mt-4 text-base md:text-lg text-slate-200">
+              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Bethlehem &
+              Easton.
             </p>
 
-            <div className="hero-fx mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/get-quote"
                 className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
@@ -164,14 +170,14 @@ export default async function HomePage() {
               </a>
             </div>
 
-            <div className="hero-fx grid md:grid-cols-3 gap-4 mt-10">
+            <div className="grid grid-cols-3 gap-4 mt-10">
               <Stat k="<15 min" v="P1 response target" />
               <Stat k="99.9%" v="EDR/XDR coverage" />
               <Stat k="24/7" v="Helpdesk & monitoring" />
             </div>
           </div>
 
-          <div data-parallax="y" data-speed="0.18" className="section-enter">
+          <div className="lg:pl-2">
             <Collage
               items={[
                 { src: "/media/hero-1.jpg", alt: "Fiber optics" },
@@ -183,15 +189,14 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="section-divider h-px w-full bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
       </section>
 
-      {/* ───────── ABOUT ───────── */}
       <Section id="about" className="py-16">
         <Title k="About" sub="We keep your business running — and secure" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          We act as your IT department, or augment your in-house team, with real SLAs, documented SOPs,
-          and transparent reporting leadership actually reads.
+          We act as your IT department, or augment your in-house team, with real SLAs, documented SOPs, and transparent
+          reporting leadership actually reads.
         </p>
 
         <div className="grid md:grid-cols-2 gap-10 items-center mt-8">
@@ -240,7 +245,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── SERVICES ───────── */}
       <Section id="services" className="py-16">
         <Title k="Services" sub="Everything an SMB needs — nothing you don’t" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
@@ -249,13 +253,45 @@ export default async function HomePage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {[
-            { Icon: Shield, t: "Managed IT", d: "Helpdesk, patching, monitoring, reporting with SLAs.", bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"] },
-            { Icon: Server, t: "Cybersecurity", d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.", bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"] },
-            { Icon: Cloud, t: "Cloud & 365/Workspace", d: "Migrations, identity, MDM, cost optimization.", bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"] },
-            { Icon: Wrench, t: "Projects & Consulting", d: "Audits, office moves, network refresh, server/cloud.", bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"] },
-            { Icon: Smartphone, t: "Device Management", d: "Windows/Mac/iOS/Android baselines + app deploys.", bullets: ["Baseline config", "App catalogs", "Compliance checks"] },
-            { Icon: Users, t: "vCIO / Strategy", d: "Quarterly roadmap, budget planning, measurable KPIs.", bullets: ["Roadmaps", "Budgeting", "Risk register"] },
-          ].map((p) => <ServiceCard key={p.t} {...p} />)}
+            {
+              Icon: Shield,
+              t: "Managed IT",
+              d: "Helpdesk, patching, monitoring, reporting with SLAs.",
+              bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"],
+            },
+            {
+              Icon: Server,
+              t: "Cybersecurity",
+              d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
+              bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
+            },
+            {
+              Icon: Cloud,
+              t: "Cloud & 365/Workspace",
+              d: "Migrations, identity, MDM, cost optimization.",
+              bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"],
+            },
+            {
+              Icon: Wrench,
+              t: "Projects & Consulting",
+              d: "Audits, office moves, network refresh, server/cloud.",
+              bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"],
+            },
+            {
+              Icon: Smartphone,
+              t: "Device Management",
+              d: "Windows/Mac/iOS/Android baselines + app deploys.",
+              bullets: ["Baseline config", "App catalogs", "Compliance checks"],
+            },
+            {
+              Icon: Users,
+              t: "vCIO / Strategy",
+              d: "Quarterly roadmap, budget planning, measurable KPIs.",
+              bullets: ["Roadmaps", "Budgeting", "Risk register"],
+            },
+          ].map((p) => (
+            <ServiceCard key={p.t} {...p} />
+          ))}
         </div>
 
         <div className="mt-8 flex gap-3" data-reveal="up">
@@ -274,7 +310,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── WINS ───────── */}
       <Section id="wins" className="py-16">
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
@@ -293,7 +328,13 @@ export default async function HomePage() {
             </div>
           </div>
           <div data-reveal="up">
-            <Collage items={[{ src: "/media/team.jpg", alt: "Team" }, { src: "/media/work-2.jpg", alt: "Work" }, { src: "/media/hero-2.jpg", alt: "Cloud" }]} />
+            <Collage
+              items={[
+                { src: "/media/team.jpg", alt: "Team" },
+                { src: "/media/work-2.jpg", alt: "Work" },
+                { src: "/media/hero-2.jpg", alt: "Cloud" },
+              ]}
+            />
             <div className="mt-3">
               <div className="font-medium">Onboarding without chaos</div>
               <p className="text-sm text-slate-300">MDM baselines in 10 days; predictable new-hire workflow.</p>
@@ -302,7 +343,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── PROCESS ───────── */}
       <Section id="process" className="py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
@@ -325,12 +365,7 @@ export default async function HomePage() {
             ))}
           </ol>
 
-          <div
-            className="rounded-2xl overflow-hidden border border-white/10 group"
-            data-parallax="y"
-            data-speed="0.1"
-            data-reveal="up"
-          >
+          <div className="rounded-2xl overflow-hidden border border-white/10 group" data-parallax="y" data-speed="0.1" data-reveal="up">
             <div className="relative w-full aspect-[16/16]">
               <Image
                 src="/media/work-2.jpg"
@@ -346,7 +381,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── TRUST ───────── */}
       <Section id="trust" className="py-16">
         <Title k="Trust" sub="Security-first and SLA-backed" />
         <div className="grid md:grid-cols-3 gap-4">
@@ -366,7 +400,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── GALLERY PREVIEW ───────── */}
       <Section id="gallery" className="py-16">
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
@@ -375,11 +408,7 @@ export default async function HomePage() {
             ["/media/rack.jpg", "Rack & cabling"],
             ["/media/dashboard.jpg", "Monitoring"],
           ].map(([src, cap]) => (
-            <figure
-              key={src}
-              className="rounded-2xl overflow-hidden border border-white/10 bg-white/5"
-              data-reveal="up"
-            >
+            <figure key={src} className="rounded-2xl overflow-hidden border border-white/10 bg-white/5" data-reveal="up">
               <div className="relative w-full aspect-[3/2] md:aspect-[16/10] group">
                 <Image
                   src={src}
@@ -407,7 +436,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* ───────── AREAS ───────── */}
       <Section id="areas" className="pb-24">
         <Title k="Areas we serve" sub="Onsite & remote support in DE & PA" />
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -423,8 +451,9 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* client-only FX */}
-      <Suspense fallback={null}><HomeFX /></Suspense>
+      <Suspense fallback={null}>
+        <HomeFX />
+      </Suspense>
     </>
   );
 }

@@ -8,11 +8,13 @@ import {
 
 const REGIONS = [
   {
-    key: "delaware",
-    name: "Delaware",
-    color: "#22d3ee",
+    key: "lehigh",
+    name: "Lehigh Valley, PA",
+    color: "#34d399",
     cities: [
-      { name: "Wilmington, DE", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [40, 58] },
+      { name: "Allentown, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [60, 34] },
+      { name: "Bethlehem, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [64, 32] },
+      { name: "Easton, PA", tier: "B", sla: "P1 ≤ 30 min", onsite: "Tue–Fri", pin: [68, 34] },
     ],
   },
   {
@@ -24,11 +26,11 @@ const REGIONS = [
     ],
   },
   {
-    key: "lehigh",
-    name: "Lehigh Valley, PA",
-    color: "#34d399",
+    key: "delaware",
+    name: "Delaware",
+    color: "#22d3ee",
     cities: [
-      { name: "Allentown, PA", tier: "B", sla: "P1 ≤ 30 min", onsite: "Tue–Fri", pin: [60, 34] },
+      { name: "Wilmington, DE", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [40, 58] },
     ],
   },
 ];
@@ -42,43 +44,23 @@ const TIER = {
 const SHARED_SERVICES = [
   {
     title: "Managed IT (SupremeCare™)",
-    bullets: [
-      "Helpdesk with P1 ≤ 15 min",
-      "Proactive monitoring & patching",
-      "Asset & license management",
-    ],
+    bullets: ["Helpdesk with P1 ≤ 15 min","Proactive monitoring & patching","Asset & license management"],
   },
   {
     title: "Cybersecurity (EDR/XDR + M365 Hardening)",
-    bullets: [
-      "99.9% endpoint coverage target",
-      "MFA/SSO, phishing defense",
-      "Baseline policies & auditing",
-    ],
+    bullets: ["99.9% endpoint coverage target","MFA/SSO, phishing defense","Baseline policies & auditing"],
   },
   {
     title: "Cloud & Microsoft 365",
-    bullets: [
-      "Tenant security & governance",
-      "Exchange/SharePoint/Teams",
-      "Backups/DR for Microsoft 365",
-    ],
+    bullets: ["Tenant security & governance","Exchange/SharePoint/Teams","Backups/DR for Microsoft 365"],
   },
   {
     title: "Backups & DR",
-    bullets: [
-      "Endpoints & server backups",
-      "Tested recovery runbooks",
-      "BCP/DR drills",
-    ],
+    bullets: ["Endpoints & server backups","Tested recovery runbooks","BCP/DR drills"],
   },
   {
     title: "Compliance Guidance",
-    bullets: [
-      "Lightweight HIPAA/PCI guidance",
-      "Shared responsibility model",
-      "Documentation & training",
-    ],
+    bullets: ["Lightweight HIPAA/PCI guidance","Shared responsibility model","Documentation & training"],
   },
 ];
 
@@ -105,7 +87,6 @@ function RegionMap({ regions, active }) {
     params.set("region", key);
     return `/areas?${params.toString()}`;
   };
-
   return (
     <div className="relative rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.18),transparent_60%)]" />
@@ -149,9 +130,10 @@ function RegionMap({ regions, active }) {
   );
 }
 
-export default function AreasPage({ searchParams }) {
-  const regionKey = (searchParams?.region ?? "delaware").toString();
-  const q = (searchParams?.q ?? "").toString();
+export default async function AreasPage({ searchParams }) {
+  const sp = await searchParams;
+  const regionKey = (sp?.region ?? "lehigh").toString();
+  const q = (sp?.q ?? "").toString();
   const region = REGIONS.find((r) => r.key === regionKey) ?? REGIONS[0];
   const nq = normalize(q);
   const order = { A: 0, B: 1, C: 2 };
@@ -164,7 +146,7 @@ export default function AreasPage({ searchParams }) {
       <PageHero
         eyebrow="Areas we serve"
         title="Onsite where it matters, remote everywhere"
-        sub="We support businesses across Wilmington (DE), Greater Philadelphia (PA), and the Lehigh Valley (PA) with SLA-backed dispatch and 24/7 remote helpdesk."
+        sub="We support businesses across Allentown & the Lehigh Valley, Greater Philadelphia, and Wilmington with SLA-backed dispatch and 24/7 remote helpdesk."
       />
       <section className="max-w-6xl mx-auto px-4 pb-24">
         <div className="grid md:grid-cols-2 gap-6 items-start">
@@ -247,7 +229,7 @@ export default function AreasPage({ searchParams }) {
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Every city, same value</div>
-            <h3 className="text-lg font-semibold">Services we deliver in Wilmington, Philadelphia & Allentown</h3>
+            <h3 className="text-lg font-semibold">Services we deliver in Allentown, Philadelphia & Wilmington</h3>
             <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
               {SHARED_SERVICES.map((s) => (
                 <div key={s.title} className="rounded-xl border border-white/10 bg-white/5 p-4">
@@ -308,10 +290,10 @@ export default function AreasPage({ searchParams }) {
             </div>
             <div className="grid md:grid-cols-5 gap-4 mt-4 text-sm">
               {[
-                ["Mon", "Wilmington ↔ Philadelphia", "8:00–18:00", Bus],
+                ["Mon", "Allentown ↔ Philadelphia", "8:00–18:00", Bus],
                 ["Tue", "Philadelphia metro (SE PA)", "8:00–18:00", Truck],
-                ["Wed", "Allentown ↔ Philadelphia", "8:00–18:00", Bus],
-                ["Thu", "Wilmington metro (DE)", "8:00–18:00", Bus],
+                ["Wed", "Wilmington ↔ Philadelphia", "8:00–18:00", Bus],
+                ["Thu", "Lehigh Valley route", "8:00–18:00", Bus],
                 ["Fri", "Flex / project windows", "10:00–16:00", Truck],
               ].map(([d, r, t, Icon]) => (
                 <div key={d} className="rounded-xl border border-white/10 bg-white/5 p-4 hover:border-cyan-300/30 hover:-translate-y-0.5 transition">
@@ -325,7 +307,7 @@ export default function AreasPage({ searchParams }) {
               ))}
             </div>
             <p className="text-xs text-slate-400 mt-3">
-              Note: Emergency/P1 onsite outside schedule is available per engineer availability. Remote support is 24/7.
+              Emergency/P1 onsite outside schedule depends on engineer availability. Remote support is 24/7.
             </p>
           </div>
         </Reveal>
