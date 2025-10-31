@@ -1,36 +1,45 @@
-// CONTACT — super simple (SSR, Next 14/15-safe)
+// CONTACT — simple + Next 14/15 safe (SSR + Server Action)
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
 import { redirect } from "next/navigation";
 import { Mail, Phone, ArrowRight } from "lucide-react";
+import { sendContactEmail } from "@/lib/mailer";
 
-async function sendContact(form) {
-  // TODO: wire up to email/CRM
-  console.log("Contact (mini):", form);
-}
+export const metadata = {
+  title: `Contact — ${site?.name || "Supreme IT Experts"}`,
+  description: "Email or call directly — or send a short note. We reply fast.",
+};
 
 export default async function ContactPage(props) {
-  // Next 15 fix: await searchParams
-  const sp = await props.searchParams;
+  // Next 15 note: searchParams may be async on server components
+  const sp = (props?.searchParams && (await props.searchParams)) || {};
   const submitted = sp?.ok === "1";
 
-  const email = site?.email ?? "hello@hazitexperts.com";
-  const phone = site?.phone ?? "+1 (302) 555-0139";
+  const email = site?.email ;
+  const phone = site?.phone;
 
-  // server action
+  // ===== Server Action =====
   async function submit(formData) {
     "use server";
     const data = {
       name: (formData.get("name") || "").toString().trim(),
-      workEmail: (formData.get("workEmail") || "").toString().trim(),
-      message: (formData.get("message") || "").toString().trim(),
-      source: "contact-min",
+  workEmail: (formData.get("workEmail") || "").toString().trim().toLowerCase(),
+  message: (formData.get("message") || "").toString().trim(),
+  website: (formData.get("website") || "").toString(),
+  source: "contact-min",
     };
+
+    // Basic validation
     if (!data.name || !data.workEmail || !data.message) {
       redirect("/contact?ok=0");
     }
-    await sendContact(data);
+
+    const r = await sendContactEmail(data);
+    if (!r?.ok) {
+      console.error("sendContactEmail failed:", r?.error);
+      redirect("/contact?ok=0");
+    }
     redirect("/contact?ok=1");
   }
 
@@ -53,7 +62,7 @@ export default async function ContactPage(props) {
               <Mail className="h-4 w-4" /> {email}
             </a>
             <a
-              href={`tel:${phone.replace(/[^+\d]/g, "")}`}
+              href={`tel:${(phone || "").replace(/[^+\d]/g, "")}`}
               className="rounded-lg px-4 py-3 text-sm font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center justify-center gap-2"
             >
               <Phone className="h-4 w-4" /> {phone}
@@ -70,6 +79,9 @@ export default async function ContactPage(props) {
           )}
 
           <form action={submit} className="space-y-4">
+            {/* Honeypot (hidden) */}
+            <input type="text" name="website" autoComplete="off" tabIndex={-1} className="hidden" />
+
             <div>
               <label className="text-xs text-slate-400">Your name</label>
               <input
@@ -111,7 +123,6 @@ export default async function ContactPage(props) {
             </div>
           </form>
 
-          {/* Optional quick links */}
           <div className="mt-4 flex gap-2">
             <Link href="/get-quote" className="rounded-lg px-3 py-2 text-xs border border-white/10 bg-white/5 hover:border-cyan-300/30">
               Get a Quote
