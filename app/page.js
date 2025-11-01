@@ -132,7 +132,7 @@ const OfferPopup = dynamic(() => import("@/components/OfferPopup"), { ssr: false
 export default function HomePage() {
   const areas = site.areas?.length
     ? site.areas
-    : ["Allentown, PA", "Lehigh Valley, PA", "Wilmington, DE", "Philadelphia, PA"];
+    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
   return (
     <>
     <OfferPopup />
@@ -151,8 +151,8 @@ export default function HomePage() {
               Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-200">
-              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Bethlehem &
-              Easton.
+              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Macungie &
+  Emmaus.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">

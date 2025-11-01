@@ -9,7 +9,7 @@ import { Search, ChevronDown, HelpCircle, ArrowRight, MessageSquareText } from "
 const FAQS = [
   { cat: "General", q: "What’s the difference between Fully-managed and Co-managed IT?", a: "Fully-managed means we run your end-to-end IT with tooling, SOPs, and SLAs. Co-managed means we augment your in-house team to improve workflows, coverage, and reporting. Roles and access are defined in the SOW." },
   { cat: "General", q: "How long does kickoff take?", a: "Discovery starts the same week. Baselines (patching, EDR/XDR, MDM, backup/DR) typically land in 7–10 business days. You’ll see quick wins in week one." },
-  { cat: "General", q: "What company sizes do you support?", a: "We focus on SMB/SME teams from 10–500+ users across Wilmington, DE; Philadelphia, PA; and Allentown, PA." },
+  { cat: "General", q: "What company sizes do you support?", a: "We focus on SMB/SME teams from 10–500+ customers across Allentown, Macungie, and Emmaus." },
 
   { cat: "Managed IT", q: "Which helpdesk channels are available?", a: "Email, chat, and portal — all feed a central queue with triage SOPs and CSAT. Leadership KPIs are shared monthly." },
   { cat: "Managed IT", q: "What SLAs do you commit to?", a: "P1 ≤ 15 minutes first response, P2 ≤ 1 hour, P3 same business day. We track MTTR and reopen rate to keep quality high." },

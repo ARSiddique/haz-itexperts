@@ -7,7 +7,7 @@ import { ArrowRight, CheckCircle2, Phone } from "lucide-react";
 export const metadata = {
   title: "Allentown IT Launch Offer — Free IT Audit for First 20 SMBs",
   description:
-    "Allentown, Bethlehem, Easton: First 20 customers get a free IT audit. Helpdesk, security, Microsoft 365, backups — actionable quick wins and roadmap.",
+    "Allentown, Macungie, Emmaus: First 20 customers get a free IT audit — uptime, security, Microsoft 365, backups — actionable quick wins and a clear roadmap.",
 };
 
 export default function AllentownLP() {

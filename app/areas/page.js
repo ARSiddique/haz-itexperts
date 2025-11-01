@@ -7,14 +7,15 @@ import {
 } from "lucide-react";
 
 const REGIONS = [
-  {
+ {
     key: "lehigh",
     name: "Lehigh Valley, PA",
     color: "#34d399",
     cities: [
       { name: "Allentown, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [60, 34] },
-      { name: "Bethlehem, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [64, 32] },
-      { name: "Easton, PA", tier: "B", sla: "P1 ≤ 30 min", onsite: "Tue–Fri", pin: [68, 34] },
+      // REPLACE these two:
+      { name: "Macungie, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [62, 36] },
+      { name: "Emmaus, PA",   tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [61, 35] },
     ],
   },
   {
@@ -229,7 +230,7 @@ export default async function AreasPage({ searchParams }) {
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Every city, same value</div>
-            <h3 className="text-lg font-semibold">Services we deliver in Allentown, Philadelphia & Wilmington</h3>
+            <h3 className="text-lg font-semibold">Services we deliver in Allentown, Macungie & Emmaus</h3>
             <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
               {SHARED_SERVICES.map((s) => (
                 <div key={s.title} className="rounded-xl border border-white/10 bg-white/5 p-4">

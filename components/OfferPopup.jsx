@@ -92,9 +92,9 @@ export default function OfferPopup() {
                 </h3>
 
                 <p className="mt-3 text-sm md:text-base text-slate-300">
-                  Full environment checkup for SMBs in Allentown, Bethlehem, and
-                  Easton. Endpoint health, identity & MFA review, Microsoft 365
-                  hardening, email security, and backup/DR readiness.
+                  Full environment checkup for SMBs in Allentown, Macungie, and
+  Emmaus. Endpoint health, identity & MFA review, Microsoft 365
+  hardening, email security, and backup/DR readiness.
                 </p>
 
                 <ul className="mt-4 space-y-2 text-sm text-slate-200">

@@ -127,12 +127,13 @@ export default function Footer() {
         {/* Areas */}
         <div>
           <div className="font-semibold text-slate-100 mb-3">Areas We Serve</div>
-          <ul className="space-y-2.5 text-slate-300">
-            <li><Link href="/areas#wilmington" className="hover:text-cyan-300">Wilmington, DE</Link></li>
-            <li><Link href="/areas#philadelphia" className="hover:text-cyan-300">Philadelphia, PA</Link></li>
-            <li><Link href="/areas#allentown" className="hover:text-cyan-300">Allentown, PA</Link></li>
-            <li><Link href="/areas" className="hover:text-cyan-300">See all areas</Link></li>
-          </ul>
+          <ul className="space-y-2 text-slate-300 text-sm">
+  <li><Link href="/areas" className="hover:text-cyan-300">Areas we serve</Link></li>
+  <li><Link href="/areas#allentown" className="hover:text-cyan-300">Allentown, PA</Link></li>
+  <li><Link href="/areas#macungie"  className="hover:text-cyan-300">Macungie, PA</Link></li>
+  <li><Link href="/areas#emmaus"    className="hover:text-cyan-300">Emmaus, PA</Link></li>
+  <li><Link href="/areas" className="hover:text-cyan-300">See all areas</Link></li>
+</ul>
           <Link
             href="/get-quote"
             className="mt-4 inline-block rounded-lg px-5 py-3 font-semibold bg-cyan-400/10 text-cyan-300 border border-cyan-300/30 hover:bg-cyan-400/20"
