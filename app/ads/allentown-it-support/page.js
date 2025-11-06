@@ -45,13 +45,14 @@ export default async function Page({ searchParams }) {
 
       {/* Brand strip (since global header is hidden on LP) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-        <a href="/" aria-label="Supreme IT Experts – Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+        <a href="/" aria-label="Supreme IT Experts — Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
           <img
             src="/logo.png"
             alt="Supreme IT Experts"
             style={{ height: 28, width: "auto", display: "block" }}
+            fetchPriority="high"
+            decoding="async"
             loading="eager"
-            fetchpriority="high"
           />
         </a>
       </div>
@@ -60,7 +61,7 @@ export default async function Page({ searchParams }) {
       {error && <div style={errBanner}>⚠️ Something went wrong. Please try again.</div>}
 
       {/* HERO */}
-      <div style={sec} role="banner">
+      <div style={sec} role="banner" aria-label="Hero">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
         <p style={hero}>
@@ -74,8 +75,8 @@ export default async function Page({ searchParams }) {
       </div>
 
       {/* INTRO */}
-      <section style={sec} id="intro">
-        <h2 style={h2}>Built for SMBs in the Lehigh Valley</h2>
+      <section style={sec} id="intro" aria-labelledby="intro-h">
+        <h2 style={h2} id="intro-h">Built for SMBs in the Lehigh Valley</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
           We keep teams productive and protected in Allentown, Macungie and Emmaus.
           You get rapid response, clear communication, and an IT environment that just works.
@@ -83,8 +84,8 @@ export default async function Page({ searchParams }) {
       </section>
 
       {/* CORE SERVICES */}
-      <section style={sec} id="services">
-        <h2 style={h2}>Core Services</h2>
+      <section style={sec} id="services" aria-labelledby="services-h">
+        <h2 style={h2} id="services-h">Core Services</h2>
         <ul style={list}>
           <li><strong>24/7 Helpdesk &amp; Device Management</strong> — provisioning, updates, troubleshooting.</li>
           <li><strong>Cybersecurity</strong> — EDR/AV, patching, MFA, encrypted backups &amp; recovery.</li>
@@ -94,8 +95,8 @@ export default async function Page({ searchParams }) {
       </section>
 
       {/* VALUE */}
-      <section style={sec} id="why">
-        <h2 style={h2}>Why Choose Supreme IT Experts</h2>
+      <section style={sec} id="why" aria-labelledby="why-h">
+        <h2 style={h2} id="why-h">Why Choose Supreme IT Experts</h2>
         <ul style={list}>
           <li>Local team • fast, friendly support</li>
           <li>Flat monthly pricing • no surprises</li>
@@ -105,8 +106,8 @@ export default async function Page({ searchParams }) {
       </section>
 
       {/* PRICING */}
-      <section style={sec} id="pricing">
-        <h2 style={h2}>Simple, Predictable Pricing</h2>
+      <section style={sec} id="pricing" aria-labelledby="pricing-h">
+        <h2 style={h2} id="pricing-h">Simple, Predictable Pricing</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
           Per-user monthly plans tailored to your size and needs. Start with a free assessment —
           we’ll map your environment and give you a fixed quote.
@@ -114,8 +115,8 @@ export default async function Page({ searchParams }) {
       </section>
 
       {/* FORM */}
-      <section style={sec} id="contact">
-        <h2 style={h2}>Request a Free IT Assessment</h2>
+      <section style={sec} id="contact" aria-labelledby="contact-h">
+        <h2 style={h2} id="contact-h">Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
           {/* Success redirect target */}
           <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
@@ -140,12 +141,20 @@ export default async function Page({ searchParams }) {
       </section>
 
       {/* SERVICE AREA */}
-      <section style={{ ...sec, marginBottom: 8 }} id="area">
-        <h2 style={h2}>Service Area</h2>
+      <section style={{ ...sec, marginBottom: 8 }} id="area" aria-labelledby="area-h">
+        <h2 style={h2} id="area-h">Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
           Allentown • Macungie • Emmaus • Greater Lehigh Valley
         </p>
       </section>
+
+      {/* TRUST FOOTER (for Ads policy) */}
+      <footer style={{ marginTop: 40, fontSize: 13, opacity: 0.7 }}>
+        Supreme IT Experts · Allentown, PA · Local MSP ·{" "}
+        <a href="/" style={{ color: "#9cb3ff", textDecoration: "underline" }}>
+          Visit full website
+        </a>
+      </footer>
     </main>
   );
 }
