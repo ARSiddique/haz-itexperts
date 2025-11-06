@@ -12,7 +12,6 @@ export const metadata = {
   icons: {
     icon: [{ url: "/favicon.ico?v=8", sizes: "any" }],
     shortcut: "/favicon.ico?v=8",
-    // (apple touch icon optional)
     apple: "/apple-touch-icon.png?v=8",
   },
   openGraph: {
@@ -36,7 +35,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* extra safety: explicit <link> tags */}
+        {/* Explicit tags to ensure the custom favicon from /public is used */}
         <link rel="icon" href="/favicon.ico?v=8" sizes="any" />
         <link rel="shortcut icon" href="/favicon.ico?v=8" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8" />
