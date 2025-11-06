@@ -148,28 +148,31 @@ export default function Page({ searchParams }) {
       </section>
 
       {/* FORM */}
-      <section style={sec} id="contact">
-        <h2 style={h2}>Request a Free IT Assessment</h2>
-        <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-          {/* Honeypot (hidden from users, bots will fill it) */}
-          <input
-            name="hp"
-            tabIndex={-1}
-            autoComplete="off"
-            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
-            aria-hidden="true"
-          />
-          <input name="name" required placeholder="Your name" style={input} />
-          <input name="email" required type="email" placeholder="Your email" style={input} />
-          <input name="phone" placeholder="Phone (optional)" style={input} />
-          <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
-          <button type="submit" style={btn}>Request Assessment</button>
-        </form>
-        <p style={subnote}>
-          Prefer email? Write to{" "}
-          <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
-        </p>
-      </section>
+     <section style={sec} id="contact">
+  <h2 style={h2}>Request a Free IT Assessment</h2>
+  <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+    {/* ✅ redirect target for success */}
+    <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
+
+    {/* (optional) honeypot already added */}
+    <input
+      name="hp"
+      tabIndex={-1}
+      autoComplete="off"
+      style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      aria-hidden="true"
+    />
+
+    <input name="name" required placeholder="Your name" style={input} />
+    <input name="email" required type="email" placeholder="Your email" style={input} />
+    <input name="phone" placeholder="Phone (optional)" style={input} />
+    <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
+    <button type="submit" style={btn}>Request Assessment</button>
+  </form>
+  <p style={subnote}>
+    Prefer email? Write to <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
+  </p>
+</section>
 
       {/* SERVICE AREA */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
