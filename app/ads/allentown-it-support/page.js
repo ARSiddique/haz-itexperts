@@ -7,9 +7,14 @@ export const metadata = {
     "Local MSP in Allentown providing 24/7 helpdesk, device management, cybersecurity & backups, and network monitoring. Fast response. Fixed monthly pricing.",
 };
 
-export default function Page({ searchParams }) {
-  const sent = searchParams?.sent === "1";
-  const error = searchParams?.error || "";
+// ⬇️ Next 15: searchParams is a Promise in RSC; we must await it
+export default async function Page({ searchParams }) {
+  const sp = await searchParams; // may be an object or URLSearchParams-like
+  const get = (k) =>
+    typeof sp?.get === "function" ? sp.get(k) : sp?.[k];
+
+  const sent = get("sent") === "1";
+  const error = get("error") || "";
 
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
@@ -21,95 +26,25 @@ export default function Page({ searchParams }) {
   };
 
   const sec = { marginTop: 24, marginBottom: 24 };
-
-  const kicker = {
-    fontSize: 13,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    opacity: 0.8,
-  };
-  const h1 = {
-    marginTop: 6,
-    marginBottom: 6,
-    fontSize: 30,
-    fontWeight: 800,
-    letterSpacing: "-0.02em",
-  };
+  const kicker = { fontSize: 13, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.8 };
+  const h1 = { marginTop: 6, marginBottom: 6, fontSize: 30, fontWeight: 800, letterSpacing: "-0.02em" };
   const hero = { marginTop: 4, marginBottom: 0, opacity: 0.9, fontSize: 16 };
-
-  const h2 = {
-    marginTop: 0,
-    marginBottom: 10,
-    fontSize: 20,
-    fontWeight: 700,
-    letterSpacing: "-0.01em",
-  };
+  const h2 = { marginTop: 0, marginBottom: 10, fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em" };
   const list = { paddingLeft: 18, marginTop: 0, marginBottom: 0 };
-
-  const btn = {
-    display: "inline-block",
-    padding: "10px 14px",
-    borderRadius: 10,
-    background: "#111827",
-    color: "#fff",
-    textDecoration: "none",
-    border: "1px solid #111827",
-    marginRight: 12,
-  };
+  const btn = { display: "inline-block", padding: "10px 14px", borderRadius: 10, background: "#111827", color: "#fff", textDecoration: "none", border: "1px solid #111827", marginRight: 12 };
   const btnOutline = { ...btn, background: "#fff", color: "#111827" };
-
-  const input = {
-    padding: "10px 12px",
-    borderRadius: 10,
-    border: "1px solid #e5e7eb",
-    fontSize: 14,
-    width: "100%",
-  };
+  const input = { padding: "10px 12px", borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 14, width: "100%" };
   const subnote = { fontSize: 12, marginTop: 6, opacity: 0.8 };
-
-  const okBanner = {
-    marginBottom: 16,
-    padding: "10px 12px",
-    borderRadius: 8,
-    background: "rgba(34,197,94,.15)",
-    border: "1px solid rgba(34,197,94,.35)",
-    fontSize: 14,
-  };
-  const errBanner = {
-    marginBottom: 16,
-    padding: "10px 12px",
-    borderRadius: 8,
-    background: "rgba(239,68,68,.16)",
-    border: "1px solid rgba(248,113,113,.45)",
-    color: "#7f1d1d",
-    fontSize: 14,
-  };
-
-  const errorMsg =
-    error === "invalidEmail"
-      ? "Please enter a valid email."
-      : error === "missing"
-      ? "Name and email are required."
-      : error === "mailConfig"
-      ? "Email service is not configured yet."
-      : error === "server"
-      ? "Something went wrong. Please try again."
-      : "";
+  const banner = { marginBottom: 16, padding: "10px 12px", borderRadius: 8, background: "rgba(34,197,94,.15)", border: "1px solid rgba(34,197,94,.35)", fontSize: 14 };
+  const errBanner = { marginBottom: 16, padding: "10px 12px", borderRadius: 8, background: "rgba(239,68,68,.15)", border: "1px solid rgba(239,68,68,.35)", fontSize: 14 };
 
   return (
     <main style={wrap}>
-      {/* Hide global header/footer only on this landing */}
       <BodyClass name="hide-chrome" />
 
-      {/* Banners */}
-      {sent && (
-        <div style={okBanner}>
-          ✅ Thanks! Your message was sent. We’ll contact you shortly.
-        </div>
-      )}
-      {!!errorMsg && <div style={errBanner}>⛔ {errorMsg}</div>}
+      {sent && <div style={banner}>✅ Thanks! Your message was sent. We’ll contact you shortly.</div>}
+      {error && <div style={errBanner}>⚠️ Something went wrong. Please try again.</div>}
 
-      {/* HERO (div instead of <header> so global CSS doesn't hide it) */}
       <div style={sec} role="banner">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
@@ -119,16 +54,10 @@ export default function Page({ searchParams }) {
         </p>
         <div style={{ marginTop: 12 }}>
           <a href="tel:+16105009209" style={btn}>Call 610-500-9209</a>
-          <a
-            href="mailto:supremeitexperts@gmail.com?subject=IT%20Support%20Inquiry"
-            style={btnOutline}
-          >
-            Email Us
-          </a>
+          <a href="mailto:supremeitexperts@gmail.com?subject=IT%20Support%20Inquiry" style={btnOutline}>Email Us</a>
         </div>
       </div>
 
-      {/* INTRO */}
       <section style={sec} id="intro">
         <h2 style={h2}>Built for SMBs in the Lehigh Valley</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -137,7 +66,6 @@ export default function Page({ searchParams }) {
         </p>
       </section>
 
-      {/* CORE SERVICES */}
       <section style={sec} id="services">
         <h2 style={h2}>Core Services</h2>
         <ul style={list}>
@@ -148,7 +76,6 @@ export default function Page({ searchParams }) {
         </ul>
       </section>
 
-      {/* VALUE */}
       <section style={sec} id="why">
         <h2 style={h2}>Why Choose Supreme IT Experts</h2>
         <ul style={list}>
@@ -159,7 +86,6 @@ export default function Page({ searchParams }) {
         </ul>
       </section>
 
-      {/* PRICING */}
       <section style={sec} id="pricing">
         <h2 style={h2}>Simple, Predictable Pricing</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -168,22 +94,12 @@ export default function Page({ searchParams }) {
         </p>
       </section>
 
-      {/* FORM */}
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-          {/* success redirect target */}
           <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
-
-          {/* honeypot */}
-          <input
-            name="hp"
-            tabIndex={-1}
-            autoComplete="off"
-            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
-            aria-hidden="true"
-          />
-
+          <input name="hp" tabIndex={-1} autoComplete="off"
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }} aria-hidden="true" />
           <input name="name" required placeholder="Your name" style={input} />
           <input name="email" required type="email" placeholder="Your email" style={input} />
           <input name="phone" placeholder="Phone (optional)" style={input} />
@@ -191,12 +107,10 @@ export default function Page({ searchParams }) {
           <button type="submit" style={btn}>Request Assessment</button>
         </form>
         <p style={subnote}>
-          Prefer email? Write to{" "}
-          <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
+          Prefer email? Write to <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
         </p>
       </section>
 
-      {/* SERVICE AREA */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>

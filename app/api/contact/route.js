@@ -7,15 +7,18 @@ export const dynamic = "force-dynamic";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const MAIL_TO = process.env.MAIL_TO || "supremeitexperts@gmail.com";
 const MAIL_FROM = process.env.MAIL_FROM || "Supreme IT Experts <onboarding@resend.dev>";
-const LP = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000") + "/ads/allentown-it-support";
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const LP = new URL("/ads/allentown-it-support", SITE).toString();
 
 function esc(s = "") {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 const cap = (s = "", n = 2000) => String(s).slice(0, n);
 const norm = (s = "") => cap(String(s).trim(), 2000);
-const isEmail = (s = "") => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+const isEmail = (s = "") => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
 
 async function readBody(req) {
   const ct = req.headers.get("content-type") || "";
@@ -28,8 +31,10 @@ async function readBody(req) {
   }
 }
 
-function makeRedirect(url, params) {
-  const u = new URL(url);
+// Build an absolute URL even if a relative path is provided
+function makeRedirect(req, url, params) {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl?.origin || "http://localhost:3000";
+  const u = new URL(url, base); // supports relative or absolute
   Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
   return Response.redirect(u.toString(), 303);
 }
@@ -38,12 +43,11 @@ export async function POST(req) {
   try {
     const body = await readBody(req);
 
-    // allow custom redirect from form, fallback to LP
-    const redirectTo = body.redirectTo ? String(body.redirectTo) : `${LP}`;
+    const redirectTo = body.redirectTo ? String(body.redirectTo) : LP;
 
     // honeypot
     if (body.website || body.hp) {
-      return makeRedirect(redirectTo, { sent: "1" });
+      return makeRedirect(req, redirectTo, { sent: "1" });
     }
 
     const name = norm(body.name);
@@ -51,9 +55,9 @@ export async function POST(req) {
     const phone = norm(body.phone);
     const message = cap(norm(body.message), 5000);
 
-    if (!name || !email) return makeRedirect(redirectTo, { error: "missing" });
-    if (!isEmail(email)) return makeRedirect(redirectTo, { error: "invalidEmail" });
-    if (!resend) return makeRedirect(redirectTo, { error: "mailConfig" });
+    if (!name || !email) return makeRedirect(req, redirectTo, { error: "missing" });
+    if (!isEmail(email)) return makeRedirect(req, redirectTo, { error: "invalidEmail" });
+    if (!resend) return makeRedirect(req, redirectTo, { error: "mailConfig" });
 
     const subject = `New IT Assessment lead — ${name}`;
     const text = [
@@ -79,12 +83,19 @@ export async function POST(req) {
         <p style="color:#667085;font-size:12px">Sent ${esc(new Date().toLocaleString())}</p>
       </div>`;
 
-    await resend.emails.send({ from: MAIL_FROM, to: MAIL_TO, subject, text, html, reply_to: email });
+    await resend.emails.send({
+      from: MAIL_FROM,
+      to: MAIL_TO,
+      subject,
+      text,
+      html,
+      reply_to: email,
+    });
 
-    return makeRedirect(redirectTo, { sent: "1" });
+    return makeRedirect(req, redirectTo, { sent: "1" });
   } catch (e) {
     console.error("Contact form error:", e);
-    return Response.redirect(LP + "?error=server", 303);
+    return makeRedirect(req, LP, { error: "server" });
   }
 }
 
