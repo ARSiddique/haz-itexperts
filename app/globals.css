@@ -107,3 +107,6 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
     scroll-behavior: auto !important;
   }
 }
+/* instead of header, footer */
+.site-header, .site-footer { display: none !important; }
+
