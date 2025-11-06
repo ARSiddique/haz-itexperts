@@ -10,9 +10,9 @@ export const metadata = {
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
   icons: {
-    icon: [{ url: "/favicon.ico?v=8", sizes: "any" }],
-    shortcut: "/favicon.ico?v=8",
-    apple: "/apple-touch-icon.png?v=8",
+    icon: [{ url: "/favicon.ico?v=9", sizes: "any" }],
+    shortcut: "/favicon.ico?v=9",
+    apple: "/apple-touch-icon.png?v=9",
   },
   openGraph: {
     title: `${site.name} — Managed IT & Cybersecurity`,
@@ -20,14 +20,14 @@ export const metadata = {
       "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
     url: BASE_URL,
     type: "website",
-    images: ["/og-image.png?v=8"],
+    images: ["/og-image.png?v=9"],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.name} — Managed IT & Cybersecurity`,
     description:
       "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-    images: ["/og-image.png?v=8"],
+    images: ["/og-image.png?v=9"],
   },
 };
 
@@ -36,9 +36,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
   {/* existing */}
-  <link rel="icon" href="/favicon.ico?v=8" sizes="any" />
-  <link rel="shortcut icon" href="/favicon.ico?v=8" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8" />
+  <link rel="icon" href="/favicon.ico?v=9" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico?v=9" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=9" />
 
   {/* extra PNG sizes (optional but nice for some browsers/OSes) */}
   <link rel="icon" type="image/png" sizes="16x16" href="/icon_16.png" />
