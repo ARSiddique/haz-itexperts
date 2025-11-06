@@ -7,7 +7,9 @@ export const metadata = {
     "Local MSP in Allentown providing 24/7 helpdesk, device management, cybersecurity & backups, and network monitoring. Fast response. Fixed monthly pricing.",
 };
 
-export default function Page() {
+export default function Page({ searchParams }) {
+  const sent = searchParams?.sent === "1";
+
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
     lineHeight: 1.6,
@@ -65,23 +67,39 @@ export default function Page() {
   };
   const subnote = { fontSize: 12, marginTop: 6, opacity: 0.8 };
 
+  const banner = {
+    marginBottom: 16,
+    padding: "10px 12px",
+    borderRadius: 8,
+    background: "rgba(34,197,94,.15)",
+    border: "1px solid rgba(34,197,94,.35)",
+    fontSize: 14,
+  };
+
   return (
     <main style={wrap}>
       {/* Hide global header/footer only on this landing */}
       <BodyClass name="hide-chrome" />
+
+      {/* Success banner when ?sent=1 */}
+      {sent && (
+        <div style={banner}>
+          ✅ Thanks! Your message was sent. We’ll contact you shortly.
+        </div>
+      )}
 
       {/* HERO (div instead of <header> so global CSS doesn't hide it) */}
       <div style={sec} role="banner">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
         <p style={hero}>
-          24/7 helpdesk, proactive device management, cybersecurity & backups, and
+          24/7 helpdesk, proactive device management, cybersecurity &amp; backups, and
           network monitoring — delivered by a local MSP on a predictable monthly plan.
         </p>
         <div style={{ marginTop: 12 }}>
           <a href="tel:+16105009209" style={btn}>Call 610-500-9209</a>
           <a
-            href="mailto:hello@supremeitexperts.com?subject=IT%20Support%20Inquiry"
+            href="mailto:supremeitexperts@gmail.com?subject=IT%20Support%20Inquiry"
             style={btnOutline}
           >
             Email Us
@@ -102,10 +120,10 @@ export default function Page() {
       <section style={sec} id="services">
         <h2 style={h2}>Core Services</h2>
         <ul style={list}>
-          <li><strong>24/7 Helpdesk & Device Management</strong> — provisioning, updates, troubleshooting.</li>
-          <li><strong>Cybersecurity</strong> — EDR/AV, patching, MFA, encrypted backups & recovery.</li>
-          <li><strong>Network</strong> — secure setup, Wi-Fi coverage, monitoring & performance tuning.</li>
-          <li><strong>Email & Cloud Migrations</strong> — smooth moves with minimal downtime.</li>
+          <li><strong>24/7 Helpdesk &amp; Device Management</strong> — provisioning, updates, troubleshooting.</li>
+          <li><strong>Cybersecurity</strong> — EDR/AV, patching, MFA, encrypted backups &amp; recovery.</li>
+          <li><strong>Network</strong> — secure setup, Wi-Fi coverage, monitoring &amp; performance tuning.</li>
+          <li><strong>Email &amp; Cloud Migrations</strong> — smooth moves with minimal downtime.</li>
         </ul>
       </section>
 
@@ -115,7 +133,7 @@ export default function Page() {
         <ul style={list}>
           <li>Local team • fast, friendly support</li>
           <li>Flat monthly pricing • no surprises</li>
-          <li>Transparent onboarding, SLAs & reporting</li>
+          <li>Transparent onboarding, SLAs &amp; reporting</li>
           <li>No long-term lock-ins • we earn your trust every month</li>
         </ul>
       </section>
@@ -133,6 +151,14 @@ export default function Page() {
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+          {/* Honeypot (hidden from users, bots will fill it) */}
+          <input
+            name="hp"
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+            aria-hidden="true"
+          />
           <input name="name" required placeholder="Your name" style={input} />
           <input name="email" required type="email" placeholder="Your email" style={input} />
           <input name="phone" placeholder="Phone (optional)" style={input} />
@@ -140,7 +166,8 @@ export default function Page() {
           <button type="submit" style={btn}>Request Assessment</button>
         </form>
         <p style={subnote}>
-          Prefer email? Write to <a href="mailto:hello@supremeitexperts.com">hello@supremeitexperts.com</a>
+          Prefer email? Write to{" "}
+          <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
         </p>
       </section>
 
