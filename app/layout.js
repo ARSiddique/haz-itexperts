@@ -1,10 +1,10 @@
 // app/layout.js
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FABs from "@/components/FABs";
-import BackToTop from "@/components/BackToTop";
-import HomeFX from "@/components/HomeFX";
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+// import FABs from "@/components/FABs";
+// import BackToTop from "@/components/BackToTop";
+// import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
 
 // Use env in dev/prod so Next.js stops warning
@@ -64,12 +64,13 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/manifest.webmanifest" />
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
-        <Header />
+        {/* <Header />
+         */}
         <main>{children}</main>
-        <Footer />
-        <BackToTop size={44} chatSize={56} gap={12} mode="hide" panelLift={360} z={80} />
-        <FABs />
-        <HomeFX />
+        {/* <Footer /> */}
+        {/* <BackToTop size={44} chatSize={56} gap={12} mode="hide" panelLift={360} z={80} /> */}
+        {/* <FABs /> */}
+        {/* <HomeFX /> */}
       </body>
     </html>
   );
