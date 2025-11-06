@@ -9,6 +9,7 @@ export const metadata = {
 
 export default function Page({ searchParams }) {
   const sent = searchParams?.sent === "1";
+  const error = searchParams?.error || "";
 
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
@@ -19,7 +20,6 @@ export default function Page({ searchParams }) {
     marginRight: "auto",
   };
 
-  // spacing (no shorthand)
   const sec = { marginTop: 24, marginBottom: 24 };
 
   const kicker = {
@@ -67,7 +67,7 @@ export default function Page({ searchParams }) {
   };
   const subnote = { fontSize: 12, marginTop: 6, opacity: 0.8 };
 
-  const banner = {
+  const okBanner = {
     marginBottom: 16,
     padding: "10px 12px",
     borderRadius: 8,
@@ -75,18 +75,39 @@ export default function Page({ searchParams }) {
     border: "1px solid rgba(34,197,94,.35)",
     fontSize: 14,
   };
+  const errBanner = {
+    marginBottom: 16,
+    padding: "10px 12px",
+    borderRadius: 8,
+    background: "rgba(239,68,68,.16)",
+    border: "1px solid rgba(248,113,113,.45)",
+    color: "#7f1d1d",
+    fontSize: 14,
+  };
+
+  const errorMsg =
+    error === "invalidEmail"
+      ? "Please enter a valid email."
+      : error === "missing"
+      ? "Name and email are required."
+      : error === "mailConfig"
+      ? "Email service is not configured yet."
+      : error === "server"
+      ? "Something went wrong. Please try again."
+      : "";
 
   return (
     <main style={wrap}>
       {/* Hide global header/footer only on this landing */}
       <BodyClass name="hide-chrome" />
 
-      {/* Success banner when ?sent=1 */}
+      {/* Banners */}
       {sent && (
-        <div style={banner}>
+        <div style={okBanner}>
           ✅ Thanks! Your message was sent. We’ll contact you shortly.
         </div>
       )}
+      {!!errorMsg && <div style={errBanner}>⛔ {errorMsg}</div>}
 
       {/* HERO (div instead of <header> so global CSS doesn't hide it) */}
       <div style={sec} role="banner">
@@ -148,31 +169,32 @@ export default function Page({ searchParams }) {
       </section>
 
       {/* FORM */}
-     <section style={sec} id="contact">
-  <h2 style={h2}>Request a Free IT Assessment</h2>
-  <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-    {/* ✅ redirect target for success */}
-    <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
+      <section style={sec} id="contact">
+        <h2 style={h2}>Request a Free IT Assessment</h2>
+        <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+          {/* success redirect target */}
+          <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
 
-    {/* (optional) honeypot already added */}
-    <input
-      name="hp"
-      tabIndex={-1}
-      autoComplete="off"
-      style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
-      aria-hidden="true"
-    />
+          {/* honeypot */}
+          <input
+            name="hp"
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+            aria-hidden="true"
+          />
 
-    <input name="name" required placeholder="Your name" style={input} />
-    <input name="email" required type="email" placeholder="Your email" style={input} />
-    <input name="phone" placeholder="Phone (optional)" style={input} />
-    <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
-    <button type="submit" style={btn}>Request Assessment</button>
-  </form>
-  <p style={subnote}>
-    Prefer email? Write to <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
-  </p>
-</section>
+          <input name="name" required placeholder="Your name" style={input} />
+          <input name="email" required type="email" placeholder="Your email" style={input} />
+          <input name="phone" placeholder="Phone (optional)" style={input} />
+          <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
+          <button type="submit" style={btn}>Request Assessment</button>
+        </form>
+        <p style={subnote}>
+          Prefer email? Write to{" "}
+          <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
+        </p>
+      </section>
 
       {/* SERVICE AREA */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
