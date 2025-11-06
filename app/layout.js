@@ -6,16 +6,20 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
+
+  // Titles
   title: `${site.name} — Managed IT & Cybersecurity`,
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
 
-  // Keep this simple; we'll also add explicit <link> tags in <head>
+  // Icons (query param busts cache after replacement)
   icons: {
     icon: [{ url: "/favicon.ico?v=7", sizes: "any" }],
     apple: "/apple-touch-icon.png?v=7",
     shortcut: "/favicon.ico?v=7",
   },
+
+  // OG / Twitter
   openGraph: {
     title: `${site.name} — Managed IT & Cybersecurity`,
     description:
@@ -33,6 +37,7 @@ export const metadata = {
   },
 };
 
+// Next warns if themeColor is only in metadata; keeping viewport separate is fine
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -44,10 +49,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* Explicit links so tab icon never falls back to Next's default */}
         <link rel="icon" href="/favicon.ico?v=7" sizes="any" />
-  <link rel="shortcut icon" href="/favicon.ico?v=7" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
-  {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
+        <link rel="shortcut icon" href="/favicon.ico?v=7" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
+        {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <main>{children}</main>
