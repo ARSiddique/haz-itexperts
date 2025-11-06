@@ -6,54 +6,40 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
-
-  // Titles
   title: `${site.name} — Managed IT & Cybersecurity`,
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-
-  // Icons (query param busts cache after replacement)
   icons: {
-    icon: [{ url: "/favicon.ico?v=7", sizes: "any" }],
-    apple: "/apple-touch-icon.png?v=7",
-    shortcut: "/favicon.ico?v=7",
+    icon: [{ url: "/favicon.ico?v=8", sizes: "any" }],
+    shortcut: "/favicon.ico?v=8",
+    // (apple touch icon optional)
+    apple: "/apple-touch-icon.png?v=8",
   },
-
-  // OG / Twitter
   openGraph: {
     title: `${site.name} — Managed IT & Cybersecurity`,
     description:
       "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
     url: BASE_URL,
     type: "website",
-    images: ["/og-image.png?v=7"],
+    images: ["/og-image.png?v=8"],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.name} — Managed IT & Cybersecurity`,
     description:
       "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-    images: ["/og-image.png?v=7"],
+    images: ["/og-image.png?v=8"],
   },
-};
-
-// Next warns if themeColor is only in metadata; keeping viewport separate is fine
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#0b1220",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Explicit links so tab icon never falls back to Next's default */}
-        <link rel="icon" href="/favicon.ico?v=7" sizes="any" />
-        <link rel="shortcut icon" href="/favicon.ico?v=7" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
-        {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
+        {/* extra safety: explicit <link> tags */}
+        <link rel="icon" href="/favicon.ico?v=8" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.ico?v=8" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8" />
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <main>{children}</main>
