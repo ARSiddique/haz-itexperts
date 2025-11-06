@@ -4,21 +4,31 @@ import { Resend } from "resend";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// --- email config ---
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const MAIL_TO = process.env.MAIL_TO || "supremeitexperts@gmail.com";
+const MAIL_TO   = process.env.MAIL_TO   || "supremeitexperts@gmail.com"; // can be comma-separated
+const MAIL_CC   = process.env.MAIL_CC   || ""; // optional, comma-separated
 const MAIL_FROM = process.env.MAIL_FROM || "Supreme IT Experts <onboarding@resend.dev>";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const LP = new URL("/ads/allentown-it-support", SITE).toString();
+const LP   = new URL("/ads/allentown-it-support", SITE).toString();
 
+// --- utils ---
 function esc(s = "") {
   return String(s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
-const cap = (s = "", n = 2000) => String(s).slice(0, n);
-const norm = (s = "") => cap(String(s).trim(), 2000);
+const cap   = (s = "", n = 2000) => String(s).slice(0, n);
+const norm  = (s = "") => cap(String(s).trim(), 2000);
 const isEmail = (s = "") => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
+
+function splitList(v = "") {
+  return String(v)
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+}
 
 async function readBody(req) {
   const ct = req.headers.get("content-type") || "";
@@ -39,6 +49,7 @@ function makeRedirect(req, url, params) {
   return Response.redirect(u.toString(), 303);
 }
 
+// --- handler ---
 export async function POST(req) {
   try {
     const body = await readBody(req);
@@ -50,14 +61,14 @@ export async function POST(req) {
       return makeRedirect(req, redirectTo, { sent: "1" });
     }
 
-    const name = norm(body.name);
-    const email = norm((body.email || "").toLowerCase());
-    const phone = norm(body.phone);
+    const name    = norm(body.name);
+    const email   = norm((body.email || "").toLowerCase());
+    const phone   = norm(body.phone);
     const message = cap(norm(body.message), 5000);
 
-    if (!name || !email) return makeRedirect(req, redirectTo, { error: "missing" });
-    if (!isEmail(email)) return makeRedirect(req, redirectTo, { error: "invalidEmail" });
-    if (!resend) return makeRedirect(req, redirectTo, { error: "mailConfig" });
+    if (!name || !email)     return makeRedirect(req, redirectTo, { error: "missing" });
+    if (!isEmail(email))     return makeRedirect(req, redirectTo, { error: "invalidEmail" });
+    if (!resend)             return makeRedirect(req, redirectTo, { error: "mailConfig" });
 
     const subject = `New IT Assessment lead — ${name}`;
     const text = [
@@ -83,14 +94,45 @@ export async function POST(req) {
         <p style="color:#667085;font-size:12px">Sent ${esc(new Date().toLocaleString())}</p>
       </div>`;
 
+    // --- Deliver to your inbox(es) ---
+    const toList = splitList(MAIL_TO);
+    const ccList = splitList(MAIL_CC);
+
     await resend.emails.send({
       from: MAIL_FROM,
-      to: MAIL_TO,
+      to: toList,
+      ...(ccList.length ? { cc: ccList } : {}),
       subject,
       text,
       html,
+      // Resend supports snake_case
       reply_to: email,
     });
+
+    // --- Auto-reply to the lead (best-effort; doesn't block redirect) ---
+    try {
+      await resend.emails.send({
+        from: MAIL_FROM,
+        to: email,
+        subject: "We received your request — Supreme IT Experts",
+        text:
+`Hi ${name || "there"},
+
+Thanks for reaching out. We received your message and will get back shortly.
+
+— Supreme IT Experts
+Phone: 610-500-9209`,
+        html: `
+          <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.5">
+            <p>Hi ${esc(name) || "there"},</p>
+            <p>Thanks for reaching out. We received your message and will get back shortly.</p>
+            <p style="margin:12px 0 0 0">— <strong>Supreme IT Experts</strong><br/>Phone: 610-500-9209</p>
+          </div>
+        `,
+      });
+    } catch (autoErr) {
+      console.warn("Auto-reply failed (non-fatal):", autoErr);
+    }
 
     return makeRedirect(req, redirectTo, { sent: "1" });
   } catch (e) {

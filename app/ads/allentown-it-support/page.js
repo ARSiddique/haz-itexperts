@@ -1,17 +1,19 @@
 // app/ads/allentown-it-support/page.js
+import Link from "next/link";
+import Image from "next/image";
 import BodyClass from "@/components/BodyClass";
 
 export const metadata = {
   title: "Allentown Managed IT Support for SMBs | Supreme IT Experts",
   description:
     "Local MSP in Allentown providing 24/7 helpdesk, device management, cybersecurity & backups, and network monitoring. Fast response. Fixed monthly pricing.",
+  robots: { index: false, follow: true },
 };
 
 // ⬇️ Next 15: searchParams is a Promise in RSC; we must await it
 export default async function Page({ searchParams }) {
-  const sp = await searchParams; // may be an object or URLSearchParams-like
-  const get = (k) =>
-    typeof sp?.get === "function" ? sp.get(k) : sp?.[k];
+  const sp = await searchParams;
+  const get = (k) => (typeof sp?.get === "function" ? sp.get(k) : sp?.[k]);
 
   const sent = get("sent") === "1";
   const error = get("error") || "";
@@ -42,9 +44,24 @@ export default async function Page({ searchParams }) {
     <main style={wrap}>
       <BodyClass name="hide-chrome" />
 
+      {/* Brand strip (global header hidden on LP) */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <Link href="/" aria-label="Supreme IT Experts – Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+          <Image
+            src="/logo.png"
+            alt="Supreme IT Experts"
+            width={140}
+            height={28}
+            priority
+            style={{ height: "28px", width: "auto" }}
+          />
+        </Link>
+      </div>
+
       {sent && <div style={banner}>✅ Thanks! Your message was sent. We’ll contact you shortly.</div>}
       {error && <div style={errBanner}>⚠️ Something went wrong. Please try again.</div>}
 
+      {/* HERO */}
       <div style={sec} role="banner">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
@@ -58,6 +75,7 @@ export default async function Page({ searchParams }) {
         </div>
       </div>
 
+      {/* INTRO */}
       <section style={sec} id="intro">
         <h2 style={h2}>Built for SMBs in the Lehigh Valley</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -66,6 +84,7 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
+      {/* CORE SERVICES */}
       <section style={sec} id="services">
         <h2 style={h2}>Core Services</h2>
         <ul style={list}>
@@ -76,6 +95,7 @@ export default async function Page({ searchParams }) {
         </ul>
       </section>
 
+      {/* VALUE */}
       <section style={sec} id="why">
         <h2 style={h2}>Why Choose Supreme IT Experts</h2>
         <ul style={list}>
@@ -86,6 +106,7 @@ export default async function Page({ searchParams }) {
         </ul>
       </section>
 
+      {/* PRICING */}
       <section style={sec} id="pricing">
         <h2 style={h2}>Simple, Predictable Pricing</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -94,12 +115,18 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
+      {/* FORM */}
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
           <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
-          <input name="hp" tabIndex={-1} autoComplete="off"
-            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }} aria-hidden="true" />
+          <input
+            name="hp"
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+            aria-hidden="true"
+          />
           <input name="name" required placeholder="Your name" style={input} />
           <input name="email" required type="email" placeholder="Your email" style={input} />
           <input name="phone" placeholder="Phone (optional)" style={input} />
@@ -111,12 +138,18 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
+      {/* SERVICE AREA + Trust footer link */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
           Allentown • Macungie • Emmaus • Greater Lehigh Valley
         </p>
       </section>
+
+      <div style={{ fontSize: 12, opacity: 0.75, marginTop: 20 }}>
+        Supreme IT Experts · Allentown, PA · Local MSP ·{" "}
+        <Link href="/" aria-label="Visit full website">Visit full website</Link>
+      </div>
     </main>
   );
 }
