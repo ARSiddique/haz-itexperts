@@ -1,18 +1,18 @@
 // app/ads/allentown-it-support/page.js
+import BodyClass from "@/components/BodyClass";
 import Link from "next/link";
 import Image from "next/image";
-import BodyClass from "@/components/BodyClass";
 
 export const metadata = {
   title: "Allentown Managed IT Support for SMBs | Supreme IT Experts",
   description:
     "Local MSP in Allentown providing 24/7 helpdesk, device management, cybersecurity & backups, and network monitoring. Fast response. Fixed monthly pricing.",
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: true }, // LP: keep out of index for now
 };
 
 // ⬇️ Next 15: searchParams is a Promise in RSC; we must await it
 export default async function Page({ searchParams }) {
-  const sp = await searchParams;
+  const sp = await searchParams; // object or URLSearchParams-like
   const get = (k) => (typeof sp?.get === "function" ? sp.get(k) : sp?.[k]);
 
   const sent = get("sent") === "1";
@@ -42,18 +42,18 @@ export default async function Page({ searchParams }) {
 
   return (
     <main style={wrap}>
+      {/* Hide global header/footer only on this landing */}
       <BodyClass name="hide-chrome" />
 
-      {/* Brand strip (global header hidden on LP) */}
+      {/* Brand strip (since global header is hidden on LP) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <Link href="/" aria-label="Supreme IT Experts – Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
           <Image
             src="/logo.png"
             alt="Supreme IT Experts"
-            width={140}
+            width={120}
             height={28}
             priority
-            style={{ height: "28px", width: "auto" }}
           />
         </Link>
       </div>
@@ -119,7 +119,9 @@ export default async function Page({ searchParams }) {
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+          {/* Success redirect target */}
           <input type="hidden" name="redirectTo" value="/ads/allentown-it-support?sent=1" />
+          {/* Honeypot */}
           <input
             name="hp"
             tabIndex={-1}
@@ -127,6 +129,7 @@ export default async function Page({ searchParams }) {
             style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
             aria-hidden="true"
           />
+
           <input name="name" required placeholder="Your name" style={input} />
           <input name="email" required type="email" placeholder="Your email" style={input} />
           <input name="phone" placeholder="Phone (optional)" style={input} />
@@ -138,7 +141,7 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
-      {/* SERVICE AREA + Trust footer link */}
+      {/* SERVICE AREA */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -146,9 +149,9 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
-      <div style={{ fontSize: 12, opacity: 0.75, marginTop: 20 }}>
-        Supreme IT Experts · Allentown, PA · Local MSP ·{" "}
-        <Link href="/" aria-label="Visit full website">Visit full website</Link>
+      {/* Trust footer: internal link must use Link */}
+      <div style={{ marginTop: 20, opacity: 0.8, fontSize: 13 }}>
+        <Link href="/" aria-label="Back to homepage">← Back to Supreme IT Experts</Link>
       </div>
     </main>
   );
