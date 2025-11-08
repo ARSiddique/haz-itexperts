@@ -16,12 +16,13 @@ const LINKS = [
   { href: "/gallery", label: "Gallery" },
 ];
 
-function BrandLogo({ size = 28, className = "" }) {
+// Brand logo component (can show word-mark text beside the icon)
+function BrandLogo({ size = 28, className = "", withText = false }) {
   return (
-    <span className={`inline-flex items-center ${className}`}>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
       <Image
         src="/logo.png"
-        alt="Supreme IT Experts"
+        alt="Supreme IT Experts logo"
         width={size}
         height={size}
         priority
@@ -29,6 +30,14 @@ function BrandLogo({ size = 28, className = "" }) {
         className="object-contain"
         style={{ width: size, height: size }}
       />
+      {withText && (
+        <span className="hidden sm:inline text-[17px] font-semibold tracking-tight text-slate-100">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-cyan-400">
+            Supreme
+          </span>{" "}
+          IT Experts
+        </span>
+      )}
     </span>
   );
 }
@@ -39,7 +48,9 @@ export default function Header({ className = "" }) {
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <header className={`site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur ${className}`}>
+    <header
+      className={`site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur ${className}`}
+    >
       {/* thin glow line */}
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 
@@ -47,7 +58,7 @@ export default function Header({ className = "" }) {
       <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between leading-none">
         {/* Brand */}
         <Link href="/" className="shrink-0" aria-label="Go to homepage">
-          <BrandLogo size={50} />
+          <BrandLogo size={40} withText />
         </Link>
 
         {/* Desktop nav */}
@@ -83,7 +94,7 @@ export default function Header({ className = "" }) {
         {/* Mobile nav (drawer) */}
         <div className="xl:hidden">
           <input id="nav-toggle" type="checkbox" className="peer hidden" />
-          <label htmlFor="nav-toggle" aria-label="menu" className="text-slate-200 cursor-pointer">
+          <label htmlFor="nav-toggle" aria-label="Open menu" className="text-slate-200 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
               <path
                 fillRule="evenodd"
@@ -103,10 +114,11 @@ export default function Header({ className = "" }) {
           <div className="fixed right-0 top-0 z-50 h-full w-[78%] max-w-xs bg-[#0e1628] border-l border-white/10 translate-x-full peer-checked:translate-x-0 transition xl:hidden">
             <div className="p-6">
               <div className="flex items-center justify-between">
+                {/* Keep only icon on small drawer header to save space */}
                 <span className="font-semibold text-slate-100">
                   <BrandLogo size={26} className="translate-y-[1px]" />
                 </span>
-                <label htmlFor="nav-toggle" aria-label="close" className="text-slate-200 cursor-pointer">
+                <label htmlFor="nav-toggle" aria-label="Close menu" className="text-slate-200 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                     <path
                       fillRule="evenodd"

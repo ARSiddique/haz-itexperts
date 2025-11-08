@@ -57,7 +57,7 @@ export default function Footer({ className = "" }) {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-cyan-400">Supreme</span>{" "}
             <span className="text-slate-100">IT</span>{" "}
             <span className="text-slate-100">Experts</span>
-            <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-cyan-400/80 align-middle shadow-[0_0_12px_2px_rgba(34,211,238,0.45)]" />
+            {/* <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-cyan-400/80 align-middle shadow-[0_0_12px_2px_rgba(34,211,238,0.45)]" /> */}
           </div>
 
           <p className="text-slate-400 max-w-md">{site.tagline}</p>

@@ -13,9 +13,9 @@ export const metadata = {
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
   // ❌ themeColor ko yahan se hata diya
   icons: {
-    icon: [{ url: "/favicon.ico?v=7", sizes: "any" }],
-    apple: "/apple-touch-icon.png?v=7",
-    shortcut: "/favicon.ico?v=7",
+    icon: [{ url: "/favicon.ico?v=10", sizes: "any" }],
+   apple: "/apple-touch-icon.png?v=10",
+   shortcut: "/favicon.ico?v=10",
   },
   openGraph: {
     title: `${site.name} — Managed IT & Cybersecurity`,
@@ -38,16 +38,16 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0b1220", // ✅ yahan shift kar diya
+  themeColor: "#0b1220",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico?v=7" sizes="any" />
-        <link rel="shortcut icon" href="/favicon.ico?v=7" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
+        <link rel="icon" href="/favicon.ico?v=10" sizes="any" />
+<link rel="shortcut icon" href="/favicon.ico?v=10" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=10" />
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         {/* Add class names so LP par hide kiya ja sake */}
