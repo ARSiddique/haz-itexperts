@@ -11,7 +11,7 @@ export const metadata = {
   title: `${site.name} — Managed IT & Cybersecurity`,
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-  themeColor: "#0b1220",
+  // ❌ themeColor ko yahan se hata diya
   icons: {
     icon: [{ url: "/favicon.ico?v=7", sizes: "any" }],
     apple: "/apple-touch-icon.png?v=7",
@@ -38,6 +38,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#0b1220", // ✅ yahan shift kar diya
 };
 
 export default function RootLayout({ children }) {
@@ -47,12 +48,12 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico?v=7" sizes="any" />
         <link rel="shortcut icon" href="/favicon.ico?v=7" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
-        {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
-        <Header />
+        {/* Add class names so LP par hide kiya ja sake */}
+        <Header className="site-header" />
         <main>{children}</main>
-        <Footer />
+        <Footer className="site-footer" />
       </body>
     </html>
   );

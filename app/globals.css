@@ -2,7 +2,7 @@
 
 /* ───────── Base theme ───────── */
 :root{
-  --bg: #0e1424;          /* dark navy (not pure black) */
+  --bg: #0e1424;
   --fg: #e5e7eb;
   --muted: #94a3b8;
   --cyan: #22d3ee;
@@ -33,23 +33,16 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   border-radius: 1rem;
 }
 
-/* ───────── Reveal baseline (for HomeFX) ─────────
-   JS/GSAP animation handle karega; yahan sirf initial state rakhni hai.
-   DO NOT add transition on the final state—GSAP set karega. */
+/* ───────── Reveal baseline (for HomeFX) ───────── */
 [data-reveal]{
   opacity: 0;
   transform: translate3d(0, 14px, 0);
   will-change: transform, opacity;
 }
-/* Parallax elements */
 [data-parallax]{ will-change: transform; }
 
-/* Reduced motion: elements seedha visible */
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal]{
-    opacity: 1 !important;
-    transform: none !important;
-  }
+  [data-reveal]{ opacity: 1 !important; transform: none !important; }
 }
 
 /* ───────── Animated “wires” (optional) ───────── */
@@ -86,14 +79,8 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 }
 
 /* gradient glow buttons */
-.btn-glow{
-  box-shadow: 0 0 0 0 rgba(34,211,238,0);
-  transition: box-shadow .25s ease, transform .2s ease;
-}
-.btn-glow:hover{
-  box-shadow: 0 0 24px -6px rgba(34,211,238,.45);
-  transform: translateY(-1px);
-}
+.btn-glow{ box-shadow: 0 0 0 0 rgba(34,211,238,0); transition: box-shadow .25s ease, transform .2s ease; }
+.btn-glow:hover{ box-shadow: 0 0 24px -6px rgba(34,211,238,.45); transform: translateY(-1px); }
 
 /* faster transition utility */
 .fast-transition { transition-duration: .25s !important; }
@@ -108,12 +95,8 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   }
 }
 
-
-/* Default: header/footer visible */
-.site-header, .site-footer { display: block; }
-
-/* Sirf un pages par hide jahan <BodyClass name="hide-chrome" /> laga ho */
-body.hide-chrome .site-header,
-body.hide-chrome .site-footer {
+/* ✅ Only hide header/footer when LP injects .hide-chrome on <body> */
+.hide-chrome .site-header,
+.hide-chrome .site-footer {
   display: none !important;
 }

@@ -16,7 +16,6 @@ const LINKS = [
   { href: "/gallery", label: "Gallery" },
 ];
 
-// Reusable brand logo (single asset: /public/logo.png)
 function BrandLogo({ size = 28, className = "" }) {
   return (
     <span className={`inline-flex items-center ${className}`}>
@@ -34,17 +33,17 @@ function BrandLogo({ size = 28, className = "" }) {
   );
 }
 
-export default function Header() {
+export default function Header({ className = "" }) {
   const pathname = usePathname();
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <header className="site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur">
+    <header className={`site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur ${className}`}>
       {/* thin glow line */}
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 
-      {/* content-driven height (no fixed h-16) */}
+      {/* content-driven height */}
       <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between leading-none">
         {/* Brand */}
         <Link href="/" className="shrink-0" aria-label="Go to homepage">

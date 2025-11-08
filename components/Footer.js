@@ -1,4 +1,4 @@
-// app/components/Footer.jsx
+// components/Footer.jsx
 import Link from "next/link";
 import { site } from "@/lib/siteConfig";
 
@@ -42,15 +42,14 @@ function LabeledRow({ label, children, icon }) {
   );
 }
 
-export default function Footer() {
+export default function Footer({ className = "" }) {
   const year = new Date().getFullYear();
   const s = site?.socials || {};
 
   return (
-    <footer className="site-footer mt-24 bg-[#0b1220] border-t border-white/10">
+    <footer className={`site-footer mt-24 bg-[#0b1220] border-t border-white/10 ${className}`}>
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 
-      {/* even 3-column layout when some sections are commented out */}
       <div className="max-w-6xl mx-auto px-4 py-14 grid gap-y-12 gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
         {/* Brand + Contact */}
         <div className="space-y-6 md:col-span-2 lg:col-span-1">
@@ -70,9 +69,6 @@ export default function Footer() {
             <LabeledRow label="PHONE" icon={<svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C11.85 21 3 12.15 3 1a1 1 0 0 1 1-1h3.49a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.2 2.2Z"/></svg>}>
               {site.phone}
             </LabeledRow>
-            {/* <LabeledRow label="ADDRESS" icon={<svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>}>
-              <span className="block">{site.address}</span>
-            </LabeledRow> */}
           </div>
 
           <div className="flex flex-wrap gap-2.5 pt-1">
@@ -102,16 +98,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Company
-        <div className="order-2">
-          ...
-        </div> */}
-
-        {/* Services
-        <div className="order-3">
-          ...
-        </div> */}
-
         {/* Trust & Legal */}
         <div>
           <div className="font-semibold text-slate-100 mb-3">Trust & Legal</div>
@@ -128,12 +114,12 @@ export default function Footer() {
         <div>
           <div className="font-semibold text-slate-100 mb-3">Areas We Serve</div>
           <ul className="space-y-2 text-slate-300 text-sm">
-  <li><Link href="/areas" className="hover:text-cyan-300">Areas we serve</Link></li>
-  <li><Link href="/areas#allentown" className="hover:text-cyan-300">Allentown, PA</Link></li>
-  <li><Link href="/areas#macungie"  className="hover:text-cyan-300">Macungie, PA</Link></li>
-  <li><Link href="/areas#emmaus"    className="hover:text-cyan-300">Emmaus, PA</Link></li>
-  <li><Link href="/areas" className="hover:text-cyan-300">See all areas</Link></li>
-</ul>
+            <li><Link href="/areas" className="hover:text-cyan-300">Areas we serve</Link></li>
+            <li><Link href="/areas#allentown" className="hover:text-cyan-300">Allentown, PA</Link></li>
+            <li><Link href="/areas#macungie"  className="hover:text-cyan-300">Macungie, PA</Link></li>
+            <li><Link href="/areas#emmaus"    className="hover:text-cyan-300">Emmaus, PA</Link></li>
+            <li><Link href="/areas" className="hover:text-cyan-300">See all areas</Link></li>
+          </ul>
           <Link
             href="/get-quote"
             className="mt-4 inline-block rounded-lg px-5 py-3 font-semibold bg-cyan-400/10 text-cyan-300 border border-cyan-300/30 hover:bg-cyan-400/20"
