@@ -1,6 +1,8 @@
 // app/layout.js
 import "./globals.css";
 import { site } from "@/lib/siteConfig";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -9,8 +11,7 @@ export const metadata = {
   title: `${site.name} — Managed IT & Cybersecurity`,
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-
-  // Keep this simple; we'll also add explicit <link> tags in <head>
+  themeColor: "#0b1220",
   icons: {
     icon: [{ url: "/favicon.ico?v=7", sizes: "any" }],
     apple: "/apple-touch-icon.png?v=7",
@@ -37,7 +38,6 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0b1220",
 };
 
 export default function RootLayout({ children }) {
@@ -45,12 +45,14 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico?v=7" sizes="any" />
-  <link rel="shortcut icon" href="/favicon.ico?v=7" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
-  {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
+        <link rel="shortcut icon" href="/favicon.ico?v=7" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=7" />
+        {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
+        <Header />
         <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

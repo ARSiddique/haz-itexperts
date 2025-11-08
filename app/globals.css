@@ -107,6 +107,13 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
     scroll-behavior: auto !important;
   }
 }
-/* instead of header, footer */
-.site-header, .site-footer { display: none !important; }
 
+
+/* Default: header/footer visible */
+.site-header, .site-footer { display: block; }
+
+/* Sirf un pages par hide jahan <BodyClass name="hide-chrome" /> laga ho */
+body.hide-chrome .site-header,
+body.hide-chrome .site-footer {
+  display: none !important;
+}

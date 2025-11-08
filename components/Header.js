@@ -40,7 +40,7 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <header className="sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur">
+    <header className="site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur">
       {/* thin glow line */}
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 

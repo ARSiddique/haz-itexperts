@@ -47,7 +47,7 @@ export default function Footer() {
   const s = site?.socials || {};
 
   return (
-    <footer className="mt-24 bg-[#0b1220] border-t border-white/10">
+    <footer className="site-footer mt-24 bg-[#0b1220] border-t border-white/10">
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 
       {/* even 3-column layout when some sections are commented out */}
