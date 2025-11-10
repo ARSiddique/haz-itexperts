@@ -1,137 +1,53 @@
-// CONTACT — simple + Next 14/15 safe (SSR + Server Action)
-import Link from "next/link";
+// app/contact/page.jsx
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
-import { redirect } from "next/navigation";
-import { Mail, Phone, ArrowRight } from "lucide-react";
-import { sendContactEmail } from "@/lib/mailer";
+import { Mail, Phone } from "lucide-react";
 
 export const metadata = {
   title: `Contact — ${site?.name || "Supreme IT Experts"}`,
-  description: "Email or call directly — or send a short note. We reply fast.",
+  description: "Email or call us directly. We respond during business hours.",
 };
 
-export default async function ContactPage(props) {
-  // Next 15 note: searchParams may be async on server components
-  const sp = (props?.searchParams && (await props.searchParams)) || {};
-  const submitted = sp?.ok === "1";
-
-  const email = site?.email ;
-  const phone = site?.phone;
-
-  // ===== Server Action =====
-  async function submit(formData) {
-    "use server";
-    const data = {
-      name: (formData.get("name") || "").toString().trim(),
-  workEmail: (formData.get("workEmail") || "").toString().trim().toLowerCase(),
-  message: (formData.get("message") || "").toString().trim(),
-  website: (formData.get("website") || "").toString(),
-  source: "contact-min",
-    };
-
-    // Basic validation
-    if (!data.name || !data.workEmail || !data.message) {
-      redirect("/contact?ok=0");
-    }
-
-    const r = await sendContactEmail(data);
-    if (!r?.ok) {
-      console.error("sendContactEmail failed:", r?.error);
-      redirect("/contact?ok=0");
-    }
-    redirect("/contact?ok=1");
-  }
+export default function ContactPage() {
+  const email = site?.email || "supremeitexperts@gmail.com";
+  const phone = site?.phone || "610-500-9209";
 
   return (
     <>
       <PageHero
         eyebrow="Contact"
-        title="Talk to us"
-        sub="Email or call directly — or send a short note."
+        title="Talk to our team"
+        sub="Reach out by email or phone. We’re happy to answer questions about support and services."
       />
 
-      <main className="max-w-3xl mx-auto px-4 pb-20">
-        {/* Direct actions */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-          <div className="grid sm:grid-cols-2 gap-3">
+      <main className="max-w-3xl mx-auto px-4 pb-20 space-y-8">
+        <section className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
+          <h2 className="text-lg font-semibold">Direct contact</h2>
+          <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <a
               href={`mailto:${email}`}
-              className="rounded-lg px-4 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
+              className="rounded-lg px-4 py-3 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
             >
-              <Mail className="h-4 w-4" /> {email}
+              <Mail className="h-4 w-4" />
+              {email}
             </a>
             <a
               href={`tel:${(phone || "").replace(/[^+\d]/g, "")}`}
-              className="rounded-lg px-4 py-3 text-sm font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center justify-center gap-2"
+              className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
             >
-              <Phone className="h-4 w-4" /> {phone}
+              <Phone className="h-4 w-4" />
+              {phone}
             </a>
           </div>
-        </div>
+        </section>
 
-        {/* Mini form */}
-        <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-          {submitted && (
-            <div className="mb-4 rounded-md border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm">
-              Thanks! We’ll get back to you shortly.
-            </div>
-          )}
-
-          <form action={submit} className="space-y-4">
-            {/* Honeypot (hidden) */}
-            <input type="text" name="website" autoComplete="off" tabIndex={-1} className="hidden" />
-
-            <div>
-              <label className="text-xs text-slate-400">Your name</label>
-              <input
-                name="name"
-                required
-                className="w-full rounded-lg bg-transparent border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/50"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-slate-400">Work email</label>
-              <input
-                name="workEmail"
-                type="email"
-                required
-                className="w-full rounded-lg bg-transparent border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/50"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-slate-400">Message</label>
-              <textarea
-                name="message"
-                required
-                rows={5}
-                placeholder="How can we help?"
-                className="w-full rounded-lg bg-transparent border border-white/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/50"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">We’ll never share your data.</span>
-              <button
-                type="submit"
-                className="rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
-              >
-                Send <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-4 flex gap-2">
-            <Link href="/get-quote" className="rounded-lg px-3 py-2 text-xs border border-white/10 bg-white/5 hover:border-cyan-300/30">
-              Get a Quote
-            </Link>
-            <Link href="/assessment" className="rounded-lg px-3 py-2 text-xs border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">
-              Free IT assessment
-            </Link>
-          </div>
-        </div>
+        <section className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300 space-y-2">
+          <h2 className="text-base font-semibold text-slate-100">
+            Business hours
+          </h2>
+          <p>Monday – Friday: 8:00 AM – 6:00 PM</p>
+          <p>Emergency support is available outside these hours for existing customers.</p>
+        </section>
       </main>
     </>
   );
