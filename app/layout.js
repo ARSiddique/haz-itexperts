@@ -11,12 +11,6 @@ export const metadata = {
   title: `${site.name} — Managed IT & Cybersecurity`,
   description:
     "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-  // ❌ themeColor ko yahan se hata diya
-  icons: {
-    icon: [{ url: "/favicon.ico?v=10", sizes: "any" }],
-   apple: "/apple-touch-icon.png?v=10",
-   shortcut: "/favicon.ico?v=10",
-  },
   openGraph: {
     title: `${site.name} — Managed IT & Cybersecurity`,
     description:
@@ -45,12 +39,23 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico?v=10" sizes="any" />
-<link rel="shortcut icon" href="/favicon.ico?v=10" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=10" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Supreme IT Experts",
+              "url": "https://supremeitexperts.com",
+              "logo": "https://supremeitexperts.com/favicon-48.png",
+            }),
+          }}
+        />
       </head>
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
-        {/* Add class names so LP par hide kiya ja sake */}
         <Header className="site-header" />
         <main>{children}</main>
         <Footer className="site-footer" />
