@@ -1,3 +1,4 @@
+// app/areas/page.js
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
@@ -6,14 +7,39 @@ import {
   ChevronDown, Bus, Truck, CalendarDays, Laptop2, Server, Shield
 } from "lucide-react";
 
+// --- SEO (server-side)
+export async function generateMetadata() {
+  const title = "Areas We Serve — Supreme IT Experts";
+  const description =
+    "Onsite where it matters, remote everywhere. Coverage across Lehigh Valley, Greater Philadelphia, and Wilmington with SLA-backed dispatch.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/areas" },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "/areas",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
+  };
+}
+
 const REGIONS = [
- {
+  {
     key: "lehigh",
     name: "Lehigh Valley, PA",
     color: "#34d399",
     cities: [
       { name: "Allentown, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [60, 34] },
-      // REPLACE these two:
       { name: "Macungie, PA", tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [62, 36] },
       { name: "Emmaus, PA",   tier: "A", sla: "P1 ≤ 15 min", onsite: "Mon–Fri", pin: [61, 35] },
     ],
@@ -43,26 +69,11 @@ const TIER = {
 };
 
 const SHARED_SERVICES = [
-  {
-    title: "Managed IT (SupremeCare™)",
-    bullets: ["Helpdesk with P1 ≤ 15 min","Proactive monitoring & patching","Asset & license management"],
-  },
-  {
-    title: "Cybersecurity (EDR/XDR + M365 Hardening)",
-    bullets: ["99.9% endpoint coverage target","MFA/SSO, phishing defense","Baseline policies & auditing"],
-  },
-  {
-    title: "Cloud & Microsoft 365",
-    bullets: ["Tenant security & governance","Exchange/SharePoint/Teams","Backups/DR for Microsoft 365"],
-  },
-  {
-    title: "Backups & DR",
-    bullets: ["Endpoints & server backups","Tested recovery runbooks","BCP/DR drills"],
-  },
-  {
-    title: "Compliance Guidance",
-    bullets: ["Lightweight HIPAA/PCI guidance","Shared responsibility model","Documentation & training"],
-  },
+  { title: "Managed IT (SupremeCare™)", bullets: ["Helpdesk with P1 ≤ 15 min","Proactive monitoring & patching","Asset & license management"] },
+  { title: "Cybersecurity (EDR/XDR + M365 Hardening)", bullets: ["99.9% endpoint coverage target","MFA/SSO, phishing defense","Baseline policies & auditing"] },
+  { title: "Cloud & Microsoft 365", bullets: ["Tenant security & governance","Exchange/SharePoint/Teams","Backups/DR for Microsoft 365"] },
+  { title: "Backups & DR", bullets: ["Endpoints & server backups","Tested recovery runbooks","BCP/DR drills"] },
+  { title: "Compliance Guidance", bullets: ["Lightweight HIPAA/PCI guidance","Shared responsibility model","Documentation & training"] },
 ];
 
 const normalize = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
@@ -131,10 +142,10 @@ function RegionMap({ regions, active }) {
   );
 }
 
-export default async function AreasPage({ searchParams }) {
-  const sp = await searchParams;
-  const regionKey = (sp?.region ?? "lehigh").toString();
-  const q = (sp?.q ?? "").toString();
+export default function AreasPage({ searchParams }) {
+  const sp = searchParams || {};
+  const regionKey = (sp.region ?? "lehigh").toString();
+  const q = (sp.q ?? "").toString();
   const region = REGIONS.find((r) => r.key === regionKey) ?? REGIONS[0];
   const nq = normalize(q);
   const order = { A: 0, B: 1, C: 2 };
@@ -144,6 +155,40 @@ export default async function AreasPage({ searchParams }) {
 
   return (
     <>
+      {/* Breadcrumbs + AreaServed JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
+                { "@type": "ListItem", position: 2, name: "Areas", item: "https://supremeitexperts.com/areas" }
+              ]
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Supreme IT Experts",
+              url: "https://supremeitexperts.com",
+              areaServed: [
+                "Allentown, PA", "Macungie, PA", "Emmaus, PA",
+                "Philadelphia, PA", "Wilmington, DE"
+              ],
+              serviceArea: [
+                { "@type": "City", name: "Allentown" },
+                { "@type": "City", name: "Macungie" },
+                { "@type": "City", name: "Emmaus" },
+                { "@type": "City", name: "Philadelphia" },
+                { "@type": "City", name: "Wilmington" }
+              ]
+            }
+          ]),
+        }}
+      />
+
       <PageHero
         eyebrow="Areas we serve"
         title="Onsite where it matters, remote everywhere"
@@ -227,6 +272,7 @@ export default async function AreasPage({ searchParams }) {
             </div>
           </Reveal>
         </div>
+
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Every city, same value</div>
@@ -248,6 +294,7 @@ export default async function AreasPage({ searchParams }) {
             </div>
           </div>
         </Reveal>
+
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Everywhere you are</div>
@@ -280,6 +327,7 @@ export default async function AreasPage({ searchParams }) {
             </div>
           </div>
         </Reveal>
+
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-center justify-between gap-3">
@@ -312,6 +360,7 @@ export default async function AreasPage({ searchParams }) {
             </p>
           </div>
         </Reveal>
+
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5">
             {REGIONS.map((r) => {
@@ -345,6 +394,7 @@ export default async function AreasPage({ searchParams }) {
             })}
           </div>
         </Reveal>
+
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>

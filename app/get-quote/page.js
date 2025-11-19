@@ -1,12 +1,31 @@
-// app/get-quote/page.jsx
+// app/get-quote/page.js
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 
-export const metadata = {
-  title: "Get a Quote — Supreme IT Experts",
-  description:
-    "See a simple overview of how our pricing works and request a customised quote.",
-};
+// --- SEO (server-side)
+export async function generateMetadata() {
+  const title = "Get a Quote — Supreme IT Experts";
+  const description = "See a simple overview of how our pricing works and request a customised quote.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/get-quote" },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "/get-quote",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
+  };
+}
 
 const PLANS = [
   {
@@ -47,6 +66,21 @@ const PLANS = [
 export default function GetQuotePage() {
   return (
     <>
+      {/* Breadcrumbs JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
+              { "@type": "ListItem", position: 2, name: "Get a Quote", item: "https://supremeitexperts.com/get-quote" }
+            ]
+          }),
+        }}
+      />
+
       <PageHero
         eyebrow="Get quote"
         title="Simple, transparent pricing"

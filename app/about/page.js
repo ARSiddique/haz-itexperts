@@ -1,15 +1,51 @@
-// app/about/page.jsx
+// app/about/page.js
+
 import PageHero from "@/components/PageHero";
 
-export const metadata = {
-  title: "About — Supreme IT Experts",
-  description:
-    "Learn who we are, what we do, and how we support SMBs with reliable managed IT and cybersecurity.",
-};
+// --- SEO (server-side)
+export async function generateMetadata() {
+  const title = "About — Supreme IT Experts";
+  const description =
+    "Learn who we are, what we do, and how we support SMBs with reliable managed IT and cybersecurity.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/about" },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "/about",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
+  };
+}
 
 export default function AboutPage() {
   return (
     <>
+      {/* Breadcrumbs JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
+              { "@type": "ListItem", position: 2, name: "About", item: "https://supremeitexperts.com/about" }
+            ]
+          }),
+        }}
+      />
+
       <PageHero
         eyebrow="About us"
         title="We treat your IT like mission-critical"

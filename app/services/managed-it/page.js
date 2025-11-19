@@ -1,14 +1,33 @@
 import ServiceClientPage from "../_components/ServiceClientPage";
 
-export const metadata = {
-  title: "Managed IT — HaziTExperts",
-  description: "Proactive helpdesk, patching, monitoring & reporting with clear SLAs.",
-};
+export async function generateMetadata() {
+  const title = "Managed IT — Supreme IT Experts";
+  const description = "Proactive helpdesk, patching, monitoring & reporting with clear SLAs.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/services/managed-it" },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url: "/services/managed-it",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
+  };
+}
 
 export default function Page() {
   const cfg = {
     title: "Managed IT",
-    lede: "Hum aapka day-to-day IT chalatay hain: tickets, patching, monitoring, security baselines — taake aapki team ka focus business par rahe.",
+    lede:
+      "Hum aapka day-to-day IT chalatay hain: tickets, patching, monitoring, security baselines — taake aapki team ka focus business par rahe.",
     hero: "/images/services/managed-hero.svg",
     stats: [
       { kpi: "98%", label: "CSAT" },
@@ -22,15 +41,15 @@ export default function Page() {
         body:
           "Hamari helpdesk workflows first-contact resolution par focus karti hain. Email/chat/portal se ticket aaye — triage SOPs se priority set hoti hai, aur automation repetitive tasks ko khud handle kar leti hai. Aapko monthly CSAT aur SLA dashboards miltay hain jisse leadership ko real picture nazar aati hai.",
         image: "/images/illus/helpdesk.svg",
-        imageSide: "right"
+        imageSide: "right",
       },
       {
         heading: "Standardized endpoints = fewer surprises",
         body:
           "Windows/macOS devices par hardened baselines, auto patching, app catalogs aur EDR — is se drift kam hota hai, aur incidents ka blast radius control me rehta hai. Backup checks aur test restores ki wajah se recovery predictable hoti hai.",
         image: "/images/illus/devices.svg",
-        imageSide: "left"
-      }
+        imageSide: "left",
+      },
     ],
     problems: [
       "Tickets bounce between people; no ownership or SLA",
@@ -52,7 +71,7 @@ export default function Page() {
       { icon: "Users", title: "Lifecycle", desc: "Fast, compliant on/offboarding." },
       { icon: "LineChart", title: "Reporting", desc: "Ticket, asset, patch & risk KPIs." },
     ],
-    gallery: ["/images/illus/screens-1.svg","/images/illus/screens-2.svg","/images/illus/screens-3.svg"],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
     steps: [
       { title: "Assess", desc: "Users, devices, identity, risks.", outputs: ["Access & tooling", "Initial risk register"] },
       { title: "Stabilize", desc: "Patching, EDR, backup/DR, baselines.", outputs: ["Patch rings", "EDR policies"] },
@@ -69,8 +88,39 @@ export default function Page() {
     compactTimeline: true,
     testimonials: [
       { quote: "Onboarding ab hours me hota hai, days me nahi.", author: "S. Malik", role: "HR Lead", avatar: "/images/avatars/a1.svg", rating: 5 },
-      { quote: "Finally SLAs aur visibility hai — chaos khatam.", author: "A. Khan", role: "COO", avatar: "/images/avatars/a2.svg", rating: 5 }
+      { quote: "Finally SLAs aur visibility hai — chaos khatam.", author: "A. Khan", role: "COO", avatar: "/images/avatars/a2.svg", rating: 5 },
     ],
   };
-  return <ServiceClientPage cfg={cfg} />;
+
+  return (
+    <>
+      {/* Breadcrumbs + Service JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
+                { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
+                { "@type": "ListItem", position: 3, name: "Managed IT", item: "https://supremeitexperts.com/services/managed-it" }
+              ]
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Service",
+              name: "Managed IT",
+              serviceType: "Managed IT Services",
+              provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
+              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Philadelphia, PA", "Wilmington, DE"],
+              url: "https://supremeitexperts.com/services/managed-it"
+            }
+          ])
+        }}
+      />
+      <ServiceClientPage cfg={cfg} />
+    </>
+  );
 }

@@ -1,5 +1,4 @@
 // app/page.js
-
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -22,16 +21,38 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// --- SEO for Home (server-side) ---
+// ─────────────────────────────────────────────────────────────────────────────
+// SEO (server-side)
+// ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
+  const brand = site?.name || "Supreme IT Experts";
+  const title = `${brand} — Managed IT & Cybersecurity`;
+  const description =
+    "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
+
   return {
-    title: `${site.name} — Managed IT & Cybersecurity`,
-    description:
-      "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
+    title,
+    description,
     alternates: { canonical: "/" },
+    openGraph: {
+      title,
+      description,
+      url: "/",
+      type: "website",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
   };
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Small presentational helpers
+// ─────────────────────────────────────────────────────────────────────────────
 function Collage({ items = [], priority = false, ratio = "aspect-[16/10] md:aspect-[16/9]" }) {
   return (
     <div className={`relative ${ratio}`} data-reveal="up">
@@ -113,39 +134,135 @@ const Stat = ({ k, v }) => (
   </div>
 );
 
-const ServiceCard = ({ Icon, t, d, bullets = [] }) => (
-  <div
-    className="group p-6 rounded-2xl bg-white/[0.06] border border-white/10 transition hover:-translate-y-1 hover:shadow-xl hover:border-cyan-300/30"
-    data-reveal="up"
-  >
-    <div className="flex items-center gap-3">
-      <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
-        <Icon className="h-5 w-5 text-cyan-300" />
-      </span>
-      <h3 className="font-semibold text-lg">{t}</h3>
+// linked service card (deep pages)
+const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
+  const Card = (
+    <div className="group p-6 rounded-2xl bg-white/[0.06] border border-white/10 transition hover:-translate-y-1 hover:shadow-xl hover:border-cyan-300/30">
+      <div className="flex items-center gap-3">
+        <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
+          <Icon className="h-5 w-5 text-cyan-300" />
+        </span>
+        <h3 className="font-semibold text-lg">{t}</h3>
+      </div>
+      <p className="text-sm text-slate-300 mt-2">{d}</p>
+      {!!bullets.length && (
+        <ul className="mt-3 space-y-1">
+          {bullets.map((b) => (
+            <li key={b} className="flex gap-2 text-sm text-slate-300">
+              <Sparkles className="h-4 w-4 text-cyan-300" /> {b}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="mt-4 inline-flex items-center gap-2 text-sm text-cyan-300">
+        View details <ArrowRight className="h-4 w-4" />
+      </div>
     </div>
-    <p className="text-sm text-slate-300 mt-2">{d}</p>
-    {!!bullets.length && (
-      <ul className="mt-3 space-y-1">
-        {bullets.map((b) => (
-          <li key={b} className="flex gap-2 text-sm text-slate-300">
-            <Sparkles className="h-4 w-4 text-cyan-300" /> {b}
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-);
+  );
+  return href ? (
+    <Link href={href} className="block" aria-label={`${t} details`}>
+      {Card}
+    </Link>
+  ) : (
+    <div data-reveal="up">{Card}</div>
+  );
+};
 
 const OfferPopup = dynamic(() => import("@/components/OfferPopup"), { ssr: false });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Page
+// ─────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const areas = site.areas?.length ? site.areas : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+  const areas = site?.areas?.length ? site.areas : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+  const brand = site?.name || "Supreme IT Experts";
+
+  const SERVICES = [
+    {
+      Icon: Shield,
+      t: "Managed IT",
+      d: "Helpdesk, patching, monitoring, reporting with SLAs.",
+      bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"],
+      href: "/services/managed-it",
+    },
+    {
+      Icon: Server,
+      t: "Cybersecurity",
+      d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
+      bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
+      href: "/services/cybersecurity",
+    },
+    {
+      Icon: Cloud,
+      t: "Cloud & 365/Workspace",
+      d: "Migrations, identity, MDM, cost optimization.",
+      bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"],
+      href: "/services/cloud-workspace",
+    },
+    {
+      Icon: Wrench,
+      t: "Projects & Consulting",
+      d: "Audits, office moves, network refresh, server/cloud.",
+      bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"],
+      href: "/services/projects-consulting",
+    },
+    {
+      Icon: Smartphone,
+      t: "Device Management",
+      d: "Windows/Mac/iOS/Android baselines + app deploys.",
+      bullets: ["Baseline config", "App catalogs", "Compliance checks"],
+      href: "/services/device-management",
+    },
+    {
+      Icon: Users,
+      t: "vCIO / Strategy",
+      d: "Quarterly roadmap, budget planning, measurable KPIs.",
+      bullets: ["Roadmaps", "Budgeting", "Risk register"],
+      href: "/services/vcio-strategy",
+    },
+  ];
 
   return (
     <>
+      {/* Lightweight JSON-LD for Home */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: brand,
+              url: "https://supremeitexperts.com/",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://supremeitexperts.com/search?q={query}",
+                "query-input": "required name=query",
+              },
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: brand,
+              url: "https://supremeitexperts.com/",
+              sameAs: site?.socials || [],
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: site?.phone || "+1-610-500-9209",
+                  contactType: "customer service",
+                  areaServed: ["US"],
+                  availableLanguage: ["en"],
+                },
+              ],
+            },
+          ]),
+        }}
+      />
+
       <OfferPopup />
 
+      {/* ───────────── HERO ───────────── */}
       <section id="hero" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-24 -left-24 size-72 rounded-full bg-cyan-500/25 blur-3xl" />
@@ -201,6 +318,7 @@ export default function HomePage() {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
       </section>
 
+      {/* ───────────── ABOUT ───────────── */}
       <Section id="about" className="py-16">
         <Title k="About" sub="We keep your business running — and secure" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
@@ -246,7 +364,7 @@ export default function HomePage() {
             More about us <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            href="/assessment"
+            href="/get-quote"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             Free IT Assessment <ArrowRight className="h-4 w-4" />
@@ -254,6 +372,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── SERVICES ───────────── */}
       <Section id="services" className="py-16">
         <Title k="Services" sub="Everything an SMB needs — nothing you don’t" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
@@ -261,44 +380,7 @@ export default function HomePage() {
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {[
-            {
-              Icon: Shield,
-              t: "Managed IT",
-              d: "Helpdesk, patching, monitoring, reporting with SLAs.",
-              bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"],
-            },
-            {
-              Icon: Server,
-              t: "Cybersecurity",
-              d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
-              bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
-            },
-            {
-              Icon: Cloud,
-              t: "Cloud & 365/Workspace",
-              d: "Migrations, identity, MDM, cost optimization.",
-              bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"],
-            },
-            {
-              Icon: Wrench,
-              t: "Projects & Consulting",
-              d: "Audits, office moves, network refresh, server/cloud.",
-              bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"],
-            },
-            {
-              Icon: Smartphone,
-              t: "Device Management",
-              d: "Windows/Mac/iOS/Android baselines + app deploys.",
-              bullets: ["Baseline config", "App catalogs", "Compliance checks"],
-            },
-            {
-              Icon: Users,
-              t: "vCIO / Strategy",
-              d: "Quarterly roadmap, budget planning, measurable KPIs.",
-              bullets: ["Roadmaps", "Budgeting", "Risk register"],
-            },
-          ].map((p) => (
+          {SERVICES.map((p) => (
             <ServiceCard key={p.t} {...p} />
           ))}
         </div>
@@ -319,6 +401,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── CASE STUDIES ───────────── */}
       <Section id="wins" className="py-16">
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
@@ -352,6 +435,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── PROCESS ───────────── */}
       <Section id="process" className="py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
@@ -390,6 +474,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── TRUST ───────────── */}
       <Section id="trust" className="py-16">
         <Title k="Trust" sub="Security-first and SLA-backed" />
         <div className="grid md:grid-cols-3 gap-4">
@@ -409,6 +494,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── GALLERY ───────────── */}
       <Section id="gallery" className="py-16">
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
@@ -445,6 +531,7 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ───────────── AREAS ───────────── */}
       <Section id="areas" className="pb-24">
         <Title k="Areas we serve" sub="Onsite & remote support in DE & PA" />
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -457,6 +544,14 @@ export default function HomePage() {
               {a}
             </div>
           ))}
+        </div>
+        <div className="mt-6" data-reveal="up">
+          <Link
+            href="/areas"
+            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
+          >
+            See coverage map <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </Section>
 

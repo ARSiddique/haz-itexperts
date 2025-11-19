@@ -1,10 +1,5 @@
-// app/services/page.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-// SERVER COMPONENT (SSR). Interactivity lives in small client islands:
-// - <ServicesTabs /> for deep-dives
-// - <PricingRoi /> for pricing/ROI
-// We pass a plain JSON copy (servicesForClient) to client components.
-// ─────────────────────────────────────────────────────────────────────────────
+// app/services/page.js
+// SERVER COMPONENT
 
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
@@ -16,6 +11,32 @@ import {
   ArrowRight, ChevronRight, Sparkles,
   Building2, CloudCog, Network, LineChart
 } from "lucide-react";
+
+// ---- SEO (static; no client code needed)
+export async function generateMetadata() {
+  const title = "Managed IT Services & Cybersecurity | Supreme IT Experts";
+  const description =
+    "Helpdesk, patching, monitoring, cybersecurity (EDR/XDR, backup/DR, email security), cloud & device management — fully-managed or co-managed.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/services" },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "/services",
+      images: ["/og-image.png?v=7"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
+  };
+}
 
 /* small server-safe helper */
 const Badge = ({ children, tone = "cyan" }) => (
@@ -118,6 +139,21 @@ export default async function ServicesPage() {
 
   return (
     <>
+      {/* Breadcrumb JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
+              { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" }
+            ]
+          }),
+        }}
+      />
+
       {/* =====================================================================
          HERO
          ===================================================================== */}
@@ -189,7 +225,7 @@ export default async function ServicesPage() {
         </div>
 
         {/* ===================================================================
-           DEEP-DIVES (client island tabs) — can also link out using href
+           DEEP-DIVES (client island tabs)
            =================================================================== */}
         <Reveal className="mt-14">
           <ServicesTabs services={servicesForClient} />
