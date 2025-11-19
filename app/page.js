@@ -1,4 +1,4 @@
-"use client";
+// app/page.js
 
 import Link from "next/link";
 import Image from "next/image";
@@ -21,6 +21,16 @@ import {
   Image as ImageIcon,
   Sparkles,
 } from "lucide-react";
+
+// --- SEO for Home (server-side) ---
+export async function generateMetadata() {
+  return {
+    title: `${site.name} — Managed IT & Cybersecurity`,
+    description:
+      "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
+    alternates: { canonical: "/" },
+  };
+}
 
 function Collage({ items = [], priority = false, ratio = "aspect-[16/10] md:aspect-[16/9]" }) {
   return (
@@ -127,15 +137,15 @@ const ServiceCard = ({ Icon, t, d, bullets = [] }) => (
   </div>
 );
 
-
 const OfferPopup = dynamic(() => import("@/components/OfferPopup"), { ssr: false });
+
 export default function HomePage() {
-  const areas = site.areas?.length
-    ? site.areas
-    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+  const areas = site.areas?.length ? site.areas : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+
   return (
     <>
-    <OfferPopup />
+      <OfferPopup />
+
       <section id="hero" className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-24 -left-24 size-72 rounded-full bg-cyan-500/25 blur-3xl" />
@@ -151,8 +161,7 @@ export default function HomePage() {
               Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-200">
-              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Macungie &
-  Emmaus.
+              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Macungie & Emmaus.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
