@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
-import dynamic from "next/dynamic";
+import ClientOfferPopup from "@/components/ClientOfferPopup"; // ← use client wrapper
 import {
   Shield,
   Server,
@@ -168,8 +168,6 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
   );
 };
 
-const OfferPopup = dynamic(() => import("@/components/OfferPopup"), { ssr: false });
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
@@ -178,48 +176,12 @@ export default function HomePage() {
   const brand = site?.name || "Supreme IT Experts";
 
   const SERVICES = [
-    {
-      Icon: Shield,
-      t: "Managed IT",
-      d: "Helpdesk, patching, monitoring, reporting with SLAs.",
-      bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"],
-      href: "/services/managed-it",
-    },
-    {
-      Icon: Server,
-      t: "Cybersecurity",
-      d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
-      bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
-      href: "/services/cybersecurity",
-    },
-    {
-      Icon: Cloud,
-      t: "Cloud & 365/Workspace",
-      d: "Migrations, identity, MDM, cost optimization.",
-      bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"],
-      href: "/services/cloud-workspace",
-    },
-    {
-      Icon: Wrench,
-      t: "Projects & Consulting",
-      d: "Audits, office moves, network refresh, server/cloud.",
-      bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"],
-      href: "/services/projects-consulting",
-    },
-    {
-      Icon: Smartphone,
-      t: "Device Management",
-      d: "Windows/Mac/iOS/Android baselines + app deploys.",
-      bullets: ["Baseline config", "App catalogs", "Compliance checks"],
-      href: "/services/device-management",
-    },
-    {
-      Icon: Users,
-      t: "vCIO / Strategy",
-      d: "Quarterly roadmap, budget planning, measurable KPIs.",
-      bullets: ["Roadmaps", "Budgeting", "Risk register"],
-      href: "/services/vcio-strategy",
-    },
+    { Icon: Shield, t: "Managed IT", d: "Helpdesk, patching, monitoring, reporting with SLAs.", bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"], href: "/services/managed-it" },
+    { Icon: Server, t: "Cybersecurity", d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.", bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"], href: "/services/cybersecurity" },
+    { Icon: Cloud, t: "Cloud & 365/Workspace", d: "Migrations, identity, MDM, cost optimization.", bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"], href: "/services/cloud-workspace" },
+    { Icon: Wrench, t: "Projects & Consulting", d: "Audits, office moves, network refresh, server/cloud.", bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"], href: "/services/projects-consulting" },
+    { Icon: Smartphone, t: "Device Management", d: "Windows/Mac/iOS/Android baselines + app deploys.", bullets: ["Baseline config", "App catalogs", "Compliance checks"], href: "/services/device-management" },
+    { Icon: Users, t: "vCIO / Strategy", d: "Quarterly roadmap, budget planning, measurable KPIs.", bullets: ["Roadmaps", "Budgeting", "Risk register"], href: "/services/vcio-strategy" },
   ];
 
   return (
@@ -260,7 +222,8 @@ export default function HomePage() {
         }}
       />
 
-      <OfferPopup />
+      {/* Popup loads only on client via wrapper */}
+      <ClientOfferPopup />
 
       {/* ───────────── HERO ───────────── */}
       <section id="hero" className="relative overflow-hidden">
