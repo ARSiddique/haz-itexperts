@@ -1,24 +1,21 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  devIndicators: false,
-  async redirects() {
+// next.config.mjs
+export default {
+  async headers() {
     return [
-      // force apex domain (www -> non-www)
       {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.supremeitexperts.com' }],
-        destination: 'https://supremeitexperts.com/:path*',
-        permanent: true,
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=300, must-revalidate' }, // 5 min
+          { key: 'Content-Type', value: 'application/xml; charset=utf-8' },
+        ],
       },
-      // force https on apex (http -> https)
       {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'supremeitexperts.com' }],
-        destination: 'https://supremeitexperts.com/:path*',
-        permanent: true,
+        source: '/robots.txt',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=300, must-revalidate' },
+          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+        ],
       },
     ];
   },
 };
-
-export default nextConfig;
