@@ -1,8 +1,10 @@
 // app/page.js
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
+import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
+import ClientOfferPopup from "@/components/ClientOfferPopup";
 import {
   Shield,
   Server,
@@ -18,20 +20,6 @@ import {
   Image as ImageIcon,
   Sparkles,
 } from "lucide-react";
-
-// Lazy-load heavier client components (no SSR) to reduce render-blocking JS
-const ClientOfferPopup = dynamic(
-  () => import("@/components/ClientOfferPopup"),
-  {
-    ssr: false,
-    loading: () => null,
-  }
-);
-
-const HomeFX = dynamic(() => import("@/components/HomeFX"), {
-  ssr: false,
-  loading: () => null,
-});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEO (server-side)
@@ -209,7 +197,11 @@ export default function HomePage() {
       Icon: Server,
       t: "Cybersecurity",
       d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
-      bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
+      bullets: [
+        "EDR/XDR coverage",
+        "Identity hardening",
+        "BCP/DR playbooks",
+      ],
       href: "/services/cybersecurity",
     },
     {
@@ -280,7 +272,7 @@ export default function HomePage() {
         }}
       />
 
-      {/* Popup loads only on client via dynamic import */}
+      {/* Popup – client component */}
       <ClientOfferPopup />
 
       {/* ───────────── HERO ───────────── */}
@@ -345,9 +337,9 @@ export default function HomePage() {
       <Section id="about" className="py-16">
         <Title k="About" sub="We keep your business running — and secure" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          We act as your IT department, or augment your in-house team, with real
-          SLAs, documented SOPs, and transparent reporting leadership actually
-          reads.
+          We act as your IT department, or augment your in-house team, with
+          real SLAs, documented SOPs, and transparent reporting leadership
+          actually reads.
         </p>
 
         <div className="grid md:grid-cols-2 gap-10 items-center mt-8">
@@ -416,7 +408,7 @@ export default function HomePage() {
         <div className="mt-8 flex gap-3" data-reveal="up">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover-border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
+            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             All service details <ArrowRight className="h-4 w-4" />
           </Link>
@@ -485,10 +477,26 @@ export default function HomePage() {
             data-reveal="up"
           >
             {[
-              { icon: Cpu, title: "Assess", text: "Light discovery of users, devices, identity, risks." },
-              { icon: Lock, title: "Stabilize", text: "Patch, EDR/XDR, baselines for M365/Google, backup/DR." },
-              { icon: LineChart, title: "Optimize", text: "Helpdesk SLAs, workflows, reporting, roadmap alignment." },
-              { icon: Server, title: "Grow", text: "New hires, office moves, cloud projects — predictable outcomes." },
+              {
+                icon: Cpu,
+                title: "Assess",
+                text: "Light discovery of users, devices, identity, risks.",
+              },
+              {
+                icon: Lock,
+                title: "Stabilize",
+                text: "Patch, EDR/XDR, baselines for M365/Google, backup/DR.",
+              },
+              {
+                icon: LineChart,
+                title: "Optimize",
+                text: "Helpdesk SLAs, workflows, reporting, roadmap alignment.",
+              },
+              {
+                icon: Server,
+                title: "Grow",
+                text: "New hires, office moves, cloud projects — predictable outcomes.",
+              },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="ms-2">
                 <span className="absolute -start-3.5 mt-1 grid place-items-center size-6 rounded-full bg-cyan-400/20 border border-cyan-300/40">
@@ -612,8 +620,10 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* FX (lazy-loaded client chunk) */}
-      <HomeFX />
+      {/* FX (scroll / cursor stuff) */}
+      <Suspense fallback={null}>
+        <HomeFX />
+      </Suspense>
     </>
   );
 }
