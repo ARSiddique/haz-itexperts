@@ -32,7 +32,6 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  // maximumScale hata diya takay users zoom kar saken (a11y + Lighthouse)
   themeColor: "#0b1220",
 };
 

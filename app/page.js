@@ -1,10 +1,8 @@
 // app/page.js
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense } from "react";
-import HomeFX from "@/components/HomeFX";
+import dynamic from "next/dynamic";
 import { site } from "@/lib/siteConfig";
-import ClientOfferPopup from "@/components/ClientOfferPopup"; // ← use client wrapper
 import {
   Shield,
   Server,
@@ -20,6 +18,20 @@ import {
   Image as ImageIcon,
   Sparkles,
 } from "lucide-react";
+
+// Lazy-load heavier client components (no SSR) to reduce render-blocking JS
+const ClientOfferPopup = dynamic(
+  () => import("@/components/ClientOfferPopup"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+
+const HomeFX = dynamic(() => import("@/components/HomeFX"), {
+  ssr: false,
+  loading: () => null,
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEO (server-side)
@@ -53,7 +65,11 @@ export async function generateMetadata() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Small presentational helpers
 // ─────────────────────────────────────────────────────────────────────────────
-function Collage({ items = [], priority = false, ratio = "aspect-[16/10] md:aspect-[16/9]" }) {
+function Collage({
+  items = [],
+  priority = false,
+  ratio = "aspect-[16/10] md:aspect-[16/9]",
+}) {
   return (
     <div className={`relative ${ratio}`} data-reveal="up">
       {items[0] && (
@@ -111,13 +127,17 @@ const Section = ({ id, children, className = "" }) => (
       <div className="absolute -bottom-32 -right-24 size-96 rounded-full bg-fuchsia-500/15 blur-3xl" />
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_35%)]" />
     </div>
-    <div className={`max-w-6xl mx-auto px-4 section-enter ${className}`}>{children}</div>
+    <div className={`max-w-6xl mx-auto px-4 section-enter ${className}`}>
+      {children}
+    </div>
   </section>
 );
 
 const Title = ({ k, sub }) => (
   <div className="mb-6" data-reveal="up">
-    <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">{k}</div>
+    <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
+      {k}
+    </div>
     <h2 className="text-3xl md:text-5xl font-extrabold leading-tight bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
       {sub}
     </h2>
@@ -172,16 +192,54 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const areas = site?.areas?.length ? site.areas : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+  const areas = site?.areas?.length
+    ? site.areas
+    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
   const brand = site?.name || "Supreme IT Experts";
 
   const SERVICES = [
-    { Icon: Shield, t: "Managed IT", d: "Helpdesk, patching, monitoring, reporting with SLAs.", bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"], href: "/services/managed-it" },
-    { Icon: Server, t: "Cybersecurity", d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.", bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"], href: "/services/cybersecurity" },
-    { Icon: Cloud, t: "Cloud & 365/Workspace", d: "Migrations, identity, MDM, cost optimization.", bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"], href: "/services/cloud-workspace" },
-    { Icon: Wrench, t: "Projects & Consulting", d: "Audits, office moves, network refresh, server/cloud.", bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"], href: "/services/projects-consulting" },
-    { Icon: Smartphone, t: "Device Management", d: "Windows/Mac/iOS/Android baselines + app deploys.", bullets: ["Baseline config", "App catalogs", "Compliance checks"], href: "/services/device-management" },
-    { Icon: Users, t: "vCIO / Strategy", d: "Quarterly roadmap, budget planning, measurable KPIs.", bullets: ["Roadmaps", "Budgeting", "Risk register"], href: "/services/vcio-strategy" },
+    {
+      Icon: Shield,
+      t: "Managed IT",
+      d: "Helpdesk, patching, monitoring, reporting with SLAs.",
+      bullets: ["Helpdesk workflows", "Proactive maintenance", "Monthly KPIs"],
+      href: "/services/managed-it",
+    },
+    {
+      Icon: Server,
+      t: "Cybersecurity",
+      d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
+      bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
+      href: "/services/cybersecurity",
+    },
+    {
+      Icon: Cloud,
+      t: "Cloud & 365/Workspace",
+      d: "Migrations, identity, MDM, cost optimization.",
+      bullets: ["Tenant security", "Licensing hygiene", "MDM baselines"],
+      href: "/services/cloud-workspace",
+    },
+    {
+      Icon: Wrench,
+      t: "Projects & Consulting",
+      d: "Audits, office moves, network refresh, server/cloud.",
+      bullets: ["Network redesign", "Server refresh", "Zero-trust rollout"],
+      href: "/services/projects-consulting",
+    },
+    {
+      Icon: Smartphone,
+      t: "Device Management",
+      d: "Windows/Mac/iOS/Android baselines + app deploys.",
+      bullets: ["Baseline config", "App catalogs", "Compliance checks"],
+      href: "/services/device-management",
+    },
+    {
+      Icon: Users,
+      t: "vCIO / Strategy",
+      d: "Quarterly roadmap, budget planning, measurable KPIs.",
+      bullets: ["Roadmaps", "Budgeting", "Risk register"],
+      href: "/services/vcio-strategy",
+    },
   ];
 
   return (
@@ -222,7 +280,7 @@ export default function HomePage() {
         }}
       />
 
-      {/* Popup loads only on client via wrapper */}
+      {/* Popup loads only on client via dynamic import */}
       <ClientOfferPopup />
 
       {/* ───────────── HERO ───────────── */}
@@ -241,7 +299,8 @@ export default function HomePage() {
               Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-200">
-              24/7 helpdesk, proactive monitoring, and real security — built for local SMBs in Allentown, Macungie & Emmaus.
+              24/7 helpdesk, proactive monitoring, and real security — built for
+              local SMBs in Allentown, Macungie & Emmaus.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -255,7 +314,8 @@ export default function HomePage() {
                 href="#services"
                 className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 inline-flex items-center gap-2 group"
               >
-                Explore services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Explore services{" "}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
 
@@ -285,8 +345,9 @@ export default function HomePage() {
       <Section id="about" className="py-16">
         <Title k="About" sub="We keep your business running — and secure" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          We act as your IT department, or augment your in-house team, with real SLAs, documented SOPs, and transparent
-          reporting leadership actually reads.
+          We act as your IT department, or augment your in-house team, with real
+          SLAs, documented SOPs, and transparent reporting leadership actually
+          reads.
         </p>
 
         <div className="grid md:grid-cols-2 gap-10 items-center mt-8">
@@ -294,7 +355,10 @@ export default function HomePage() {
             {[
               ["Playbooks", "Documented SOPs for repeatable results"],
               ["Visibility", "Monthly KPIs leadership actually reads"],
-              ["Security-first", "Baseline hardening + EDR/XDR + backup/DR"],
+              [
+                "Security-first",
+                "Baseline hardening + EDR/XDR + backup/DR",
+              ],
             ].map(([t, d]) => (
               <div
                 key={t}
@@ -339,7 +403,8 @@ export default function HomePage() {
       <Section id="services" className="py-16">
         <Title k="Services" sub="Everything an SMB needs — nothing you don’t" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          Choose fully-managed or co-managed. We’ll meet you where you are and raise your baseline fast.
+          Choose fully-managed or co-managed. We’ll meet you where you are and
+          raise your baseline fast.
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -351,7 +416,7 @@ export default function HomePage() {
         <div className="mt-8 flex gap-3" data-reveal="up">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
+            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover-border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             All service details <ArrowRight className="h-4 w-4" />
           </Link>
@@ -369,17 +434,28 @@ export default function HomePage() {
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
           <div data-reveal="up">
-            <Collage items={[{ src: "/media/work-1.jpg", alt: "Site work" }, { src: "/media/rack.jpg", alt: "Rack" }]} />
+            <Collage
+              items={[
+                { src: "/media/work-1.jpg", alt: "Site work" },
+                { src: "/media/rack.jpg", alt: "Rack" },
+              ]}
+            />
             <div className="mt-3">
               <div className="font-medium">Faster P1 handling</div>
-              <p className="text-sm text-slate-300">First response down to ≤12 min with SOPs and queue hygiene.</p>
+              <p className="text-sm text-slate-300">
+                First response down to ≤12 min with SOPs and queue hygiene.
+              </p>
             </div>
           </div>
           <div data-reveal="up">
-            <Collage items={[{ src: "/media/dashboard.jpg", alt: "Monitoring" }]} />
+            <Collage
+              items={[{ src: "/media/dashboard.jpg", alt: "Monitoring" }]}
+            />
             <div className="mt-3">
               <div className="font-medium">Fleet visibility</div>
-              <p className="text-sm text-slate-300">99.9% EDR coverage + leadership KPIs that tell the truth.</p>
+              <p className="text-sm text-slate-300">
+                99.9% EDR coverage + leadership KPIs that tell the truth.
+              </p>
             </div>
           </div>
           <div data-reveal="up">
@@ -392,7 +468,9 @@ export default function HomePage() {
             />
             <div className="mt-3">
               <div className="font-medium">Onboarding without chaos</div>
-              <p className="text-sm text-slate-300">MDM baselines in 10 days; predictable new-hire workflow.</p>
+              <p className="text-sm text-slate-300">
+                MDM baselines in 10 days; predictable new-hire workflow.
+              </p>
             </div>
           </div>
         </div>
@@ -402,7 +480,10 @@ export default function HomePage() {
       <Section id="process" className="py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
-          <ol className="relative border-s border-white/10 ps-6 space-y-8" data-reveal="up">
+          <ol
+            className="relative border-s border-white/10 ps-6 space-y-8"
+            data-reveal="up"
+          >
             {[
               { icon: Cpu, title: "Assess", text: "Light discovery of users, devices, identity, risks." },
               { icon: Lock, title: "Stabilize", text: "Patch, EDR/XDR, baselines for M365/Google, backup/DR." },
@@ -421,7 +502,12 @@ export default function HomePage() {
             ))}
           </ol>
 
-          <div className="rounded-2xl overflow-hidden border border-white/10 group" data-parallax="y" data-speed="0.1" data-reveal="up">
+          <div
+            className="rounded-2xl overflow-hidden border border-white/10 group"
+            data-parallax="y"
+            data-speed="0.1"
+            data-reveal="up"
+          >
             <div className="relative w-full aspect-[16/16]">
               <Image
                 src="/media/work-2.jpg"
@@ -446,7 +532,11 @@ export default function HomePage() {
             ["Coverage", "99.9% EDR/XDR on managed endpoints"],
             ["MDM", "Windows/Mac/iOS/Android baselines & compliance"],
           ].map(([t, d]) => (
-            <div key={t} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5" data-reveal="up">
+            <div
+              key={t}
+              className="rounded-2xl border border-white/10 bg-white/[0.06] p-5"
+              data-reveal="up"
+            >
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-cyan-300" />
                 <span className="font-medium">{t}</span>
@@ -466,7 +556,11 @@ export default function HomePage() {
             ["/media/rack.jpg", "Rack & cabling"],
             ["/media/dashboard.jpg", "Monitoring"],
           ].map(([src, cap]) => (
-            <figure key={src} className="rounded-2xl overflow-hidden border border-white/10 bg-white/5" data-reveal="up">
+            <figure
+              key={src}
+              className="rounded-2xl overflow-hidden border border-white/10 bg-white/5"
+              data-reveal="up"
+            >
               <div className="relative w-full aspect-[3/2] md:aspect-[16/10] group">
                 <Image
                   src={src}
@@ -518,9 +612,8 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Suspense fallback={null}>
-        <HomeFX />
-      </Suspense>
+      {/* FX (lazy-loaded client chunk) */}
+      <HomeFX />
     </>
   );
 }
