@@ -3,7 +3,6 @@ import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
 import { Mail} from "lucide-react";
 import TrackedPhoneLink from "@/components/TrackedPhoneLink";
-import { Mail } from "lucide-react";
 
 
 // --- SEO (server-side)
