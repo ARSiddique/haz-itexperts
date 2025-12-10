@@ -1,7 +1,9 @@
 // app/contact/page.js
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
-import { Mail, Phone } from "lucide-react";
+import { Mail} from "lucide-react";
+import TrackedPhoneLink from "@/components/TrackedPhoneLink";
+
 
 // --- SEO (server-side)
 export async function generateMetadata() {
@@ -84,13 +86,11 @@ export default function ContactPage() {
               <Mail className="h-4 w-4" />
               {email}
             </a>
-            <a
-              href={`tel:${phoneHref}`}
-              className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
-            >
-              <Phone className="h-4 w-4" />
-              {phone}
-            </a>
+            <TrackedPhoneLink
+  phoneHref={phoneHref}
+  phone={phone}
+  className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
+/>
           </div>
         </section>
 
