@@ -1,9 +1,8 @@
 // app/contact/page.js
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
-import { Mail} from "lucide-react";
 import TrackedPhoneLink from "@/components/TrackedPhoneLink";
-
+import TrackedEmailLink from "@/components/TrackedEmailLink";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
@@ -46,9 +45,19 @@ export default function ContactPage() {
               "@context": "https://schema.org",
               "@type": "BreadcrumbList",
               itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Contact", item: "https://supremeitexperts.com/contact" }
-              ]
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://supremeitexperts.com/",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Contact",
+                  item: "https://supremeitexperts.com/contact",
+                },
+              ],
             },
             {
               "@context": "https://schema.org",
@@ -62,9 +71,9 @@ export default function ContactPage() {
                   email,
                   telephone: phoneHref ? `+${phoneHref.replace(/^\+?/, "")}` : undefined,
                   availableLanguage: ["English"],
-                }
-              ]
-            }
+                },
+              ],
+            },
           ]),
         }}
       />
@@ -79,18 +88,15 @@ export default function ContactPage() {
         <section className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
           <h2 className="text-lg font-semibold">Direct contact</h2>
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            <a
-              href={`mailto:${email}`}
+            <TrackedEmailLink
+              email={email}
               className="rounded-lg px-4 py-3 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
-            >
-              <Mail className="h-4 w-4" />
-              {email}
-            </a>
+            />
             <TrackedPhoneLink
-  phoneHref={phoneHref}
-  phone={phone}
-  className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
-/>
+              phoneHref={phoneHref}
+              phone={phone}
+              className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
+            />
           </div>
         </section>
 
