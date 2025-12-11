@@ -26,13 +26,23 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const title = `${brand} — Managed IT & Cybersecurity`;
+
+  const baseTitle =
+    "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
+  const title = `${baseTitle} | ${brand}`;
   const description =
-    "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
+    "Supreme IT Experts provides managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown, Macungie, Emmaus and the wider Lehigh Valley. Fixed-fee helpdesk, device management, cloud, backup and disaster recovery.";
 
   return {
     title,
     description,
+    keywords: [
+      "managed IT services Allentown",
+      "IT support Allentown PA",
+      "managed service provider Lehigh Valley",
+      "small business IT support",
+      "cybersecurity services Allentown",
+    ],
     alternates: { canonical: "/" },
     openGraph: {
       title,
@@ -182,7 +192,7 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
 export default function HomePage() {
   const areas = site?.areas?.length
     ? site.areas
-    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Wilmington, DE"];
   const brand = site?.name || "Supreme IT Experts";
 
   const SERVICES = [
@@ -285,14 +295,29 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 items-center">
           <div className="max-w-[62ch]">
             <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
-              Managed IT for Allentown & the Lehigh Valley
+              Managed IT & cybersecurity for Allentown & the Lehigh Valley
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
               Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-200">
-              24/7 helpdesk, proactive monitoring, and real security — built for
-              local SMBs in Allentown, Macungie & Emmaus.
+              {brand} is a local{" "}
+              <Link
+                href="/services/managed-it"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                managed IT services
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/services/cybersecurity"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                cybersecurity
+              </Link>{" "}
+              partner for small and mid-sized businesses in Allentown, Macungie
+              &amp; Emmaus. 24/7 helpdesk, proactive monitoring and real
+              security backed by SLAs.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -306,7 +331,7 @@ export default function HomePage() {
                 href="#services"
                 className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 inline-flex items-center gap-2 group"
               >
-                Explore services{" "}
+                Explore IT services{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
@@ -321,8 +346,14 @@ export default function HomePage() {
           <div className="lg:pl-2">
             <Collage
               items={[
-                { src: "/media/hero-1.jpg", alt: "Fiber optics" },
-                { src: "/media/hero-2.jpg", alt: "Cloud & devices" },
+                {
+                  src: "/media/hero-1.jpg",
+                  alt: "Network and cabling for managed IT environments",
+                },
+                {
+                  src: "/media/hero-2.jpg",
+                  alt: "Cloud and devices managed by an MSP",
+                },
               ]}
               ratio="aspect-[16/10] md:aspect-[16/9]"
               priority
@@ -335,10 +366,26 @@ export default function HomePage() {
 
       {/* ───────────── ABOUT ───────────── */}
       <Section id="about" className="py-16">
-        <Title k="About" sub="We keep your business running — and secure" />
+        <Title
+          k="About"
+          sub="We keep your business running with managed IT and real security"
+        />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          We act as your IT department, or augment your in-house team, with
-          real SLAs, documented SOPs, and transparent reporting leadership
+          We act as your IT department, or augment your in-house team, with{" "}
+          <Link
+            href="/services/managed-it"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            managed IT services
+          </Link>
+          ,{" "}
+          <Link
+            href="/services/cybersecurity"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            cybersecurity
+          </Link>
+          , real SLAs, documented SOPs and transparent reporting leadership
           actually reads.
         </p>
 
@@ -366,9 +413,9 @@ export default function HomePage() {
           <div data-parallax="y" data-speed="0.12">
             <Collage
               items={[
-                { src: "/media/rack.jpg", alt: "Server rack" },
-                { src: "/media/dashboard.jpg", alt: "Monitoring" },
-                { src: "/media/team.jpg", alt: "IT team" },
+                { src: "/media/rack.jpg", alt: "Server rack and network gear" },
+                { src: "/media/dashboard.jpg", alt: "IT monitoring dashboard" },
+                { src: "/media/team.jpg", alt: "IT support team at work" },
               ]}
               ratio="aspect-[4/3] md:aspect-[16/10]"
             />
@@ -393,10 +440,20 @@ export default function HomePage() {
 
       {/* ───────────── SERVICES ───────────── */}
       <Section id="services" className="py-16">
-        <Title k="Services" sub="Everything an SMB needs — nothing you don’t" />
+        <Title
+          k="Services"
+          sub="Managed IT, IT support & cybersecurity for SMBs"
+        />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          Choose fully-managed or co-managed. We’ll meet you where you are and
-          raise your baseline fast.
+          Choose fully-managed or co-managed IT with our{" "}
+          <Link
+            href="/services"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            managed IT service plans
+          </Link>
+          . We’ll meet you where you are and raise your security and support
+          baseline fast.
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -428,8 +485,8 @@ export default function HomePage() {
           <div data-reveal="up">
             <Collage
               items={[
-                { src: "/media/work-1.jpg", alt: "Site work" },
-                { src: "/media/rack.jpg", alt: "Rack" },
+                { src: "/media/work-1.jpg", alt: "Onsite IT cabling work" },
+                { src: "/media/rack.jpg", alt: "Network rack after cleanup" },
               ]}
             />
             <div className="mt-3">
@@ -441,7 +498,12 @@ export default function HomePage() {
           </div>
           <div data-reveal="up">
             <Collage
-              items={[{ src: "/media/dashboard.jpg", alt: "Monitoring" }]}
+              items={[
+                {
+                  src: "/media/dashboard.jpg",
+                  alt: "Monitoring tools for managed IT services",
+                },
+              ]}
             />
             <div className="mt-3">
               <div className="font-medium">Fleet visibility</div>
@@ -453,9 +515,9 @@ export default function HomePage() {
           <div data-reveal="up">
             <Collage
               items={[
-                { src: "/media/team.jpg", alt: "Team" },
-                { src: "/media/work-2.jpg", alt: "Work" },
-                { src: "/media/hero-2.jpg", alt: "Cloud" },
+                { src: "/media/team.jpg", alt: "IT support team collaborating" },
+                { src: "/media/work-2.jpg", alt: "Technician working onsite" },
+                { src: "/media/hero-2.jpg", alt: "Cloud-focused IT setup" },
               ]}
             />
             <div className="mt-3">
@@ -480,22 +542,22 @@ export default function HomePage() {
               {
                 icon: Cpu,
                 title: "Assess",
-                text: "Light discovery of users, devices, identity, risks.",
+                text: "Light discovery of users, devices, identity and risks in your current IT environment.",
               },
               {
                 icon: Lock,
                 title: "Stabilize",
-                text: "Patch, EDR/XDR, baselines for M365/Google, backup/DR.",
+                text: "Patch, EDR/XDR, baselines for M365/Google and backup/DR so your IT is secure and predictable.",
               },
               {
                 icon: LineChart,
                 title: "Optimize",
-                text: "Helpdesk SLAs, workflows, reporting, roadmap alignment.",
+                text: "Helpdesk SLAs, workflows, reporting and roadmap alignment with leadership.",
               },
               {
                 icon: Server,
                 title: "Grow",
-                text: "New hires, office moves, cloud projects — predictable outcomes.",
+                text: "New hires, office moves, cloud projects — predictable outcomes with clear ownership.",
               },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="ms-2">
@@ -519,7 +581,7 @@ export default function HomePage() {
             <div className="relative w-full aspect-[16/16]">
               <Image
                 src="/media/work-2.jpg"
-                alt="Onsite work"
+                alt="Technician delivering onsite IT support"
                 fill
                 loading="lazy"
                 decoding="async"
@@ -529,6 +591,28 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Small internal-link SEO helper */}
+        <p
+          className="mt-6 text-sm text-slate-400 max-w-3xl"
+          data-reveal="up"
+        >
+          Have questions about how our managed IT services work? Check our{" "}
+          <Link
+            href="/faqs"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            FAQs
+          </Link>{" "}
+          or{" "}
+          <Link
+            href="/contact"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            contact us
+          </Link>{" "}
+          for a quick, no-pressure conversation.
+        </p>
       </Section>
 
       {/* ───────────── TRUST ───────────── */}
@@ -553,6 +637,26 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+        <p
+          className="mt-6 text-sm text-slate-400 max-w-3xl"
+          data-reveal="up"
+        >
+          Want a deeper look at our security stack? See our{" "}
+          <Link
+            href="/services/cybersecurity"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            cybersecurity services
+          </Link>{" "}
+          or{" "}
+          <Link
+            href="/faqs"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            IT services FAQs
+          </Link>
+          .
+        </p>
       </Section>
 
       {/* ───────────── GALLERY ───────────── */}
@@ -560,9 +664,15 @@ export default function HomePage() {
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            ["/media/hero-1.jpg", "Fiber"],
-            ["/media/rack.jpg", "Rack & cabling"],
-            ["/media/dashboard.jpg", "Monitoring"],
+            [
+              "/media/hero-1.jpg",
+              "Fiber and cabling work for business networks",
+            ],
+            ["/media/rack.jpg", "Tidy network rack in a small business"],
+            [
+              "/media/dashboard.jpg",
+              "Monitoring dashboard for managed IT services",
+            ],
           ].map(([src, cap]) => (
             <figure
               key={src}
@@ -598,7 +708,10 @@ export default function HomePage() {
 
       {/* ───────────── AREAS ───────────── */}
       <Section id="areas" className="pb-24">
-        <Title k="Areas we serve" sub="Onsite & remote support in DE & PA" />
+        <Title
+          k="Areas we serve"
+          sub="Onsite & remote IT support in Allentown, the Lehigh Valley & Wilmington"
+        />
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {areas.map((a) => (
             <div
@@ -610,9 +723,30 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+        <p
+          className="mt-6 text-sm text-slate-400 max-w-3xl"
+          data-reveal="up"
+        >
+          If you’re based in or around these locations and need a responsive IT
+          support partner,{" "}
+          <Link
+            href="/contact"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            contact us
+          </Link>{" "}
+          or{" "}
+          <Link
+            href="/get-quote"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            request a quote
+          </Link>
+          .
+        </p>
         <div className="mt-6" data-reveal="up">
           <Link
-            href="/areas"
+            href="/areas-we-serve"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             See coverage map <ArrowRight className="h-4 w-4" />

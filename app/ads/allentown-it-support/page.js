@@ -70,7 +70,7 @@ export default async function Page({ searchParams }) {
           network monitoring — delivered by a local MSP on a predictable monthly plan.
         </p>
         <div style={{ marginTop: 12 }}>
-          <a href="tel:+16105009209" style={btn}>Call 610-500-9209</a>
+          <a href="tel:+16105009209" style={btn}>Call +1 610-500-9209</a>
           <a href="mailto:supremeitexperts@gmail.com?subject=IT%20Support%20Inquiry" style={btnOutline}>Email Us</a>
         </div>
       </div>

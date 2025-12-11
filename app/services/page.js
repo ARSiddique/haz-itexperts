@@ -16,7 +16,7 @@ import {
 export async function generateMetadata() {
   const title = "Managed IT Services & Cybersecurity | Supreme IT Experts";
   const description =
-    "Helpdesk, patching, monitoring, cybersecurity (EDR/XDR, backup/DR, email security), cloud & device management — fully-managed or co-managed.";
+    "Helpdesk, patching, monitoring, cybersecurity (EDR/XDR, backup/DR, email security), cloud & device management — fully-managed or co-managed for SMBs in Allentown & the Lehigh Valley.";
   return {
     title,
     description,
@@ -162,6 +162,40 @@ export default async function ServicesPage() {
         title="Everything you need for reliable, secure IT"
         sub="Choose fully-managed or co-managed. Start with HaziCare™ and plug security modules as you grow."
       />
+
+      {/* Short intro with internal links */}
+      <section className="max-w-6xl mx-auto px-4 pt-4 pb-6 text-sm text-slate-300 space-y-2">
+        <p>
+          This page gives you a high-level view of our{" "}
+          <Link href="/services/managed-it" className="text-cyan-300 hover:underline">
+            Managed IT
+          </Link>{" "}
+          and{" "}
+          <Link href="/services/cybersecurity" className="text-cyan-300 hover:underline">
+            Cybersecurity
+          </Link>{" "}
+          programs, plus cloud, device management and vCIO strategy.
+        </p>
+        <p>
+          To see where we can come onsite, visit{" "}
+          <Link href="/areas" className="text-cyan-300 hover:underline">
+            Areas we serve
+          </Link>
+          . For common questions, check the{" "}
+          <Link href="/faqs" className="text-cyan-300 hover:underline">
+            FAQs
+          </Link>{" "}
+          page or go straight to{" "}
+          <Link href="/get-quote" className="text-cyan-300 hover:underline">
+            Get a Quote
+          </Link>{" "}
+          and{" "}
+          <Link href="/contact" className="text-cyan-300 hover:underline">
+            Contact
+          </Link>
+          .
+        </p>
+      </section>
 
       {/* =====================================================================
          STICKY IN-PAGE NAV
@@ -325,6 +359,17 @@ export default async function ServicesPage() {
                 </details>
               ))}
             </div>
+            <p className="mt-4 text-sm text-slate-400">
+              For more general questions, see the{" "}
+              <Link href="/faqs" className="text-cyan-300 hover:underline">
+                FAQs page
+              </Link>{" "}
+              or{" "}
+              <Link href="/contact" className="text-cyan-300 hover:underline">
+                contact us
+              </Link>
+              .
+            </p>
           </div>
         </Reveal>
 
@@ -335,7 +380,9 @@ export default async function ServicesPage() {
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold">Ready for a no-pressure IT assessment?</h3>
-              <p className="text-slate-300">We’ll map gaps and give you clear next steps — free.</p>
+              <p className="text-slate-300">
+                We’ll map gaps and give you clear next steps for your locations in Allentown, the Lehigh Valley and beyond.
+              </p>
             </div>
             <div className="flex gap-3">
               <Link

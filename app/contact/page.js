@@ -1,13 +1,12 @@
 // app/contact/page.js
-import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
-import TrackedPhoneLink from "@/components/TrackedPhoneLink";
-import TrackedEmailLink from "@/components/TrackedEmailLink";
+import ContactClient from "./ContactClient";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
   const title = `Contact — ${site?.name || "Supreme IT Experts"}`;
-  const description = "Email or call us directly. We respond during business hours.";
+  const description =
+    "Talk to our team about managed IT, cybersecurity and support. We respond during business hours.";
   return {
     title,
     description,
@@ -31,7 +30,7 @@ export async function generateMetadata() {
 
 export default function ContactPage() {
   const email = site?.email || "supremeitexperts@gmail.com";
-  const phone = site?.phone || "610-500-9209";
+  const phone = site?.phone || "+1 610-500-9209";
   const phoneHref = (phone || "").replace(/[^+\d]/g, "");
 
   return (
@@ -69,7 +68,9 @@ export default function ContactPage() {
                   "@type": "ContactPoint",
                   contactType: "customer support",
                   email,
-                  telephone: phoneHref ? `+${phoneHref.replace(/^\+?/, "")}` : undefined,
+                  telephone: phoneHref
+                    ? `+${phoneHref.replace(/^\+?/, "")}`
+                    : undefined,
                   availableLanguage: ["English"],
                 },
               ],
@@ -78,34 +79,8 @@ export default function ContactPage() {
         }}
       />
 
-      <PageHero
-        eyebrow="Contact"
-        title="Talk to our team"
-        sub="Reach out by email or phone. We’re happy to answer questions about support and services."
-      />
-
-      <main className="max-w-3xl mx-auto px-4 pb-20 space-y-8">
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
-          <h2 className="text-lg font-semibold">Direct contact</h2>
-          <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            <TrackedEmailLink
-              email={email}
-              className="rounded-lg px-4 py-3 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
-            />
-            <TrackedPhoneLink
-              phoneHref={phoneHref}
-              phone={phone}
-              className="rounded-lg px-4 py-3 border border-white/15 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2 text-slate-100"
-            />
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300 space-y-2">
-          <h2 className="text-base font-semibold text-slate-100">Business hours</h2>
-          <p>Monday – Friday: 8:00 AM – 6:00 PM</p>
-          <p>Emergency support is available outside these hours for existing customers.</p>
-        </section>
-      </main>
+      {/* full contact page UI (hero + cards + multi-step form etc.) */}
+      <ContactClient mode="full" source="contact-page" />
     </>
   );
 }

@@ -52,20 +52,54 @@ const FAQS = [
 ];
 
 export default function FaqsPage() {
+  // FAQPage schema JSON-LD object
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://supremeitexperts.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "FAQs",
+        item: "https://supremeitexperts.com/faqs",
+      },
+    ],
+  };
+
   return (
     <>
       {/* Breadcrumbs JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-              { "@type": "ListItem", position: 2, name: "FAQs", item: "https://supremeitexperts.com/faqs" }
-            ]
-          }),
+          __html: JSON.stringify(breadcrumbsSchema),
+        }}
+      />
+
+      {/* FAQPage JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
         }}
       />
 
@@ -81,7 +115,9 @@ export default function FaqsPage() {
             <details key={i} className="group px-4 md:px-6 py-4">
               <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
                 <h3 className="font-medium leading-snug">{item.q}</h3>
-                <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform">
+                  ▼
+                </span>
               </summary>
               <p className="mt-3 text-sm text-slate-300">{item.a}</p>
             </details>
@@ -89,7 +125,8 @@ export default function FaqsPage() {
         </div>
 
         <p className="mt-8 text-sm text-slate-400">
-          If your question is not listed here, please email or call us and we’ll be happy to help.
+          If your question is not listed here, please email or call us and we’ll
+          be happy to help.
         </p>
       </main>
     </>
