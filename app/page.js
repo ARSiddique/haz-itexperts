@@ -246,41 +246,60 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Lightweight JSON-LD for Home */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: brand,
-              url: "https://supremeitexperts.com/",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: "https://supremeitexperts.com/search?q={query}",
-                "query-input": "required name=query",
-              },
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: brand,
-              url: "https://supremeitexperts.com/",
-              sameAs: site?.socials || [],
-              contactPoint: [
-                {
-                  "@type": "ContactPoint",
-                  telephone: site?.phone || "+1-610-500-9209",
-                  contactType: "customer service",
-                  areaServed: ["US"],
-                  availableLanguage: ["en"],
-                },
-              ],
-            },
-          ]),
-        }}
-      />
+     {/* WebSite + Organization + LocalBusiness JSON-LD */}
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://supremeitexperts.com/#website",
+        name: brand,
+        url: "https://supremeitexperts.com/",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "https://supremeitexperts.com/search?q={query}",
+          "query-input": "required name=query",
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://supremeitexperts.com/#organization",
+        name: brand,
+        url: "https://supremeitexperts.com/",
+        sameAs: site?.socials || [],
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            telephone: site?.phone || "+1-610-500-9209",
+            contactType: "customer service",
+            areaServed: areas,
+            availableLanguage: ["en"],
+          },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": ["LocalBusiness", "ITService"],
+        "@id": "https://supremeitexperts.com/#localbusiness",
+        name: brand,
+        url: "https://supremeitexperts.com/",
+        telephone: site?.phone || "+1-610-500-9209",
+        priceRange: "$$",
+        areaServed: areas,
+        address: {
+          "@type": "PostalAddress",
+          // TODO: exact office address aajay to yahan add karna
+          addressLocality: "Allentown",
+          addressRegion: "PA",
+          addressCountry: "US",
+        },
+      },
+    ]),
+  }}
+/>
 
       {/* Popup – client component */}
       <ClientOfferPopup />
