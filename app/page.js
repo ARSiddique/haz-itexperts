@@ -118,13 +118,13 @@ function Collage({
   );
 }
 
+/**
+ * ✅ Seamless Section:
+ * - no per-section blobs / overlays
+ * - only spacing + container
+ */
 const Section = ({ id, children, className = "" }) => (
-  <section id={id} className="relative overflow-hidden">
-    <div className="pointer-events-none absolute inset-0 -z-10">
-      <div className="absolute -top-32 -left-24 size-80 rounded-full bg-cyan-500/15 blur-3xl" />
-      <div className="absolute -bottom-32 -right-24 size-96 rounded-full bg-fuchsia-500/15 blur-3xl" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_35%)]" />
-    </div>
+  <section id={id} className="relative">
     <div className={`max-w-6xl mx-auto px-4 section-enter ${className}`}>
       {children}
     </div>
@@ -177,6 +177,7 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
       </div>
     </div>
   );
+
   return href ? (
     <Link href={href} className="block" aria-label={`${t} details`}>
       {Card}
@@ -195,6 +196,9 @@ export default function HomePage() {
     : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Wilmington, DE"];
   const brand = site?.name || "Supreme IT Experts";
 
+  // ✅ schema sameAs should be an array (site.socials is usually an object)
+  const sameAs = Object.values(site?.socials || {}).filter(Boolean);
+
   const SERVICES = [
     {
       Icon: Shield,
@@ -207,11 +211,7 @@ export default function HomePage() {
       Icon: Server,
       t: "Cybersecurity",
       d: "EDR/XDR, MFA/SSO, email security, backup/DR, vCISO.",
-      bullets: [
-        "EDR/XDR coverage",
-        "Identity hardening",
-        "BCP/DR playbooks",
-      ],
+      bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
       href: "/services/cybersecurity",
     },
     {
@@ -245,80 +245,85 @@ export default function HomePage() {
   ];
 
   return (
-    <>
-     {/* WebSite + Organization + LocalBusiness JSON-LD */}
-<script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify([
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "@id": "https://supremeitexperts.com/#website",
-        name: brand,
-        url: "https://supremeitexperts.com/",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: "https://supremeitexperts.com/search?q={query}",
-          "query-input": "required name=query",
-        },
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "@id": "https://supremeitexperts.com/#organization",
-        name: brand,
-        url: "https://supremeitexperts.com/",
-        sameAs: site?.socials || [],
-        contactPoint: [
-          {
-            "@type": "ContactPoint",
-            telephone: site?.phone || "+1-610-500-9209",
-            contactType: "customer service",
-            areaServed: areas,
-            availableLanguage: ["en"],
-          },
-        ],
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "ITService"],
-        "@id": "https://supremeitexperts.com/#localbusiness",
-        name: brand,
-        url: "https://supremeitexperts.com/",
-        telephone: site?.phone || "+1-610-500-9209",
-        priceRange: "$$",
-        areaServed: areas,
-        address: {
-          "@type": "PostalAddress",
-          // TODO: exact office address aajay to yahan add karna
-          addressLocality: "Allentown",
-          addressRegion: "PA",
-          addressCountry: "US",
-        },
-      },
-    ]),
-  }}
-/>
+    <div className="relative overflow-hidden bg-[#0b1220]">
+      {/* ✅ ONE global background for whole page (seamless) */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-48 -left-48 size-[520px] rounded-full bg-cyan-500/12 blur-3xl" />
+        <div className="absolute top-[18%] -right-56 size-[700px] rounded-full bg-fuchsia-500/12 blur-3xl" />
+        <div className="absolute -bottom-72 left-[10%] size-[820px] rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(1100px_600px_at_50%_-10%,rgba(56,189,248,0.12),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_30%)]" />
+      </div>
+
+      {/* WebSite + Organization + LocalBusiness JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://supremeitexperts.com/#website",
+              name: brand,
+              url: "https://supremeitexperts.com/",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://supremeitexperts.com/search?q={query}",
+                "query-input": "required name=query",
+              },
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "@id": "https://supremeitexperts.com/#organization",
+              name: brand,
+              url: "https://supremeitexperts.com/",
+              sameAs,
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: site?.phone || "+1-610-500-9209",
+                  contactType: "customer service",
+                  areaServed: areas,
+                  availableLanguage: ["en"],
+                },
+              ],
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": ["LocalBusiness", "ITService"],
+              "@id": "https://supremeitexperts.com/#localbusiness",
+              name: brand,
+              url: "https://supremeitexperts.com/",
+              telephone: site?.phone || "+1-610-500-9209",
+              priceRange: "$$",
+              areaServed: areas,
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Allentown",
+                addressRegion: "PA",
+                addressCountry: "US",
+              },
+            },
+          ]),
+        }}
+      />
 
       {/* Popup – client component */}
       <ClientOfferPopup />
 
       {/* ───────────── HERO ───────────── */}
-      <section id="hero" className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-24 -left-24 size-72 rounded-full bg-cyan-500/25 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 size-80 rounded-full bg-fuchsia-500/20 blur-3xl" />
-        </div>
-
+      <section id="hero" className="relative">
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 items-center">
           <div className="max-w-[62ch]">
             <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
               Managed IT & cybersecurity for Allentown & the Lehigh Valley
             </div>
+
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
               Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
             </h1>
+
             <p className="mt-4 text-base md:text-lg text-slate-200">
               {brand} is a local{" "}
               <Link
@@ -346,6 +351,7 @@ export default function HomePage() {
               >
                 Get a Quote
               </Link>
+
               <a
                 href="#services"
                 className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 inline-flex items-center gap-2 group"
@@ -413,10 +419,7 @@ export default function HomePage() {
             {[
               ["Playbooks", "Documented SOPs for repeatable results"],
               ["Visibility", "Monthly KPIs leadership actually reads"],
-              [
-                "Security-first",
-                "Baseline hardening + EDR/XDR + backup/DR",
-              ],
+              ["Security-first", "Baseline hardening + EDR/XDR + backup/DR"],
             ].map(([t, d]) => (
               <div
                 key={t}
@@ -459,10 +462,7 @@ export default function HomePage() {
 
       {/* ───────────── SERVICES ───────────── */}
       <Section id="services" className="py-16">
-        <Title
-          k="Services"
-          sub="Managed IT, IT support & cybersecurity for SMBs"
-        />
+        <Title k="Services" sub="Managed IT, IT support & cybersecurity for SMBs" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
           Choose fully-managed or co-managed IT with our{" "}
           <Link
@@ -515,6 +515,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+
           <div data-reveal="up">
             <Collage
               items={[
@@ -531,6 +532,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+
           <div data-reveal="up">
             <Collage
               items={[
@@ -611,11 +613,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Small internal-link SEO helper */}
-        <p
-          className="mt-6 text-sm text-slate-400 max-w-3xl"
-          data-reveal="up"
-        >
+        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
           Have questions about how our managed IT services work? Check our{" "}
           <Link
             href="/faqs"
@@ -656,10 +654,8 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-        <p
-          className="mt-6 text-sm text-slate-400 max-w-3xl"
-          data-reveal="up"
-        >
+
+        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
           Want a deeper look at our security stack? See our{" "}
           <Link
             href="/services/cybersecurity"
@@ -683,15 +679,9 @@ export default function HomePage() {
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            [
-              "/media/hero-1.jpg",
-              "Fiber and cabling work for business networks",
-            ],
+            ["/media/hero-1.jpg", "Fiber and cabling work for business networks"],
             ["/media/rack.jpg", "Tidy network rack in a small business"],
-            [
-              "/media/dashboard.jpg",
-              "Monitoring dashboard for managed IT services",
-            ],
+            ["/media/dashboard.jpg", "Monitoring dashboard for managed IT services"],
           ].map(([src, cap]) => (
             <figure
               key={src}
@@ -715,6 +705,7 @@ export default function HomePage() {
             </figure>
           ))}
         </div>
+
         <div className="mt-6" data-reveal="up">
           <Link
             href="/gallery"
@@ -726,7 +717,8 @@ export default function HomePage() {
       </Section>
 
       {/* ───────────── AREAS ───────────── */}
-      <Section id="areas" className="pb-24">
+      {/* ✅ pb-24 removed -> py-16 (gap fix) */}
+      <Section id="areas" className="py-16">
         <Title
           k="Areas we serve"
           sub="Onsite & remote IT support in Allentown, the Lehigh Valley & Wilmington"
@@ -742,10 +734,8 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-        <p
-          className="mt-6 text-sm text-slate-400 max-w-3xl"
-          data-reveal="up"
-        >
+
+        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
           If you’re based in or around these locations and need a responsive IT
           support partner,{" "}
           <Link
@@ -763,9 +753,10 @@ export default function HomePage() {
           </Link>
           .
         </p>
+
         <div className="mt-6" data-reveal="up">
           <Link
-            href="/areas-we-serve"
+            href="/areas"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             See coverage map <ArrowRight className="h-4 w-4" />
@@ -777,6 +768,6 @@ export default function HomePage() {
       <Suspense fallback={null}>
         <HomeFX />
       </Suspense>
-    </>
+    </div>
   );
 }

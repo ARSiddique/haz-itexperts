@@ -2,7 +2,8 @@ import ServiceClientPage from "../_components/ServiceClientPage";
 
 export async function generateMetadata() {
   const title = "Cybersecurity — Supreme IT Experts";
-  const description = "CIS/NIST aligned: zero-trust identity, EDR/XDR, phishing defense, immutable backups.";
+  const description =
+    "CIS/NIST aligned: zero-trust identity, EDR/XDR, phishing defense, immutable backups.";
   return {
     title,
     description,
@@ -27,7 +28,7 @@ export default function Page() {
   const cfg = {
     title: "Cybersecurity",
     lede:
-      "Identity-first controls, modern endpoint defense, phishing resistance, aur recoverability — sab kuch ek measured program ke through.",
+      "Identity-first controls, modern endpoint defense, phishing resistance, and proven recoverability—delivered through a measurable security program.",
     hero: "/images/services/cyber-hero.svg",
     stats: [
       { kpi: "↓85%", label: "Phishing risk" },
@@ -39,14 +40,14 @@ export default function Page() {
       {
         heading: "Identity is the new perimeter",
         body:
-          "MFA, Conditional Access, device compliance, aur least-privilege ki wajah se compromised password se breach tak ka safar yahin khatam ho jata hai. Privileged access ko JIT/JEA se gated rakhte hain.",
+          "MFA, Conditional Access, device compliance, and least-privilege controls stop the path from a compromised password to a full breach. We also gate privileged access using just-in-time / just-enough administration practices.",
         image: "/images/illus/identity.svg",
         imageSide: "right",
       },
       {
         heading: "Detect fast, respond faster",
         body:
-          "EDR/XDR detections par curated playbooks: isolate, investigate, rollback. Email security ke sath monthly phishing drills run karte hain jisse user behavior measurable rehta hai.",
+          "Curated EDR/XDR playbooks help you isolate, investigate, and recover quickly. Paired with email security and monthly phishing simulations, your team’s behavior becomes measurable—and risk drops over time.",
         image: "/images/illus/shield.svg",
         imageSide: "left",
       },
@@ -58,27 +59,37 @@ export default function Page() {
       "Policies & training outdated",
     ],
     outcomes: [
-      "Strong MFA/CA across users & admins",
-      "Rapid endpoint isolation & response",
-      "Immutable backups with test restores",
-      "Awareness program with visible drop in clicks",
+      "Strong MFA and Conditional Access across users and admins",
+      "Rapid endpoint isolation and incident response",
+      "Immutable backups with tested restores",
+      "An awareness program with a visible reduction in clicks",
     ],
     features: [
-      { icon: "Shield", title: "EDR/XDR", desc: "Managed detections, isolation & response." },
-      { icon: "KeySquare", title: "Identity & MFA", desc: "CA policies, PAM, JIT/JEA." },
-      { icon: "AlertTriangle", title: "Vulnerability Mgmt", desc: "Scans + remediation pipelines." },
-      { icon: "Fingerprint", title: "Email & Phishing", desc: "Advanced filtering + simulations." },
-      { icon: "Database", title: "Backup/Immutable", desc: "Air-gapped copy + quarterly restores." },
-      { icon: "BookOpen", title: "Policies & Training", desc: "Practical controls; mapped to CIS/NIST." },
+      { icon: "Shield", title: "EDR/XDR", desc: "Managed detections, isolation, and response." },
+      { icon: "KeySquare", title: "Identity & MFA", desc: "Conditional Access policies, PAM, JIT/JEA." },
+      { icon: "AlertTriangle", title: "Vulnerability Mgmt", desc: "Scans plus remediation pipelines." },
+      { icon: "Fingerprint", title: "Email & Phishing", desc: "Advanced filtering plus simulations." },
+      { icon: "Database", title: "Backup/Immutable", desc: "Air-gapped copy plus quarterly restores." },
+      { icon: "BookOpen", title: "Policies & Training", desc: "Practical controls mapped to CIS/NIST." },
     ],
-    gallery: ["/images/illus/screens-2.svg", "/images/illus/screens-3.svg", "/images/illus/screens-1.svg"],
+    gallery: [
+      "/images/illus/screens-2.svg",
+      "/images/illus/screens-3.svg",
+      "/images/illus/screens-1.svg",
+    ],
     steps: [
-      { title: "Baseline", desc: "Gap analysis vs CIS/NIST.", outputs: ["Scorecard", "Prioritized backlog"] },
-      { title: "Implement", desc: "MFA/CA, EDR, email security, backups.", outputs: ["Policies", "EDR rollout"] },
-      { title: "Operate", desc: "Alert tuning, vuln mgmt, phishing drills.", outputs: ["Monthly posture report"] },
-      { title: "Audit", desc: "Tabletops & evidence refresh.", outputs: ["IR plan", "Evidence pack"] },
+      { title: "Baseline", desc: "Gap analysis against CIS/NIST.", outputs: ["Scorecard", "Prioritized backlog"] },
+      { title: "Implement", desc: "MFA/CA, EDR, email security, and backups.", outputs: ["Policies", "EDR rollout"] },
+      { title: "Operate", desc: "Alert tuning, vulnerability management, phishing drills.", outputs: ["Monthly posture report"] },
+      { title: "Audit", desc: "Tabletops and evidence refresh.", outputs: ["IR plan", "Evidence pack"] },
     ],
-    deliverables: ["Security scorecard", "IR playbook", "CA/MFA policies", "Vuln report", "Awareness results"],
+    deliverables: [
+      "Security scorecard",
+      "IR playbook",
+      "Conditional Access / MFA policies",
+      "Vulnerability report",
+      "Awareness results",
+    ],
     tooling: ["EDR/XDR", "Email security", "SIEM/Logs", "M365/Entra", "Backup (immutable)"],
     timeline: [
       { when: "Weeks 1–2", title: "Baseline & quick wins", desc: "MFA/CA rollout" },
@@ -86,8 +97,8 @@ export default function Page() {
       { when: "Quarterly", title: "Tabletop & audit", desc: "Evidence refresh" },
     ],
     testimonials: [
-      { quote: "CA/MFA ke baad breach attempts near zero.", author: "M. Raza", role: "CFO", avatar: "/images/avatars/a3.svg", rating: 5 },
-      { quote: "Phishing drills ne team ko kaafi disciplined bana diya.", author: "H. Noor", role: "Ops Head", avatar: "/images/avatars/a4.svg", rating: 5 },
+      { quote: "After rolling out Conditional Access and MFA, attempted breaches dropped to near zero.", author: "M. Raza", role: "CFO", avatar: "/images/avatars/a3.svg", rating: 5 },
+      { quote: "Phishing drills made the team noticeably more disciplined and consistent.", author: "H. Noor", role: "Ops Head", avatar: "/images/avatars/a4.svg", rating: 5 },
     ],
   };
 
@@ -104,8 +115,8 @@ export default function Page() {
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
                 { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-                { "@type": "ListItem", position: 3, name: "Cybersecurity", item: "https://supremeitexperts.com/services/cybersecurity" }
-              ]
+                { "@type": "ListItem", position: 3, name: "Cybersecurity", item: "https://supremeitexperts.com/services/cybersecurity" },
+              ],
             },
             {
               "@context": "https://schema.org",
@@ -114,9 +125,9 @@ export default function Page() {
               serviceType: "Cybersecurity Services",
               provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
               areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Philadelphia, PA", "Wilmington, DE"],
-              url: "https://supremeitexperts.com/services/cybersecurity"
-            }
-          ])
+              url: "https://supremeitexperts.com/services/cybersecurity",
+            },
+          ]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

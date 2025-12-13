@@ -28,7 +28,7 @@ export default function Page() {
   const cfg = {
     title: "vCIO / Strategy",
     lede:
-      "Business goals ko pragmatic IT roadmap me translate karte hain — budgets, risks, vendors, aur KPIs ke saath.",
+      "We translate business goals into a practical IT roadmap—with budgets, risks, vendors, and KPIs you can actually act on.",
     hero: "/images/services/vcio-hero.svg",
     stats: [
       { kpi: "90-day", label: "Roadmaps" },
@@ -40,41 +40,41 @@ export default function Page() {
       {
         heading: "From wishlist to measurable outcomes",
         body:
-          "Har initiative ko revenue, efficiency ya risk ke sath tie karte hain. Is se spend defendable hota hai aur priorities clear hoti hain.",
+          "We tie every initiative to revenue, efficiency, or risk reduction. That makes spend defensible, priorities clear, and progress easy to track across leadership.",
         image: "/images/illus/roadmap.svg",
         imageSide: "right",
       },
       {
         heading: "Vendors under control",
         body:
-          "Stack ko right-size karke overlap hatate hain. Renewal calendar aur scorecards se surprises khatam.",
+          "We right-size your stack and remove overlap. With a renewal calendar and scorecards, surprises disappear and decisions become data-driven.",
         image: "/images/illus/vendors.svg",
         imageSide: "left",
       },
     ],
     features: [
-      { icon: "LineChart", title: "QBRs", desc: "KPIs, risks & health with leadership." },
-      { icon: "BookOpen", title: "Policies & Standards", desc: "Practical & auditable operating model." },
-      { icon: "BarChart3", title: "Budget & Forecast", desc: "12–18m spend, refresh & licensing." },
-      { icon: "Network", title: "Vendor Management", desc: "Right-size stack; remove overlap." },
-      { icon: "Sparkles", title: "Innovation Sprints", desc: "Pilot to prove value before commit." },
-      { icon: "Building2", title: "Board Reporting", desc: "Clear visuals & risk summaries." },
+      { icon: "LineChart", title: "QBRs", desc: "KPIs, risks, and health reviews with leadership." },
+      { icon: "BookOpen", title: "Policies & Standards", desc: "A practical and auditable operating model." },
+      { icon: "BarChart3", title: "Budget & Forecast", desc: "12–18 month view of spend, refresh, and licensing." },
+      { icon: "Network", title: "Vendor Management", desc: "Right-size the stack and remove overlap." },
+      { icon: "Sparkles", title: "Innovation Sprints", desc: "Pilot to prove value before committing." },
+      { icon: "Building2", title: "Board Reporting", desc: "Clear visuals and risk summaries for exec teams." },
     ],
     timeline: [
-      { when: "Month 1", title: "Baseline & KPIs", desc: "Scorecard + OKRs" },
-      { when: "Month 2", title: "Vendor & budget", desc: "Consolidation plan" },
-      { when: "Quarterly", title: "Board/QBR", desc: "Progress & risks" },
+      { when: "Month 1", title: "Baseline & KPIs", desc: "Scorecard and OKRs" },
+      { when: "Month 2", title: "Vendors & budget", desc: "Consolidation plan" },
+      { when: "Quarterly", title: "Board / QBR", desc: "Progress and risk review" },
     ],
     testimonials: [
       {
-        quote: "Strategy finally ties to revenue & risk — board loved it.",
+        quote: "Strategy finally ties to revenue and risk—the board loved it.",
         author: "N. Rahman",
         role: "CEO",
         avatar: "/images/avatars/a4.svg",
         rating: 5,
       },
       {
-        quote: "Spend predictable, vendors streamlined.",
+        quote: "Spend is predictable now, and the vendor stack is streamlined.",
         author: "R. Saleem",
         role: "COO",
         avatar: "/images/avatars/a3.svg",

@@ -1,7 +1,15 @@
 // components/PageHero.jsx
-export default function PageHero({ eyebrow, title, sub, compact = false, className = "" }) {
-  // compact=true gives a shorter hero (if you ever want it)
-  const pad = compact ? "pt-10 pb-8 md:pt-12 md:pb-10" : "pt-16 pb-12 md:pt-20 md:pb-16";
+export default function PageHero({
+  eyebrow,
+  title,
+  sub,
+  compact = false,
+  className = "",
+}) {
+  const pad = compact
+    ? "pt-10 pb-8 md:pt-12 md:pb-10"
+    : "pt-16 pb-12 md:pt-20 md:pb-16";
+
   return (
     <section className={`relative ${pad} ${className}`}>
       <div className="max-w-6xl mx-auto px-4">

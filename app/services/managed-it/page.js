@@ -2,7 +2,8 @@ import ServiceClientPage from "../_components/ServiceClientPage";
 
 export async function generateMetadata() {
   const title = "Managed IT — Supreme IT Experts";
-  const description = "Proactive helpdesk, patching, monitoring & reporting with clear SLAs.";
+  const description =
+    "Proactive helpdesk, patching, monitoring, and reporting with clear SLAs.";
   return {
     title,
     description,
@@ -27,7 +28,7 @@ export default function Page() {
   const cfg = {
     title: "Managed IT",
     lede:
-      "Hum aapka day-to-day IT chalatay hain: tickets, patching, monitoring, security baselines — taake aapki team ka focus business par rahe.",
+      "We run your day-to-day IT: tickets, patching, monitoring, and security baselines—so your team can stay focused on the business.",
     hero: "/images/services/managed-hero.svg",
     stats: [
       { kpi: "98%", label: "CSAT" },
@@ -39,14 +40,14 @@ export default function Page() {
       {
         heading: "Ticketing that actually solves problems",
         body:
-          "Hamari helpdesk workflows first-contact resolution par focus karti hain. Email/chat/portal se ticket aaye — triage SOPs se priority set hoti hai, aur automation repetitive tasks ko khud handle kar leti hai. Aapko monthly CSAT aur SLA dashboards miltay hain jisse leadership ko real picture nazar aati hai.",
+          "Our helpdesk workflows prioritize first-contact resolution. Whether a request comes in via email, chat, or portal, triage SOPs set the right priority fast, while automation handles repetitive work in the background. You get monthly CSAT reports and SLA dashboards—so leadership sees a clear, honest view of performance.",
         image: "/images/illus/helpdesk.svg",
         imageSide: "right",
       },
       {
         heading: "Standardized endpoints = fewer surprises",
         body:
-          "Windows/macOS devices par hardened baselines, auto patching, app catalogs aur EDR — is se drift kam hota hai, aur incidents ka blast radius control me rehta hai. Backup checks aur test restores ki wajah se recovery predictable hoti hai.",
+          "Hardened Windows and macOS baselines, automated patching, curated app catalogs, and endpoint protection reduce device drift and keep incidents contained. With backup verification and regular restore tests, recovery becomes predictable—not a guessing game.",
         image: "/images/illus/devices.svg",
         imageSide: "left",
       },
@@ -71,24 +72,69 @@ export default function Page() {
       { icon: "Users", title: "Lifecycle", desc: "Fast, compliant on/offboarding." },
       { icon: "LineChart", title: "Reporting", desc: "Ticket, asset, patch & risk KPIs." },
     ],
-    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
-    steps: [
-      { title: "Assess", desc: "Users, devices, identity, risks.", outputs: ["Access & tooling", "Initial risk register"] },
-      { title: "Stabilize", desc: "Patching, EDR, backup/DR, baselines.", outputs: ["Patch rings", "EDR policies"] },
-      { title: "Optimize", desc: "SOPs, automation, self-service.", outputs: ["KB + runbooks", "Automation backlog"] },
-      { title: "Grow", desc: "QBRs, roadmap, budget planning.", outputs: ["QBR deck", "OKRs"] },
+    gallery: [
+      "/images/illus/screens-1.svg",
+      "/images/illus/screens-2.svg",
+      "/images/illus/screens-3.svg",
     ],
-    deliverables: ["SOPs", "Asset inventory", "Monthly KPI pack", "Backup & security status", "Roadmap & budget view"],
-    tooling: ["RMM", "EDR/XDR", "Intune/Jamf", "M365/Workspace", "SharePoint/Drive", "Ticketing/CSAT"],
+    steps: [
+      {
+        title: "Assess",
+        desc: "Users, devices, identity, and risks.",
+        outputs: ["Access & tooling", "Initial risk register"],
+      },
+      {
+        title: "Stabilize",
+        desc: "Patching, EDR, backup/DR, and baselines.",
+        outputs: ["Patch rings", "EDR policies"],
+      },
+      {
+        title: "Optimize",
+        desc: "SOPs, automation, and self-service.",
+        outputs: ["Knowledge base + runbooks", "Automation backlog"],
+      },
+      {
+        title: "Grow",
+        desc: "QBRs, roadmap, and budget planning.",
+        outputs: ["QBR deck", "OKRs"],
+      },
+    ],
+    deliverables: [
+      "SOPs",
+      "Asset inventory",
+      "Monthly KPI pack",
+      "Backup & security status",
+      "Roadmap & budget view",
+    ],
+    tooling: [
+      "RMM",
+      "EDR/XDR",
+      "Intune/Jamf",
+      "M365/Workspace",
+      "SharePoint/Drive",
+      "Ticketing/CSAT",
+    ],
     timeline: [
       { when: "Week 1", title: "Access & discovery", desc: "Tools connected, quick wins" },
-      { when: "Weeks 2–3", title: "Stabilization sprint", desc: "Patch/EDR/Baselines + backup" },
+      { when: "Weeks 2–3", title: "Stabilization sprint", desc: "Patch/EDR/baselines + backup" },
       { when: "Week 4", title: "KPI + roadmap", desc: "Leadership metrics & plan" },
     ],
     compactTimeline: true,
     testimonials: [
-      { quote: "Onboarding ab hours me hota hai, days me nahi.", author: "S. Malik", role: "HR Lead", avatar: "/images/avatars/a1.svg", rating: 5 },
-      { quote: "Finally SLAs aur visibility hai — chaos khatam.", author: "A. Khan", role: "COO", avatar: "/images/avatars/a2.svg", rating: 5 },
+      {
+        quote: "Onboarding now takes hours, not days.",
+        author: "S. Malik",
+        role: "HR Lead",
+        avatar: "/images/avatars/a1.svg",
+        rating: 5,
+      },
+      {
+        quote: "We finally have SLAs and visibility—no more chaos.",
+        author: "A. Khan",
+        role: "COO",
+        avatar: "/images/avatars/a2.svg",
+        rating: 5,
+      },
     ],
   };
 

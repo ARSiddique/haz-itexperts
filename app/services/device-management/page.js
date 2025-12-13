@@ -2,7 +2,8 @@ import ServiceClientPage from "../_components/ServiceClientPage";
 
 export async function generateMetadata() {
   const title = "Device Management — Supreme IT Experts";
-  const description = "Zero-touch enrollment, hardening, patch & app mgmt, compliance and lifecycle.";
+  const description =
+    "Zero-touch enrollment, hardening, patch & app management, compliance, and lifecycle.";
   return {
     title,
     description,
@@ -27,7 +28,7 @@ export default function Page() {
   const cfg = {
     title: "Device Management",
     lede:
-      "Windows, macOS, iOS, Android — sab ke liye baselines, patching, app catalogs, aur compliance dashboards.",
+      "Windows, macOS, iOS, and Android—standardized baselines, patching, app catalogs, and compliance dashboards across your entire fleet.",
     hero: "/images/services/device-hero.svg",
     stats: [
       { kpi: "100%", label: "Disk encryption" },
@@ -37,36 +38,36 @@ export default function Page() {
     ],
     sections: [
       {
-        heading: "Zero-touch that delights",
+        heading: "Zero-touch that users actually love",
         body:
-          "Autopilot/Jamf/ABM se devices box se nikalte hi policy-compliant ban jate hain. HR/IT ke beech ka handoff clear checklists se smooth rehta hai.",
+          "With Autopilot, Jamf, and Apple Business Manager (ABM), devices become policy-compliant right out of the box. Clear onboarding checklists keep the HR-to-IT handoff smooth and predictable.",
         image: "/images/illus/enroll.svg",
         imageSide: "right",
       },
       {
         heading: "Compliance you can trust",
         body:
-          "Encryption, firewall, patch levels — sab dashboards me. Exceptions documented, time-bound aur review me rehte hain.",
+          "Encryption, firewall status, and patch levels are visible in dashboards at all times. Exceptions are documented, time-bound, and reviewed regularly—so compliance stays real, not just a checkbox.",
         image: "/images/illus/compliance.svg",
         imageSide: "left",
       },
     ],
     features: [
-      { icon: "Laptop", title: "MDM Enrollment", desc: "Autopilot/Jamf/ABM/Android Enterprise." },
-      { icon: "Lock", title: "Hardening", desc: "Encryption, firewall, allowlists, compliance rules." },
-      { icon: "Wrench", title: "Patch & Apps", desc: "Automated OS/app updates & catalogs." },
-      { icon: "AlertTriangle", title: "Lost/Stolen", desc: "Remote lock/wipe & chain-of-custody." },
-      { icon: "LineChart", title: "Compliance Reports", desc: "Drift, encryption, patch levels." },
-      { icon: "Users", title: "Lifecycle", desc: "Procure → assign → replace → dispose." },
+      { icon: "Laptop", title: "MDM Enrollment", desc: "Autopilot, Jamf, ABM, and Android Enterprise." },
+      { icon: "Lock", title: "Hardening", desc: "Encryption, firewall, allowlists, and compliance rules." },
+      { icon: "Wrench", title: "Patch & Apps", desc: "Automated OS/app updates and app catalogs." },
+      { icon: "AlertTriangle", title: "Lost/Stolen", desc: "Remote lock/wipe and chain-of-custody workflows." },
+      { icon: "LineChart", title: "Compliance Reports", desc: "Drift, encryption coverage, and patch levels." },
+      { icon: "Users", title: "Lifecycle", desc: "Procure → assign → replace → retire → dispose." },
     ],
     timeline: [
-      { when: "Week 1", title: "Baselines", desc: "Profiles & policies" },
-      { when: "Week 2", title: "Enrollment", desc: "Zero-touch & assets" },
-      { when: "Weeks 3–4", title: "Operate", desc: "Patch/app cadence" },
+      { when: "Week 1", title: "Baselines", desc: "Profiles and policies" },
+      { when: "Week 2", title: "Enrollment", desc: "Zero-touch setup and asset mapping" },
+      { when: "Weeks 3–4", title: "Operate", desc: "Patch and app cadence" },
     ],
     testimonials: [
-      { quote: "Compliance 98%+ — audits painless.", author: "H. Javed", role: "CISO", avatar: "/images/avatars/a1.svg", rating: 5 },
-      { quote: "BYOD bhi secure aur frictionless.", author: "N. Fatima", role: "IT Lead", avatar: "/images/avatars/a2.svg", rating: 5 },
+      { quote: "98%+ compliance—audits became painless.", author: "H. Javed", role: "CISO", avatar: "/images/avatars/a1.svg", rating: 5 },
+      { quote: "BYOD is secure and frictionless now.", author: "N. Fatima", role: "IT Lead", avatar: "/images/avatars/a2.svg", rating: 5 },
     ],
   };
 
@@ -83,8 +84,8 @@ export default function Page() {
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
                 { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-                { "@type": "ListItem", position: 3, name: "Device Management", item: "https://supremeitexperts.com/services/device-management" }
-              ]
+                { "@type": "ListItem", position: 3, name: "Device Management", item: "https://supremeitexperts.com/services/device-management" },
+              ],
             },
             {
               "@context": "https://schema.org",
@@ -93,9 +94,9 @@ export default function Page() {
               serviceType: "Endpoint & Mobile Device Management",
               provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
               areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Philadelphia, PA", "Wilmington, DE"],
-              url: "https://supremeitexperts.com/services/device-management"
-            }
-          ])
+              url: "https://supremeitexperts.com/services/device-management",
+            },
+          ]),
         }}
       />
       <ServiceClientPage cfg={cfg} />
