@@ -17,9 +17,9 @@ import {
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const title = "Areas We Serve | Remote Managed IT for Allentown, Lehigh Valley, Philadelphia & Wilmington";
+  const title = "Areas We Serve | Remote Managed IT for Allentown & Lehigh Valley";
   const description =
-    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, Emmaus, Greater Philadelphia, and Wilmington — with clear SLAs, fast response, and consistent service.";
+    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, and Emmaus — with clear SLAs, fast response, and consistent service.";
   const url = "https://supremeitexperts.com/areas";
 
   return {
@@ -53,18 +53,6 @@ const REGIONS = [
       { name: "Macungie, PA", slug: "macungie-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [62, 36] },
       { name: "Emmaus, PA", slug: "emmaus-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [61, 35] },
     ],
-  },
-  {
-    key: "philadelphia",
-    name: "Greater Philadelphia, PA",
-    color: "#a855f7",
-    cities: [{ name: "Philadelphia, PA", slug: "philadelphia-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [52, 46] }],
-  },
-  {
-    key: "delaware",
-    name: "Delaware",
-    color: "#22d3ee",
-    cities: [{ name: "Wilmington, DE", slug: "wilmington-de", tier: "A", sla: "P1 ≤ 15 min", pin: [40, 58] }],
   },
 ];
 
@@ -132,6 +120,7 @@ function RegionMap({ regions, active }) {
   return (
     <div className="relative rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.18),transparent_60%)]" />
+
       <svg viewBox="0 0 100 100" className="w-full h-[360px] md:h-[500px]">
         <g className="fill-white/6 stroke-white/10">
           <path d="M28,20 C34,16 46,14 58,18 C68,21 76,28 82,36 C88,44 92,54 88,64 C84,72 76,78 66,82 C58,84 48,85 40,82 C28,78 22,70 18,60 C14,50 16,40 20,32 C22,26 24,22 28,20 Z" />
@@ -191,7 +180,9 @@ export default async function AreasPage({ searchParams }) {
   const regionKey = (regionParam ?? "lehigh").toString();
   const q = (qParam ?? "").toString();
 
-  const region = REGIONS.find((r) => r.key === regionKey) ?? REGIONS[0];
+  const region =
+    REGIONS.find((r) => r.key === regionKey) ?? REGIONS.find((r) => r.key === "lehigh") ?? REGIONS[0];
+
   const nq = normalize(q);
   const order = { A: 0, B: 1, C: 2 };
 
@@ -226,14 +217,12 @@ export default async function AreasPage({ searchParams }) {
               name: "Supreme IT Experts",
               url: "https://supremeitexperts.com",
               description:
-                "Remote-first managed IT services and cybersecurity for small and mid-sized businesses across Allentown, Macungie, Emmaus, Philadelphia and Wilmington.",
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Philadelphia, PA", "Wilmington, DE"],
+                "Remote-first managed IT services and cybersecurity for small and mid-sized businesses across Allentown, Macungie, and Emmaus (Lehigh Valley).",
+              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
               serviceArea: [
                 { "@type": "City", name: "Allentown" },
                 { "@type": "City", name: "Macungie" },
                 { "@type": "City", name: "Emmaus" },
-                { "@type": "City", name: "Philadelphia" },
-                { "@type": "City", name: "Wilmington" },
               ],
             },
           ]),
@@ -242,8 +231,8 @@ export default async function AreasPage({ searchParams }) {
 
       <PageHero
         eyebrow="Areas we serve"
-        title="Remote-first IT support across PA & DE"
-        sub="We support SMBs across the Lehigh Valley, Greater Philadelphia, and Wilmington with fast remote response, clear SLAs, and consistent service."
+        title="Remote-first IT support across the Lehigh Valley"
+        sub="We support SMBs across Allentown, Macungie, and Emmaus with fast remote response, clear SLAs, and consistent service."
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
@@ -441,7 +430,7 @@ export default async function AreasPage({ searchParams }) {
                 </ul>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <div className="flex items-center gap-2 font-medium">
                   <Shield className="h-4 w-4 text-cyan-300" /> Security
                 </div>
@@ -527,10 +516,7 @@ export default async function AreasPage({ searchParams }) {
               >
                 Book a 20-min Assessment
               </Link>
-              <Link
-                href="/contact"
-                className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
-              >
+              <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20">
                 Talk to us
               </Link>
             </div>

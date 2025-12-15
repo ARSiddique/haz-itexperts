@@ -160,7 +160,8 @@ export default function Page() {
               name: "Managed IT",
               serviceType: "Managed IT Services",
               provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Philadelphia, PA", "Wilmington, DE"],
+              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+
               url: "https://supremeitexperts.com/services/managed-it"
             }
           ])

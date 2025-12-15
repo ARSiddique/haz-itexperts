@@ -193,7 +193,7 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
 export default function HomePage() {
   const areas = site?.areas?.length
     ? site.areas
-    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Wilmington, DE"];
+    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"];
   const brand = site?.name || "Supreme IT Experts";
 
   // ✅ schema sameAs should be an array (site.socials is usually an object)
@@ -721,7 +721,7 @@ export default function HomePage() {
       <Section id="areas" className="py-16">
         <Title
           k="Areas we serve"
-          sub="Onsite & remote IT support in Allentown, the Lehigh Valley & Wilmington"
+          sub="Onsite & remote IT support in Allentown & the Lehigh Valley"
         />
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {areas.map((a) => (

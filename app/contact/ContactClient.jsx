@@ -62,7 +62,7 @@ export default function ContactClient({ source = "contact-page" }) {
 
   // ✅ Remote-only (NO onsite, NO Pakistan)
   const address =
-    "Remote-only IT support across Allentown, Macungie, Emmaus, Greater Philadelphia & Wilmington.";
+    "Remote-only IT support across Allentown, Macungie, Emmaus & the Lehigh Valley.";
 
   const [copied, setCopied] = useState("");
   const copy = async (txt, key) => {

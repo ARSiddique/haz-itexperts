@@ -110,7 +110,8 @@ export default function Page() {
               name: "vCIO / Strategy",
               serviceType: "Virtual CIO & IT Strategy",
               provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
-              areaServed: ["Allentown, PA", "Philadelphia, PA", "Wilmington, DE", "Macungie, PA", "Emmaus, PA"],
+              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+
               url: "https://supremeitexperts.com/services/vcio-strategy",
             },
           ]),
