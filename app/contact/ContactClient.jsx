@@ -341,9 +341,12 @@ export default function ContactClient({ source = "contact-page" }) {
                 ))}
               </div>
               {/* ✅ No PKT here */}
-              <p className="text-xs text-slate-400 mt-2">
-                24/7 helpdesk. Business hours: Mon–Fri 9:00 AM – 6:00 PM ET.
-              </p>
+            <p className="text-xs text-slate-400 mt-2">
+  24/7 helpdesk. Business hours:{" "}
+  {site.businessHours?.text || "Mon–Fri 9:00 AM – 6:00 PM ET"}
+</p>
+
+
             </div>
 
             {/* Channels */}

@@ -59,7 +59,8 @@ export default function Footer({ className = "" }) {
             </div>
 
             <div className="text-xs text-slate-500">
-              Mon–Fri 8am–6pm • 24/7 Emergency Support
+             {site.businessHours?.text || "Mon–Fri 9:00 AM – 6:00 PM ET"} • 24/7 Emergency Support
+
             </div>
           </div>
 
