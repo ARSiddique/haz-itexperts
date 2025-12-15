@@ -13,7 +13,7 @@ export default function PlanCard(){
   return (
     <div id="plan" className="card p-6">
       <div className="flex items-baseline justify-between gap-4 flex-wrap">
-        <h3 className="text-xl font-semibold">HaziCare™ Managed IT Plan</h3>
+        <h3 className="text-xl font-semibold">SupremeCare™ Managed IT Plan</h3>
         <span className="text-xs text-slate-400">Add-ons: vCISO · Compliance · SOC/SIEM · Projects</span>
       </div>
       <ul className="mt-4 grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-300">

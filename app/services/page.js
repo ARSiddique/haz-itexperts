@@ -190,7 +190,7 @@ export default async function ServicesPage() {
       <PageHero
         eyebrow="Services"
         title="Everything you need for reliable, secure IT"
-        sub="Choose fully managed or co-managed. Start with HaziCare™ Core and add security modules as you scale."
+        sub="Choose fully managed or co-managed. Start with SupremeCare™ Core and add security modules as you scale."
       />
 
       {/* Short intro with internal links */}
@@ -208,7 +208,7 @@ export default async function ServicesPage() {
         </p>
         <p>
           To see where we can come onsite, visit{" "}
-          <Link href="/areas-we-serve" className="text-cyan-300 hover:underline">
+          <Link href="/areas" className="text-cyan-300 hover:underline">
             Areas we serve
           </Link>
           . For common questions, check the{" "}
@@ -270,7 +270,7 @@ export default async function ServicesPage() {
                     <Icon className="h-5 w-5 text-cyan-300" />
                   </span>
                   <h3 className="font-semibold text-lg">{title}</h3>
-                  <Badge>Included in HaziCare™ Core</Badge>
+                  <Badge>Included in SupremeCare™ Core</Badge>
                 </div>
 
                 <p className="text-sm text-slate-300 mt-2">{desc}</p>
@@ -314,7 +314,7 @@ export default async function ServicesPage() {
               <thead className="bg-white/5">
                 <tr>
                   <th className="text-left p-3">Capability</th>
-                  <th className="p-3">HaziCare™</th>
+                  <th className="p-3">SupremeCare™</th>
                   <th className="p-3">Add-on</th>
                   <th className="p-3">Project</th>
                 </tr>

@@ -35,7 +35,7 @@ export default function PricingRoi() {
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">HaziCare™</div>
+          <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">SupremeCare™</div>
           <h3 className="text-xl font-semibold">Managed IT plan & simple add-ons</h3>
         </div>
         {/* billing toggle */}
@@ -57,7 +57,7 @@ export default function PricingRoi() {
       <div className="grid md:grid-cols-3 gap-4 mt-6">
         {[
           {
-            t: "HaziCare™ Core",
+            t: "SupremeCare™ Core",
             p: price.perUser, u: "per user",
             list: ["Helpdesk & SLAs", "Patching & monitoring", "EDR/XDR baseline", "Leadership KPIs"],
             highlight: true,
