@@ -6,7 +6,7 @@ import { site } from "@/lib/siteConfig";
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = site?.url || "https://supremeitexperts.com";
 
   const title = `Gallery — ${brand}`;
   const description =
@@ -16,25 +16,15 @@ export async function generateMetadata() {
     metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: `${baseUrl}/gallery` },
+    alternates: { canonical: "/gallery" },
     robots: { index: true, follow: true },
-
     openGraph: {
       title,
       description,
       type: "website",
       url: `${baseUrl}/gallery`,
-      siteName: brand,
-      images: [
-        {
-          url: `${baseUrl}/og-image.png?v=7`,
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Gallery`,
-        },
-      ],
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
@@ -44,8 +34,7 @@ export async function generateMetadata() {
   };
 }
 
-// Static data is safe to live on the server.
-// (Make sure the files exist in /public/media)
+// Static data (Make sure files exist in /public/media)
 const ALL_ITEMS = [
   { src: "/media/hero-1.jpg", t: "Fiber uplink test", tag: "Monitoring" },
   { src: "/media/hero-2.jpg", t: "Edge optics", tag: "Security" },
@@ -62,8 +51,7 @@ const ALL_ITEMS = [
 ];
 
 export default function GalleryPage() {
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = site?.url || "https://supremeitexperts.com";
 
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
@@ -74,39 +62,38 @@ export default function GalleryPage() {
     ],
   };
 
-  // Optional but useful: tells Google this page is a collection/gallery
-  const collectionSchema = {
+  const gallerySchema = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: `Gallery — ${brand}`,
+    "@type": "ImageGallery",
+    name: "Supreme IT Experts Gallery",
     url: `${baseUrl}/gallery`,
-    description:
-      "Racks, refreshes, dashboards, field jobs — a candid look at how we keep SMEs running.",
-    isPartOf: {
-      "@type": "WebSite",
-      name: brand,
-      url: baseUrl,
-    },
+    image: ALL_ITEMS.map((x) => ({
+      "@type": "ImageObject",
+      contentUrl: `${baseUrl}${x.src}`,
+      caption: x.t,
+    })),
   };
 
   return (
     <>
-      {/* Breadcrumbs + CollectionPage JSON-LD */}
+      {/* Breadcrumbs JSON-LD */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionSchema]),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
       />
 
-      {/* HERO */}
+      {/* Gallery JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gallerySchema) }}
+      />
+
       <PageHero
         eyebrow="GALLERY"
         title="Real work. Real environments."
         sub="Racks, refreshes, dashboards, field jobs — a candid look at how we keep SMEs running."
       />
 
-      {/* Client island for interactivity */}
       <GalleryClient items={ALL_ITEMS} />
     </>
   );
