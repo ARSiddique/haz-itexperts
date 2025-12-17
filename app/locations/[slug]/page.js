@@ -19,25 +19,40 @@ export async function generateMetadata({ params }) {
   if (!loc) return {};
 
   const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+
   const title = `${loc.title} | ${brand}`;
   const description = loc.lede;
+  const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: `/locations/${loc.slug}` },
+    alternates: { canonical },
+    robots: { index: true, follow: true },
+
     openGraph: {
       title,
       description,
       type: "website",
-      url: `/locations/${loc.slug}`,
-      images: ["/og-image.png?v=7"],
+      url: canonical,
+      siteName: brand,
+      images: [
+        {
+          url: `${baseUrl}/og-image.png?v=7`,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — ${loc.city}, ${loc.state}`,
+        },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
   };
 }
@@ -50,7 +65,9 @@ export default async function LocationPage({ params }) {
   if (!loc) notFound();
 
   const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const phone = site?.phone || "+1-610-500-9209";
+  const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   const services = [
     { t: "Managed IT", href: "/services/managed-it" },
@@ -61,36 +78,57 @@ export default async function LocationPage({ params }) {
     { t: "vCIO / Strategy", href: "/services/vcio-strategy" },
   ];
 
+  // Breadcrumb schema
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Areas we serve", item: `${baseUrl}/areas` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `${loc.city}, ${loc.state}`,
+        item: canonical,
+      },
+    ],
+  };
+
+  // LocalBusiness (remote-first coverage page)
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": ["LocalBusiness", "ITService"],
+    name: brand,
+    url: canonical,
+    telephone: phone,
+    areaServed: [`${loc.city}, ${loc.state}`],
+    serviceType: [
+      "Managed IT Services",
+      "Cybersecurity",
+      "Cloud Services",
+      "Device Management",
+      "IT Consulting",
+    ],
+  };
+
+  // WebPage schema for the location landing page
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `${loc.city}, ${loc.state} — IT Support`,
+    url: canonical,
+    description: loc.lede,
+    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    about: { "@type": "Thing", name: "Managed IT & Cybersecurity" },
+  };
+
   return (
     <>
-      {/* Breadcrumbs + LocalBusiness JSON-LD */}
+      {/* Breadcrumbs + LocalBusiness + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Areas we serve", item: "https://supremeitexperts.com/areas" },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: `${loc.city}, ${loc.state}`,
-                  item: `https://supremeitexperts.com/locations/${loc.slug}`,
-                },
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": ["LocalBusiness", "ITService"],
-              name: brand,
-              url: `https://supremeitexperts.com/locations/${loc.slug}`,
-              telephone: phone,
-              areaServed: [`${loc.city}, ${loc.state}`],
-            },
-          ]),
+          __html: JSON.stringify([breadcrumbsSchema, localBusinessSchema, webPageSchema]),
         }}
       />
 
@@ -203,7 +241,7 @@ export default async function LocationPage({ params }) {
                 Areas we serve <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/contact?type=assessment&source=location"
+                href={`/contact?type=assessment&source=location-${loc.slug}`}
                 className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
               >
                 Request an assessment <ArrowRight className="h-4 w-4" />

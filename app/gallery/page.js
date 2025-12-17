@@ -1,12 +1,48 @@
 // app/gallery/page.jsx
 import PageHero from "@/components/PageHero";
 import GalleryClient from "./GalleryClient";
+import { site } from "@/lib/siteConfig";
 
-export const metadata = {
-  title: "Gallery — Supreme IT Experts",
-  description:
-    "Racks, refreshes, dashboards, field jobs — a candid look at how we keep SMEs running.",
-};
+// --- SEO (server-side)
+export async function generateMetadata() {
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+
+  const title = `Gallery — ${brand}`;
+  const description =
+    "Racks, refreshes, dashboards, field jobs — a candid look at how we keep SMEs running.";
+
+  return {
+    metadataBase: new URL(baseUrl),
+    title,
+    description,
+    alternates: { canonical: `${baseUrl}/gallery` },
+    robots: { index: true, follow: true },
+
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `${baseUrl}/gallery`,
+      siteName: brand,
+      images: [
+        {
+          url: `${baseUrl}/og-image.png?v=7`,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Gallery`,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${baseUrl}/og-image.png?v=7`],
+    },
+  };
+}
 
 // Static data is safe to live on the server.
 // (Make sure the files exist in /public/media)
@@ -26,8 +62,43 @@ const ALL_ITEMS = [
 ];
 
 export default function GalleryPage() {
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const brand = site?.name || "Supreme IT Experts";
+
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Gallery", item: `${baseUrl}/gallery` },
+    ],
+  };
+
+  // Optional but useful: tells Google this page is a collection/gallery
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `Gallery — ${brand}`,
+    url: `${baseUrl}/gallery`,
+    description:
+      "Racks, refreshes, dashboards, field jobs — a candid look at how we keep SMEs running.",
+    isPartOf: {
+      "@type": "WebSite",
+      name: brand,
+      url: baseUrl,
+    },
+  };
+
   return (
     <>
+      {/* Breadcrumbs + CollectionPage JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([breadcrumbsSchema, collectionSchema]),
+        }}
+      />
+
       {/* HERO */}
       <PageHero
         eyebrow="GALLERY"

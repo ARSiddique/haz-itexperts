@@ -1,12 +1,13 @@
 // app/about/page.js
-
+import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import { site } from "@/lib/siteConfig";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
   const title = "About — Supreme IT Experts";
   const description =
-    "Learn who we are, what we do, and how we support SMBs with reliable managed IT and cybersecurity.";
+    "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.";
   return {
     title,
     description,
@@ -29,6 +30,8 @@ export async function generateMetadata() {
 }
 
 export default function AboutPage() {
+  const brand = site?.name || "Supreme IT Experts";
+
   return (
     <>
       {/* Breadcrumbs JSON-LD */}
@@ -39,9 +42,19 @@ export default function AboutPage() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-              { "@type": "ListItem", position: 2, name: "About", item: "https://supremeitexperts.com/about" }
-            ]
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://supremeitexperts.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "About",
+                item: "https://supremeitexperts.com/about",
+              },
+            ],
           }),
         }}
       />
@@ -57,20 +70,38 @@ export default function AboutPage() {
         <section>
           <h2 className="text-xl font-semibold">Who we are</h2>
           <p className="mt-3 text-slate-300 leading-7">
-            Supreme IT Experts is a small, senior-led team that helps
-            businesses keep their IT stable and secure. We focus on clear
-            processes, documentation and simple reporting so owners always
-            know what is happening.
+            {brand} is a small, senior-led team helping small and mid-sized
+            businesses keep IT stable, secure and predictable. We serve teams in
+            Allentown and the wider Lehigh Valley with clear processes,
+            documentation and reporting—so owners always know what’s happening.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">How we work</h2>
-          <ul className="mt-3 space-y-2 text-slate-300 text-sm">
-            <li>• Security-first configuration for devices, email and accounts.</li>
-            <li>• Planned changes with communication before and after work.</li>
-            <li>• Simple, fixed-fee support for day-to-day issues.</li>
+          <ul className="mt-3 space-y-2 text-slate-300 text-sm list-disc pl-5">
+            <li>Security-first configuration for devices, email and accounts.</li>
+            <li>Planned changes with communication before and after work.</li>
+            <li>Simple, fixed-fee support for day-to-day issues.</li>
           </ul>
+
+          <p className="mt-4 text-slate-300 text-sm leading-7">
+            If you want details on what’s included, see our{" "}
+            <Link
+              href="/services"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              IT services
+            </Link>{" "}
+            and how we structure{" "}
+            <Link
+              href="/services/managed-it"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              managed IT
+            </Link>
+            .
+          </p>
         </section>
 
         <section>
@@ -78,8 +109,41 @@ export default function AboutPage() {
           <p className="mt-3 text-slate-300 text-sm leading-7">
             Our goal is that your IT “just works” so your team can focus on
             customers and growth. When something breaks, you get a clear
-            response, a simple explanation and a fix.
+            response, a simple explanation and a fix—with real accountability
+            behind it.
           </p>
+        </section>
+
+        {/* ✅ CTA block */}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
+          <h2 className="text-lg font-semibold">Talk to a real engineer</h2>
+          <p className="mt-2 text-sm text-slate-300 leading-7 max-w-2xl">
+            If you’re evaluating IT support or want a quick second opinion on
+            security gaps, reach out—no pressure.
+          </p>
+
+          <div className="mt-5 flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/get-quote"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
+            >
+              Get a Quote
+            </Link>
+
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 hover:border-cyan-300/30 hover:text-cyan-300 transition"
+            >
+              Contact us
+            </Link>
+
+            <Link
+              href="/services"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 hover:border-cyan-300/30 hover:text-cyan-300 transition"
+            >
+              View services
+            </Link>
+          </div>
         </section>
       </main>
     </>

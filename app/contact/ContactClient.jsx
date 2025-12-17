@@ -32,10 +32,8 @@ const Input = ({ error, className, ...props }) => (
   <input
     {...props}
     className={cx(
-      "rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error
-        ? "border-red-500/70 focus:border-red-400"
-        : "border-white/20 focus:border-cyan-300/50",
+      "rounded-lg bg-transparent border px-3 py-2 text-sm outline-none w-full",
+      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
@@ -46,23 +44,26 @@ const TextArea = ({ error, className, ...props }) => (
     {...props}
     className={cx(
       "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error
-        ? "border-red-500/70 focus:border-red-400"
-        : "border-white/20 focus:border-cyan-300/50",
+      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
 );
 
-// -------------------------------------------------------
+const cleanTel = (p) => {
+  const s = String(p || "");
+  const keep = s.replace(/[^+\d]/g, "");
+  if (!keep) return "";
+  return keep.startsWith("+") ? keep : `+${keep}`;
+};
 
-export default function ContactClient({ source = "contact-page" }) {
+export default function ContactClient({ source = "contact-page", mode = "full", tz = "America/New_York" }) {
   const email = site?.email ?? "supremeitexperts@gmail.com";
   const phone = site?.phone ?? "+1 610-500-9209";
+  const telHref = cleanTel(phone);
 
   // ✅ Remote-only (NO onsite, NO Pakistan)
-  const address =
-    "Remote-only IT support across Allentown, Macungie, Emmaus & the Lehigh Valley.";
+  const address = "Remote-only IT support across Allentown, Macungie, Emmaus & the Lehigh Valley.";
 
   const [copied, setCopied] = useState("");
   const copy = async (txt, key) => {
@@ -94,7 +95,6 @@ export default function ContactClient({ source = "contact-page" }) {
 
   const [errors, setErrors] = useState({});
 
-  // helper – field update + error clear
   const updateField = (field, value) => {
     setForm((f) => ({ ...f, [field]: value }));
     setErrors((err) => ({ ...err, [field]: "" }));
@@ -114,7 +114,6 @@ export default function ContactClient({ source = "contact-page" }) {
   // ---------- Validation per step ----------
   const validateStep1 = () => {
     const nextErrors = {};
-
     if (!form.name.trim()) nextErrors.name = "Please enter your name.";
     if (!form.company.trim()) nextErrors.company = "Please enter your company name.";
 
@@ -164,10 +163,7 @@ export default function ContactClient({ source = "contact-page" }) {
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name: form.name,
           email: form.workEmail,
@@ -204,6 +200,7 @@ export default function ContactClient({ source = "contact-page" }) {
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(
         "Website Contact — " + form.company
       )}&body=${body}`;
+
       setSending(false);
       setDone(true);
     }
@@ -246,15 +243,10 @@ export default function ContactClient({ source = "contact-page" }) {
           <div className="grid lg:grid-cols-3 gap-4">
             {/* Direct */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
-                Direct
-              </div>
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Direct</div>
 
               <div className="mt-2 text-sm">
-                <a
-                  className="inline-flex items-center gap-2 hover:text-cyan-300 transition"
-                  href={`mailto:${email}`}
-                >
+                <a className="inline-flex items-center gap-2 hover:text-cyan-300 transition" href={`mailto:${email}`}>
                   <Mail className="w-4 h-4" /> {email}
                 </a>
                 <button
@@ -275,10 +267,7 @@ export default function ContactClient({ source = "contact-page" }) {
               </div>
 
               <div className="mt-1 text-sm">
-                <a
-                  className="inline-flex items-center gap-2 hover:text-cyan-300 transition"
-                  href={`tel:${phone.replaceAll(" ", "")}`}
-                >
+                <a className="inline-flex items-center gap-2 hover:text-cyan-300 transition" href={telHref ? `tel:${telHref}` : "#"}>
                   <Phone className="w-4 h-4" /> {phone}
                 </a>
                 <button
@@ -312,7 +301,7 @@ export default function ContactClient({ source = "contact-page" }) {
                   Get Quote
                 </Link>
                 <Link
-                  href="/assessment"
+                  href="/contact?type=assessment"
                   className="rounded-lg px-3 py-2 text-sm bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center gap-2"
                 >
                   Free IT assessment <ArrowRight className="h-4 w-4" />
@@ -322,38 +311,30 @@ export default function ContactClient({ source = "contact-page" }) {
 
             {/* SLA */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
-                SLA promise
-              </div>
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">SLA promise</div>
+
               <div className="mt-2 grid grid-cols-3 gap-3 text-sm">
                 {[
                   ["P1", "≤ 15 min"],
                   ["P2", "≤ 1 hr"],
                   ["P3", "Same day"],
                 ].map(([k, v]) => (
-                  <div
-                    key={k}
-                    className="rounded-xl border border-white/10 bg-white/5 p-3 text-center"
-                  >
+                  <div key={k} className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
                     <div className="text-cyan-300 font-semibold">{k}</div>
                     <div className="text-slate-300 text-xs">{v} response</div>
                   </div>
                 ))}
               </div>
-              {/* ✅ No PKT here */}
-            <p className="text-xs text-slate-400 mt-2">
-  24/7 helpdesk. Business hours:{" "}
-  {site.businessHours?.text || "Mon–Fri 9:00 AM – 6:00 PM ET"}
-</p>
 
-
+              <p className="text-xs text-slate-400 mt-2">
+                24/7 helpdesk. Business hours:{" "}
+                {site.businessHours?.text || "Mon–Fri 9:00 AM – 6:00 PM ET"}
+              </p>
             </div>
 
             {/* Channels */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
-                Channels
-              </div>
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Channels</div>
               <ul className="mt-2 text-sm text-slate-300 space-y-1">
                 <li className="flex items-center gap-2">
                   <MessageSquareText className="h-4 w-4 text-cyan-300" /> Email, portal, phone
@@ -361,7 +342,6 @@ export default function ContactClient({ source = "contact-page" }) {
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-cyan-300" /> Security incidents triaged as P1
                 </li>
-                {/* ✅ No onsite mention */}
                 <li className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-cyan-300" /> Remote support anywhere in the US
                 </li>
@@ -380,21 +360,12 @@ export default function ContactClient({ source = "contact-page" }) {
                   <div
                     className={cx(
                       "size-6 grid place-items-center rounded-full border",
-                      step >= i + 1
-                        ? "border-cyan-300/40 bg-cyan-400/10 text-cyan-300"
-                        : "border-white/10 text-slate-400"
+                      step >= i + 1 ? "border-cyan-300/40 bg-cyan-400/10 text-cyan-300" : "border-white/10 text-slate-400"
                     )}
                   >
                     {i + 1}
                   </div>
-                  <span
-                    className={cx(
-                      "hidden sm:inline",
-                      step >= i + 1 ? "text-slate-200" : "text-slate-400"
-                    )}
-                  >
-                    {t}
-                  </span>
+                  <span className={cx("hidden sm:inline", step >= i + 1 ? "text-slate-200" : "text-slate-400")}>{t}</span>
                   {i < 2 && <span className="w-6 h-[2px] bg-white/10 rounded-full" />}
                 </div>
               ))}
@@ -422,9 +393,7 @@ export default function ContactClient({ source = "contact-page" }) {
                       onChange={(e) => updateField("company", e.target.value)}
                       error={!!errors.company}
                     />
-                    {errors.company && (
-                      <p className="mt-1 text-xs text-red-400">{errors.company}</p>
-                    )}
+                    {errors.company && <p className="mt-1 text-xs text-red-400">{errors.company}</p>}
                   </div>
 
                   <div>
@@ -436,9 +405,7 @@ export default function ContactClient({ source = "contact-page" }) {
                       onChange={(e) => updateField("workEmail", e.target.value)}
                       error={!!errors.workEmail}
                     />
-                    {errors.workEmail && (
-                      <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>
-                    )}
+                    {errors.workEmail && <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>}
                   </div>
 
                   <div>
@@ -462,9 +429,7 @@ export default function ContactClient({ source = "contact-page" }) {
                         onChange={(e) => updateField("users", e.target.value)}
                         className={cx(
                           "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-                          errors.users
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/20 focus:border-cyan-300/50"
+                          errors.users ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50"
                         )}
                       >
                         {["10-24", "25-50", "51-100", "101-200", "200+"].map((x) => (
@@ -484,9 +449,7 @@ export default function ContactClient({ source = "contact-page" }) {
                         onChange={(e) => updateField("location", e.target.value)}
                         error={!!errors.location}
                       />
-                      {errors.location && (
-                        <p className="mt-1 text-xs text-red-400">{errors.location}</p>
-                      )}
+                      {errors.location && <p className="mt-1 text-xs text-red-400">{errors.location}</p>}
                     </div>
 
                     <div>
@@ -517,15 +480,7 @@ export default function ContactClient({ source = "contact-page" }) {
                   <div className="mt-2">
                     <label className="text-xs text-slate-400">Current stack</label>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {[
-                        "Microsoft 365",
-                        "Google Workspace",
-                        "Windows",
-                        "macOS",
-                        "Android/iOS",
-                        "Servers/AD",
-                        "Firewalls/Wi-Fi",
-                      ].map((x) => (
+                      {["Microsoft 365", "Google Workspace", "Windows", "macOS", "Android/iOS", "Servers/AD", "Firewalls/Wi-Fi"].map((x) => (
                         <StackChip key={x} label={x} />
                       ))}
                     </div>
@@ -544,15 +499,10 @@ export default function ContactClient({ source = "contact-page" }) {
                       onChange={(e) => updateField("message", e.target.value)}
                       error={!!errors.message}
                     />
-                    {errors.message && (
-                      <p className="mt-1 text-xs text-red-400">{errors.message}</p>
-                    )}
+                    {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
                     <div className="mt-2 text-xs text-slate-400 flex items-center gap-2">
                       <Paperclip className="h-3.5 w-3.5 text-cyan-300" /> Attachments? Email to{" "}
-                      <a
-                        className="underline decoration-dotted underline-offset-2"
-                        href={`mailto:${email}`}
-                      >
+                      <a className="underline decoration-dotted underline-offset-2" href={`mailto:${email}`}>
                         {email}
                       </a>
                     </div>
@@ -560,11 +510,7 @@ export default function ContactClient({ source = "contact-page" }) {
 
                   <label className="text-xs flex flex-col gap-1 text-slate-300 mt-2">
                     <span className="inline-flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={form.consent}
-                        onChange={(e) => updateField("consent", e.target.checked)}
-                      />
+                      <input type="checkbox" checked={form.consent} onChange={(e) => updateField("consent", e.target.checked)} />
                       You agree to be contacted about this request.
                     </span>
                     {errors.consent && <span className="text-xs text-red-400">{errors.consent}</span>}
@@ -604,9 +550,7 @@ export default function ContactClient({ source = "contact-page" }) {
                       disabled={sending}
                       className={cx(
                         "rounded-lg px-5 py-2.5 text-sm font-semibold border transition inline-flex items-center gap-2",
-                        sending
-                          ? "border-white/10 text-slate-400"
-                          : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                        sending ? "border-white/10 text-slate-400" : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                       )}
                     >
                       {sending ? "Sending…" : "Send"} {!sending && <ArrowRight className="h-4 w-4" />}
@@ -617,8 +561,7 @@ export default function ContactClient({ source = "contact-page" }) {
 
               {done && (
                 <div className="mt-4 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm">
-                  Thanks! We’ve received your request.{" "}
-                  <span className="text-emerald-300">Target response {sla.eta}</span>.
+                  Thanks! We’ve received your request. <span className="text-emerald-300">Target response {sla.eta}</span>.
                 </div>
               )}
             </form>
@@ -633,10 +576,7 @@ export default function ContactClient({ source = "contact-page" }) {
               [Server, "Infra & Cloud", "Monitoring, identity, backup/DR"],
               [ShieldCheck, "Security", "EDR/XDR, email security, backup/DR"],
             ].map(([Icon, t, d]) => (
-              <div
-                key={t}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-300/30 transition"
-              >
+              <div key={t} className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-300/30 transition">
                 <div className="flex items-center gap-2">
                   <span className="grid place-items-center size-9 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
                     <Icon className="h-5 w-5 text-cyan-300" />
@@ -678,13 +618,11 @@ export default function ContactClient({ source = "contact-page" }) {
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold">Prefer a quick call?</h3>
-              <p className="text-slate-300">
-                15-min no-pressure assessment — we’ll map gaps and next steps.
-              </p>
+              <p className="text-slate-300">15-min no-pressure assessment — we’ll map gaps and next steps.</p>
             </div>
             <div className="flex gap-3">
               <a
-                href={`tel:${phone.replaceAll(" ", "")}`}
+                href={telHref ? `tel:${telHref}` : "#"}
                 className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
               >
                 Call now <Phone className="h-4 w-4" />

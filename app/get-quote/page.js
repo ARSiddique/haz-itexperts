@@ -2,13 +2,19 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import QuoteFormClient from "./QuoteFormClient";
+import { site } from "@/lib/siteConfig";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const title = "Get a Quote — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = site?.url || "https://supremeitexperts.com";
+
+  const title = `Get a Quote — ${brand}`;
   const description =
     "See how our pricing works and request a tailored quote for your team, tools and risk profile.";
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
     alternates: { canonical: "/get-quote" },
@@ -17,14 +23,14 @@ export async function generateMetadata() {
       title,
       description,
       type: "website",
-      url: "/get-quote",
-      images: ["/og-image.png?v=7"],
+      url: `${baseUrl}/get-quote`,
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
   };
 }
@@ -66,6 +72,8 @@ const PLANS = [
 ];
 
 export default function GetQuotePage() {
+  const baseUrl = site?.url || "https://supremeitexperts.com";
+
   return (
     <>
       {/* Breadcrumbs JSON-LD */}
@@ -80,13 +88,13 @@ export default function GetQuotePage() {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://supremeitexperts.com/",
+                item: `${baseUrl}/`,
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Get a Quote",
-                item: "https://supremeitexperts.com/get-quote",
+                item: `${baseUrl}/get-quote`,
               },
             ],
           }),
@@ -118,15 +126,9 @@ export default function GetQuotePage() {
               key={plan.name}
               className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col"
             >
-              <h2 className="text-lg font-semibold text-slate-100">
-                {plan.name}
-              </h2>
-              <p className="mt-1 text-xs text-cyan-300/90">
-                {plan.priceNote}
-              </p>
-              <p className="mt-3 text-sm text-slate-300">
-                {plan.description}
-              </p>
+              <h2 className="text-lg font-semibold text-slate-100">{plan.name}</h2>
+              <p className="mt-1 text-xs text-cyan-300/90">{plan.priceNote}</p>
+              <p className="mt-3 text-sm text-slate-300">{plan.description}</p>
               <ul className="mt-3 space-y-1.5 text-xs text-slate-300">
                 {plan.includes.map((line) => (
                   <li key={line}>• {line}</li>

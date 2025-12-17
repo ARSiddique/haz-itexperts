@@ -19,6 +19,7 @@ import {
   LineChart,
   Image as ImageIcon,
   Sparkles,
+  Phone,
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -199,6 +200,9 @@ export default function HomePage() {
   // ✅ schema sameAs should be an array (site.socials is usually an object)
   const sameAs = Object.values(site?.socials || {}).filter(Boolean);
 
+  const phoneRaw = site?.phone || "+1-610-500-9209";
+  const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
+
   const SERVICES = [
     {
       Icon: Shield,
@@ -244,6 +248,14 @@ export default function HomePage() {
     },
   ];
 
+  // Areas → internal links (SEO boost)
+  const areaLinks = {
+    "Allentown, PA": "/locations/allentown-pa",
+    "Macungie, PA": "/locations/macungie-pa",
+    "Emmaus, PA": "/locations/emmaus-pa",
+    "Lehigh Valley, PA": "/areas",
+  };
+
   return (
     <div className="relative overflow-hidden bg-[#0b1220]">
       {/* ✅ ONE global background for whole page (seamless) */}
@@ -266,11 +278,7 @@ export default function HomePage() {
               "@id": "https://supremeitexperts.com/#website",
               name: brand,
               url: "https://supremeitexperts.com/",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: "https://supremeitexperts.com/search?q={query}",
-                "query-input": "required name=query",
-              },
+              // NOTE: SearchAction removed until a real /search page exists
             },
             {
               "@context": "https://schema.org",
@@ -321,7 +329,8 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
-              Managed IT Services in Allentown, PA — Fast, Friendly, Fixed-Fee
+              Managed IT Services in Allentown &amp; Lehigh Valley, PA — Fast,
+              Friendly, Fixed-Fee
             </h1>
 
             <p className="mt-4 text-base md:text-lg text-slate-200">
@@ -426,7 +435,7 @@ export default function HomePage() {
                 className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/30"
                 data-reveal="up"
               >
-                <div className="font-medium text-sm">{t}</div>
+                <h3 className="font-medium text-sm">{t}</h3>
                 <p className="text-slate-300 text-xs mt-1">{d}</p>
               </div>
             ))}
@@ -452,7 +461,7 @@ export default function HomePage() {
             More about us <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            href="/get-quote"
+            href="/assessment"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
           >
             Free IT Assessment <ArrowRight className="h-4 w-4" />
@@ -717,22 +726,30 @@ export default function HomePage() {
       </Section>
 
       {/* ───────────── AREAS ───────────── */}
-      {/* ✅ pb-24 removed -> py-16 (gap fix) */}
       <Section id="areas" className="py-16">
         <Title
           k="Areas we serve"
           sub="Onsite & remote IT support in Allentown & the Lehigh Valley"
         />
+
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {areas.map((a) => (
-            <div
-              key={a}
-              className="rounded-2xl border border-white/10 bg-white/5 p-5 text-center transition hover:-translate-y-0.5 hover:border-cyan-300/30"
-              data-reveal="up"
-            >
-              {a}
-            </div>
-          ))}
+          {areas.map((a) => {
+            const href = areaLinks[a] || "/areas";
+            return (
+              <Link
+                key={a}
+                href={href}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 text-center transition hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-cyan-400/5"
+                data-reveal="up"
+                aria-label={`IT services in ${a}`}
+              >
+                <div className="font-medium">{a}</div>
+                <div className="mt-1 text-xs text-slate-400">
+                  View local coverage <span className="text-cyan-300">→</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
@@ -761,6 +778,57 @@ export default function HomePage() {
           >
             See coverage map <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
+      </Section>
+
+      {/* ───────────── FINAL CTA ───────────── */}
+      <Section id="cta" className="py-16">
+        <div
+          className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 md:p-10 overflow-hidden relative"
+          data-reveal="up"
+        >
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-24 -right-24 size-[360px] rounded-full bg-cyan-500/10 blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 size-[420px] rounded-full bg-fuchsia-500/10 blur-3xl" />
+          </div>
+
+          <div className="relative">
+            <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
+              Ready to tighten IT and security?
+            </div>
+            <h2 className="mt-3 text-2xl md:text-4xl font-extrabold leading-tight text-slate-100">
+              Get a clear plan for your IT — fast response, real SLAs, predictable
+              costs.
+            </h2>
+            <p className="mt-3 text-slate-300 max-w-3xl">
+              Request a quote, run a quick assessment, or just call — we’ll map
+              gaps and give you next steps.
+            </p>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/get-quote"
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
+              >
+                Get a Quote <ArrowRight className="h-4 w-4" />
+              </Link>
+
+              <Link
+                href="/assessment"
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition"
+              >
+                Free IT Assessment <ArrowRight className="h-4 w-4" />
+              </Link>
+
+              <a
+                href={phoneTel}
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition"
+              >
+                <Phone className="h-4 w-4" />
+                Call {phoneRaw}
+              </a>
+            </div>
+          </div>
         </div>
       </Section>
 

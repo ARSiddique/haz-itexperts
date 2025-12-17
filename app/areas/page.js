@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
+import { site } from "@/lib/siteConfig";
 import {
   MapPin,
   ShieldCheck,
@@ -17,28 +18,30 @@ import {
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const title = "Areas We Serve | Remote Managed IT for Allentown & Lehigh Valley";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = site?.url || "https://supremeitexperts.com";
+
+  const title = `Areas We Serve | Remote Managed IT for Allentown & Lehigh Valley — ${brand}`;
   const description =
     "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, and Emmaus — with clear SLAs, fast response, and consistent service.";
-  const url = "https://supremeitexperts.com/areas";
 
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: "/areas" },
     robots: { index: true, follow: true },
     openGraph: {
       title,
       description,
       type: "website",
-      url,
-      images: ["https://supremeitexperts.com/og-image.png?v=7"],
+      url: `${baseUrl}/areas`,
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://supremeitexperts.com/og-image.png?v=7"],
+      images: [`${baseUrl}/og-image.png?v=7`],
     },
   };
 }
@@ -173,6 +176,10 @@ function RegionMap({ regions, active }) {
 }
 
 export default async function AreasPage({ searchParams }) {
+  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const brand = site?.name || "Supreme IT Experts";
+
+  // Next 15: searchParams is a Promise (reading it opts into dynamic rendering) :contentReference[oaicite:1]{index=1}
   const sp = (await searchParams) || {};
   const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
@@ -196,36 +203,53 @@ export default async function AreasPage({ searchParams }) {
     { name: "Emmaus, PA", slug: "emmaus-pa" },
   ];
 
+  // ---- JSON-LD (better SEO)
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: `${baseUrl}/areas` },
+    ],
+  };
+
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Popular IT Support Locations",
+    itemListElement: popularLocations.map((x, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: x.name,
+      url: `${baseUrl}/locations/${x.slug}`,
+    })),
+  };
+
+  const collectionPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Areas We Serve",
+    url: `${baseUrl}/areas`,
+    isPartOf: { "@type": "WebSite", url: `${baseUrl}/`, name: brand },
+    about: { "@type": "Service", name: "Managed IT Services & Cybersecurity" },
+  };
+
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: brand,
+    url: baseUrl,
+    telephone: site?.phone || "+1-610-500-9209",
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + AreaServed JSON-LD */}
+      {/* Breadcrumbs + CollectionPage + ItemList + Organization JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Areas We Serve", item: "https://supremeitexperts.com/areas" },
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Supreme IT Experts",
-              url: "https://supremeitexperts.com",
-              description:
-                "Remote-first managed IT services and cybersecurity for small and mid-sized businesses across Allentown, Macungie, and Emmaus (Lehigh Valley).",
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
-              serviceArea: [
-                { "@type": "City", name: "Allentown" },
-                { "@type": "City", name: "Macungie" },
-                { "@type": "City", name: "Emmaus" },
-              ],
-            },
-          ]),
+          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema, orgSchema]),
         }}
       />
 
