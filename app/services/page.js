@@ -6,6 +6,7 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import ServicesTabs from "@/components/ServicesTabs";
 import PricingRoi from "@/components/PricingRoi";
+import { site } from "@/lib/siteConfig";
 import {
   Shield,
   Server,
@@ -22,28 +23,46 @@ import {
   LineChart,
 } from "lucide-react";
 
-// ---- SEO (static; no client code needed)
+// ---- SEO (server-side)
 export async function generateMetadata() {
-  const title = "Managed IT Services & Cybersecurity | Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+
+  const title = `Managed IT Services & Cybersecurity | ${brand}`;
   const description =
     "Helpdesk, patching, monitoring, cybersecurity (EDR/XDR, backup/DR, email security), cloud and device management — fully managed or co-managed for SMBs in Allentown and the Lehigh Valley.";
+
+  const canonical = `${baseUrl}/services`;
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/services" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
+
     openGraph: {
       title,
       description,
       type: "website",
-      url: "/services",
-      images: ["/og-image.png?v=7"],
+      url: canonical,
+      siteName: brand,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Services`,
+        },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
@@ -63,6 +82,10 @@ const Badge = ({ children, tone = "cyan" }) => (
 );
 
 export default async function ServicesPage() {
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services`;
+
   // ── Source of truth for services (includes `href` for deep pages)
   const services = [
     {
@@ -155,20 +178,61 @@ export default async function ServicesPage() {
     href,
   }));
 
+  // ✅ Schema Day: Breadcrumb + WebPage + ItemList + Service
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Services", item: canonical },
+    ],
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `Services | ${brand}`,
+    description:
+      "Managed IT services and cybersecurity modules for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    about: { "@type": "Thing", name: "Managed IT & Cybersecurity" },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+  };
+
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${canonical}#servicelist`,
+    name: `${brand} Services`,
+    itemListElement: services.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: s.title,
+      url: `${baseUrl}${s.href}`,
+    })),
+  };
+
+  const serviceSchemas = services.map((s) => ({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${baseUrl}${s.href}#service`,
+    name: s.title,
+    description: s.desc,
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    serviceType: s.title,
+    url: `${baseUrl}${s.href}`,
+  }));
+
   return (
     <>
-      {/* Breadcrumb JSON-LD */}
+      {/* ✅ Schema Day JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-              { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-            ],
-          }),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas]),
         }}
       />
 
@@ -193,7 +257,7 @@ export default async function ServicesPage() {
           programs, plus cloud, device management, and vCIO strategy.
         </p>
         <p>
-          To see where we can come onsite, visit{" "}
+          To see our primary service areas, visit{" "}
           <Link href="/areas" className="text-cyan-300 hover:underline">
             Areas we serve
           </Link>
@@ -262,10 +326,7 @@ export default async function ServicesPage() {
                       <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
                         <Icon className="h-5 w-5 text-cyan-300" />
                       </span>
-
-                      {/* ✅ H3 under page H1 */}
                       <h3 className="font-semibold text-lg">{title}</h3>
-
                       <Badge>Included in SupremeCare™ Core</Badge>
                     </div>
 
@@ -371,7 +432,7 @@ export default async function ServicesPage() {
                   [Building2, "Assess", "Light discovery: users, devices, identity, and risks."],
                   [CloudCog, "Stabilize", "Patching, EDR/XDR, secure baselines, and backup/DR."],
                   [Network, "Optimize", "SLAs, workflows, reporting, and roadmap alignment."],
-                  [LineChart, "Grow", "New hires, office moves, and projects — without chaos."],
+                  [LineChart, "Grow", "New hires and projects — without chaos."],
                 ].map(([Icon, t, d]) => (
                   <li key={t} className="ms-2">
                     <span className="absolute -start-3.5 mt-1 grid place-items-center size-6 rounded-full bg-cyan-400/20 border border-cyan-300/40">

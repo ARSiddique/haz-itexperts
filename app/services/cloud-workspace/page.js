@@ -1,30 +1,55 @@
+// app/services/cloud-workspace/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
+import { site } from "@/lib/siteConfig";
 
 export async function generateMetadata() {
-  const title = "Cloud & 365/Workspace — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services/cloud-workspace`;
+
+  const title = `Cloud & 365/Workspace | ${brand}`;
   const description =
     "Migrations, identity, governance, collaboration tuning, and SaaS backup.";
+
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/services/cloud-workspace" },
+    alternates: { canonical },
+    robots: { index: true, follow: true },
+
     openGraph: {
       title,
       description,
-      type: "article",
-      url: "/services/cloud-workspace",
-      images: ["/og-image.png?v=7"],
+      type: "website",
+      url: canonical,
+      siteName: brand,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Cloud & 365/Workspace`,
+        },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
 
 export default function Page() {
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const brand = site?.name || "Supreme IT Experts";
+  const canonical = `${baseUrl}/services/cloud-workspace`;
+
   const cfg = {
     title: "Cloud & 365/Workspace",
     lede:
@@ -65,36 +90,12 @@ export default function Page() {
       "Backups beyond the recycle bin with tested restores",
     ],
     features: [
-      {
-        icon: "Cloud",
-        title: "Email & Files Migration",
-        desc: "Staged or cutover migrations with validation and rollback.",
-      },
-      {
-        icon: "Users",
-        title: "Identity & SSO",
-        desc: "Entra ID / Google Workspace IAM plus Conditional Access.",
-      },
-      {
-        icon: "Lock",
-        title: "DLP & Governance",
-        desc: "Labels, sharing policy, and audit visibility.",
-      },
-      {
-        icon: "Server",
-        title: "Sites/Drives Design",
-        desc: "Ownership, structure, and lifecycle hygiene.",
-      },
-      {
-        icon: "Database",
-        title: "SaaS Backup",
-        desc: "Mailbox, Drive, and SharePoint restores you can trust.",
-      },
-      {
-        icon: "Globe",
-        title: "Collaboration",
-        desc: "Teams/Channels/Spaces standards and lifecycle controls.",
-      },
+      { icon: "Cloud", title: "Email & Files Migration", desc: "Staged or cutover migrations with validation and rollback." },
+      { icon: "Users", title: "Identity & SSO", desc: "Entra ID / Google Workspace IAM plus Conditional Access." },
+      { icon: "Lock", title: "DLP & Governance", desc: "Labels, sharing policy, and audit visibility." },
+      { icon: "Server", title: "Sites/Drives Design", desc: "Ownership, structure, and lifecycle hygiene." },
+      { icon: "Database", title: "SaaS Backup", desc: "Mailbox, Drive, and SharePoint restores you can trust." },
+      { icon: "Globe", title: "Collaboration", desc: "Teams/Channels/Spaces standards and lifecycle controls." },
     ],
     gallery: [
       "/images/illus/screens-1.svg",
@@ -130,49 +131,58 @@ export default function Page() {
       { when: "Week 7", title: "Harden", desc: "DLP, retention, and backup hardening" },
     ],
     testimonials: [
-      {
-        quote: "Hundreds of mailboxes moved with minimal disruption.",
-        author: "R. Iqbal",
-        role: "IT Manager",
-        avatar: "/images/avatars/a2.svg",
-        rating: 5,
-      },
-      {
-        quote: "Information architecture finally made sharing sane and secure.",
-        author: "F. Tariq",
-        role: "PM",
-        avatar: "/images/avatars/a1.svg",
-        rating: 5,
-      },
+      { quote: "Hundreds of mailboxes moved with minimal disruption.", author: "R. Iqbal", role: "IT Manager", avatar: "/images/avatars/a2.svg", rating: 5 },
+      { quote: "Information architecture finally made sharing sane and secure.", author: "F. Tariq", role: "PM", avatar: "/images/avatars/a1.svg", rating: 5 },
     ],
   };
 
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Services", item: `${baseUrl}/services` },
+      { "@type": "ListItem", position: 3, name: "Cloud & 365/Workspace", item: canonical },
+    ],
+  };
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Cloud & 365/Workspace",
+    serviceType: "Cloud Migration & Productivity",
+    url: canonical,
+    provider: {
+      "@type": "Organization",
+      name: brand,
+      url: baseUrl,
+      "@id": `${baseUrl}/#organization`,
+    },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `Cloud & 365/Workspace | ${brand}`,
+    url: canonical,
+    description: "Migrations, identity, governance, collaboration tuning, and SaaS backup.",
+    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+  };
+
+  // attach ids (optional but nice)
+  breadcrumbsSchema["@id"] = `${canonical}#breadcrumb`;
+  serviceSchema["@id"] = `${canonical}#service`;
+  webPageSchema.mainEntity = { "@id": `${canonical}#service` };
+
   return (
     <>
-      {/* Breadcrumbs + Service JSON-LD */}
+      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-                { "@type": "ListItem", position: 3, name: "Cloud & 365/Workspace", item: "https://supremeitexperts.com/services/cloud-workspace" }
-              ]
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              name: "Cloud & 365/Workspace",
-              serviceType: "Cloud Migration & Productivity",
-              provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-              url: "https://supremeitexperts.com/services/cloud-workspace"
-            }
-          ])
+          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

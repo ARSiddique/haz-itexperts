@@ -95,21 +95,24 @@ export default async function LocationPage({ params }) {
   };
 
   // LocalBusiness (remote-first coverage page)
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "ITService"],
-    name: brand,
-    url: canonical,
-    telephone: phone,
-    areaServed: [`${loc.city}, ${loc.state}`],
-    serviceType: [
-      "Managed IT Services",
-      "Cybersecurity",
-      "Cloud Services",
-      "Device Management",
-      "IT Consulting",
-    ],
-  };
+ const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "ITService"],
+  "@id": `${canonical}#localbusiness`,
+  name: brand,
+  url: canonical,
+  telephone: phone,
+  areaServed: [`${loc.city}, ${loc.state}`],
+  provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+  serviceType: [
+    "Managed IT Services",
+    "Cybersecurity",
+    "Cloud Services",
+    "Device Management",
+    "IT Consulting",
+  ],
+};
+
 
   // WebPage schema for the location landing page
   const webPageSchema = {

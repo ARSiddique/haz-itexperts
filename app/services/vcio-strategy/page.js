@@ -1,30 +1,50 @@
+// app/services/vcio-strategy/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
+import { site } from "@/lib/siteConfig";
 
 export async function generateMetadata() {
-  const title = "vCIO / Strategy — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services/vcio-strategy`;
+
+  const title = `vCIO / Strategy | ${brand}`;
   const description =
     "Roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.";
+
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/services/vcio-strategy" },
+    alternates: { canonical },
+    robots: { index: true, follow: true },
+
     openGraph: {
       title,
       description,
-      type: "article",
-      url: "/services/vcio-strategy",
-      images: ["/og-image.png?v=7"],
+      type: "website",
+      url: canonical,
+      siteName: brand,
+      images: [
+        { url: ogImage, width: 1200, height: 630, alt: `${brand} — vCIO / Strategy` },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
 
 export default function Page() {
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services/vcio-strategy`;
+
   const cfg = {
     title: "vCIO / Strategy",
     lede:
@@ -83,38 +103,52 @@ export default function Page() {
     ],
   };
 
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Services", item: `${baseUrl}/services` },
+      { "@type": "ListItem", position: 3, name: "vCIO / Strategy", item: canonical },
+    ],
+  };
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${canonical}#service`,
+    name: "vCIO / Strategy",
+    serviceType: "Virtual CIO & IT Strategy",
+    url: canonical,
+    provider: {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: brand,
+      url: baseUrl,
+    },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `vCIO / Strategy | ${brand}`,
+    url: canonical,
+    description:
+      "Roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.",
+    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    mainEntity: { "@id": `${canonical}#service` },
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service JSON-LD */}
+      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: "vCIO / Strategy",
-                  item: "https://supremeitexperts.com/services/vcio-strategy",
-                },
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              name: "vCIO / Strategy",
-              serviceType: "Virtual CIO & IT Strategy",
-              provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-
-              url: "https://supremeitexperts.com/services/vcio-strategy",
-            },
-          ]),
+          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

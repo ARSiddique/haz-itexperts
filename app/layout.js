@@ -5,25 +5,35 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 
-const BASE_URL =
+const RAW_BASE_URL =
   (site?.url && site.url.startsWith("http") ? site.url : null) ||
   process.env.NEXT_PUBLIC_SITE_URL ||
   "https://supremeitexperts.com";
+
+// normalize (no trailing slash)
+const BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
+
+const BRAND = site?.name || "Supreme IT Experts";
+const DEFAULT_DESC =
+  "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
+
+const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
+
+const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
+const email = site?.email || "supremeitexperts@gmail.com";
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
 
   title: {
-    default: `${site?.name || "Supreme IT Experts"} — Managed IT & Cybersecurity`,
-    template: `%s | ${site?.name || "Supreme IT Experts"}`,
+    default: `${BRAND} — Managed IT & Cybersecurity`,
+    template: `%s | ${BRAND}`,
   },
 
-  description:
-    "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
+  description: DEFAULT_DESC,
 
-  alternates: {
-    canonical: "/",
-  },
+  // ✅ IMPORTANT: root layout me canonical mat do
+  // har page (generateMetadata) apna canonical set kare
 
   robots: {
     index: true,
@@ -46,41 +56,84 @@ export const metadata = {
   },
 
   openGraph: {
-    title: `${site?.name || "Supreme IT Experts"} — Managed IT & Cybersecurity`,
-    description:
-      "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
+    title: `${BRAND} — Managed IT & Cybersecurity`,
+    description: DEFAULT_DESC,
     url: BASE_URL,
-    siteName: site?.name || "Supreme IT Experts",
+    siteName: BRAND,
     type: "website",
+    locale: "en_US",
     images: [
       {
-        url: new URL("/og-image.png?v=7", BASE_URL).toString(),
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Supreme IT Experts",
+        alt: BRAND,
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: `${site?.name || "Supreme IT Experts"} — Managed IT & Cybersecurity`,
-    description:
-      "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.",
-    images: [new URL("/og-image.png?v=7", BASE_URL).toString()],
+    title: `${BRAND} — Managed IT & Cybersecurity`,
+    description: DEFAULT_DESC,
+    images: [OG_IMAGE],
   },
+
+  // Optional: agar GSC verify code ho to yahan add kar dena
+  // verification: {
+  //   google: "YOUR_GSC_VERIFICATION_CODE",
+  // },
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0b1220",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1220" },
+  ],
 };
 
 export default function RootLayout({ children }) {
-  const brand = site?.name || "Supreme IT Experts";
-  const phone = site?.phone || "+1 610-500-9209";
-  const email = site?.email || "supremeitexperts@gmail.com";
+  // Global schema (Organization + WebSite)
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": `${BASE_URL}/#organization`,
+      name: BRAND,
+      url: BASE_URL,
+      logo: new URL("/favicon-48.png", BASE_URL).toString(),
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          telephone: cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`,
+          email,
+          availableLanguage: ["English"],
+        },
+      ],
+      areaServed: [
+        "Allentown, PA",
+        "Macungie, PA",
+        "Emmaus, PA",
+        "Lehigh Valley, PA",
+      ],
+      // Optional: real social profile URLs add karna ho to uncomment:
+      // sameAs: [
+      //   "https://www.linkedin.com/company/....",
+      //   "https://www.facebook.com/....",
+      // ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      url: BASE_URL,
+      name: BRAND,
+      publisher: { "@id": `${BASE_URL}/#organization` },
+    },
+  ];
 
   return (
     <html lang="en">
@@ -88,34 +141,10 @@ export default function RootLayout({ children }) {
         {/* GA4 */}
         <Analytics />
 
-        {/* Global Organization JSON-LD */}
+        {/* Global JSON-LD */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: brand,
-              url: BASE_URL,
-              logo: new URL("/favicon-48.png", BASE_URL).toString(),
-              contactPoint: [
-                {
-                  "@type": "ContactPoint",
-                  contactType: "customer support",
-                  telephone: phone,
-                  email,
-                  availableLanguage: ["English"],
-                },
-              ],
-              // Optional: add your real social profile URLs here
-              sameAs: [
-                // "https://www.linkedin.com/company/...",
-                // "https://www.facebook.com/...",
-                // "https://x.com/...",
-              ],
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-            }),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
 
         <Header className="site-header" />

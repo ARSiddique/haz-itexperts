@@ -1,30 +1,55 @@
+// app/services/device-management/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
+import { site } from "@/lib/siteConfig";
 
 export async function generateMetadata() {
-  const title = "Device Management — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services/device-management`;
+
+  const title = `Device Management | ${brand}`;
   const description =
     "Zero-touch enrollment, hardening, patch & app management, compliance, and lifecycle.";
+
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/services/device-management" },
+    alternates: { canonical },
+    robots: { index: true, follow: true },
+
     openGraph: {
       title,
       description,
-      type: "article",
-      url: "/services/device-management",
-      images: ["/og-image.png?v=7"],
+      type: "website",
+      url: canonical,
+      siteName: brand,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Device Management`,
+        },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
 
 export default function Page() {
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/services/device-management`;
+
   const cfg = {
     title: "Device Management",
     lede:
@@ -66,37 +91,69 @@ export default function Page() {
       { when: "Weeks 3–4", title: "Operate", desc: "Patch and app cadence" },
     ],
     testimonials: [
-      { quote: "98%+ compliance—audits became painless.", author: "H. Javed", role: "CISO", avatar: "/images/avatars/a1.svg", rating: 5 },
-      { quote: "BYOD is secure and frictionless now.", author: "N. Fatima", role: "IT Lead", avatar: "/images/avatars/a2.svg", rating: 5 },
+      {
+        quote: "98%+ compliance—audits became painless.",
+        author: "H. Javed",
+        role: "CISO",
+        avatar: "/images/avatars/a1.svg",
+        rating: 5,
+      },
+      {
+        quote: "BYOD is secure and frictionless now.",
+        author: "N. Fatima",
+        role: "IT Lead",
+        avatar: "/images/avatars/a2.svg",
+        rating: 5,
+      },
     ],
+  };
+
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Services", item: `${baseUrl}/services` },
+      { "@type": "ListItem", position: 3, name: "Device Management", item: canonical },
+    ],
+  };
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${canonical}#service`,
+    name: "Device Management",
+    serviceType: "Endpoint & Mobile Device Management",
+    url: canonical,
+    provider: {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: brand,
+      url: baseUrl,
+    },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `Device Management | ${brand}`,
+    url: canonical,
+    description:
+      "Zero-touch enrollment, hardening, patch & app management, compliance, and lifecycle.",
+    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    mainEntity: { "@id": `${canonical}#service` },
   };
 
   return (
     <>
-      {/* Breadcrumbs + Service JSON-LD */}
+      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-                { "@type": "ListItem", position: 2, name: "Services", item: "https://supremeitexperts.com/services" },
-                { "@type": "ListItem", position: 3, name: "Device Management", item: "https://supremeitexperts.com/services/device-management" },
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              name: "Device Management",
-              serviceType: "Endpoint & Mobile Device Management",
-              provider: { "@type": "Organization", name: "Supreme IT Experts", url: "https://supremeitexperts.com" },
-              areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-              url: "https://supremeitexperts.com/services/device-management",
-            },
-          ]),
+          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />
