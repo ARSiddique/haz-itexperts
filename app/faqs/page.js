@@ -1,29 +1,43 @@
 // app/faqs/page.js
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import { site } from "@/lib/siteConfig";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const title = "FAQs — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/faqs`;
+
+  const title = "FAQs"; // ✅ IMPORTANT: brand yahan mat lagao (layout already add karega)
   const description =
     "Short answers to common questions about our managed IT and cybersecurity services.";
+
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/faqs" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
+
     openGraph: {
-      title,
+      title: `${title} | ${brand}`,
       description,
       type: "website",
-      url: "/faqs",
-      images: ["/og-image.png?v=7"],
+      url: canonical,
+      siteName: brand,
+      images: [
+        { url: ogImage, width: 1200, height: 630, alt: `${brand} — FAQs` },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | ${brand}`,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
@@ -52,10 +66,10 @@ const FAQS = [
 ];
 
 export default function FaqsPage() {
-  // FAQPage schema JSON-LD object
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "@id": "https://supremeitexperts.com/faqs#faq",
     mainEntity: FAQS.map((item) => ({
       "@type": "Question",
       name: item.q,
@@ -66,6 +80,7 @@ export default function FaqsPage() {
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": "https://supremeitexperts.com/faqs#breadcrumb",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
       { "@type": "ListItem", position: 2, name: "FAQs", item: "https://supremeitexperts.com/faqs" },
@@ -93,7 +108,6 @@ export default function FaqsPage() {
       />
 
       <main className="max-w-4xl mx-auto px-4 pb-20">
-        {/* ✅ H2 for better heading hierarchy */}
         <section aria-labelledby="faqs-title" className="mt-2">
           <h2 id="faqs-title" className="sr-only">
             Frequently asked questions
@@ -103,7 +117,6 @@ export default function FaqsPage() {
             {FAQS.map((item) => (
               <details key={item.q} className="group px-4 md:px-6 py-4">
                 <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
-                  {/* ✅ keep questions as H3 */}
                   <h3 className="font-medium leading-snug">{item.q}</h3>
                   <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform">
                     ▼
@@ -114,7 +127,6 @@ export default function FaqsPage() {
             ))}
           </div>
 
-          {/* ✅ stronger CTA block */}
           <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p className="text-sm text-slate-300">

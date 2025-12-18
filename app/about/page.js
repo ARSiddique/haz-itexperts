@@ -5,57 +5,78 @@ import { site } from "@/lib/siteConfig";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const title = "About — Supreme IT Experts";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/about`;
+
+  const title = "About"; // ✅ brand yahan mat lagao (layout template already adds it)
   const description =
     "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.";
+
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/about" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
+
     openGraph: {
-      title,
+      title: `${title} | ${brand}`,
       description,
       type: "website",
-      url: "/about",
-      images: ["/og-image.png?v=7"],
+      url: canonical,
+      siteName: brand,
+      images: [
+        { url: ogImage, width: 1200, height: 630, alt: `${brand} — About` },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | ${brand}`,
       description,
-      images: ["/og-image.png?v=7"],
+      images: [ogImage],
     },
   };
 }
 
 export default function AboutPage() {
   const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/about`;
+
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "About", item: canonical },
+    ],
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `About | ${brand}`,
+    description:
+      "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.",
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+  };
 
   return (
     <>
-      {/* Breadcrumbs JSON-LD */}
+      {/* Breadcrumbs + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://supremeitexperts.com/",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "About",
-                item: "https://supremeitexperts.com/about",
-              },
-            ],
-          }),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema]),
         }}
       />
 

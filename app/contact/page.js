@@ -5,55 +5,78 @@ import ContactClient from "./ContactClient";
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/contact`;
 
-  const title = `Contact — ${brand}`;
+  const title = "Contact"; // ✅ layout template already adds brand
   const description =
     "Talk to our team about managed IT, cybersecurity and support. We respond during business hours.";
 
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/contact" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
+
     openGraph: {
-      title,
+      title: `Contact | ${brand}`,
       description,
       type: "website",
-      url: `${baseUrl}/contact`,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      url: canonical,
+      siteName: brand,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Contact` }],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `Contact | ${brand}`,
       description,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      images: [ogImage],
     },
   };
 }
 
 export default function ContactPage() {
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/contact`;
+
   const email = site?.email || "supremeitexperts@gmail.com";
   const phoneRaw = site?.phone || "+1 610-500-9209";
-
-  // normalize phone for schema (E.164-ish)
   const digits = String(phoneRaw).replace(/[^\d+]/g, "");
   const phoneE164 = digits.startsWith("+") ? digits : `+${digits}`;
 
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Contact", item: `${baseUrl}/contact` },
+      { "@type": "ListItem", position: 2, name: "Contact", item: canonical },
     ],
   };
 
-  const orgSchema = {
+  // ✅ re-use global org id from layout
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${canonical}#contactpage`,
+    url: canonical,
+    name: `Contact | ${brand}`,
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+  };
+
+  // ✅ ContactPoint (attach to same org id)
+  const orgContactSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: site?.name || "Supreme IT Experts",
+    "@id": `${baseUrl}/#organization`,
+    name: brand,
     url: baseUrl,
     email,
     telephone: phoneE164,
@@ -70,15 +93,14 @@ export default function ContactPage() {
 
   return (
     <>
-      {/* Breadcrumbs + Organization/ContactPoint JSON-LD */}
+      {/* Breadcrumbs + ContactPage + ContactPoint JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, orgSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, contactPageSchema, orgContactSchema]),
         }}
       />
 
-      {/* full contact page UI */}
       <ContactClient mode="full" source="contact-page" tz="America/New_York" />
     </>
   );
