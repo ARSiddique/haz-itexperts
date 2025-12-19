@@ -9,9 +9,9 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/faqs`;
 
-  const title = "FAQs"; // ✅ IMPORTANT: brand yahan mat lagao (layout already add karega)
+  const title = "FAQs"; // ✅ brand yahan mat lagao (layout template already adds it)
   const description =
-    "Short answers to common questions about our managed IT and cybersecurity services.";
+    "Short answers to common questions about our managed IT and cybersecurity services in Allentown and the Lehigh Valley.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -28,9 +28,7 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        { url: ogImage, width: 1200, height: 630, alt: `${brand} — FAQs` },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — FAQs` }],
     },
 
     twitter: {
@@ -42,34 +40,58 @@ export async function generateMetadata() {
   };
 }
 
+// ✅ Expanded FAQs (10)
 const FAQS = [
   {
-    q: "What types of businesses do you work with?",
-    a: "We mainly support small and mid-sized organisations that need reliable IT, basic cybersecurity and a friendly support team.",
+    q: "What’s included in managed IT services?",
+    a: "Managed IT typically includes helpdesk support, proactive monitoring, patching, device baselines, reporting, and an ongoing roadmap to keep systems stable and secure.",
   },
   {
-    q: "Do you support remote and in-office teams?",
-    a: "Yes. We help with laptops, desktops, VPNs, cloud tools and basic security for people working from home or in the office.",
+    q: "Do you provide 24/7 IT support?",
+    a: "Yes. We offer 24/7 monitoring and support with clear escalation paths so urgent issues get handled fast.",
+  },
+  {
+    q: "How fast is your response time?",
+    a: "Response depends on priority. We use ticket triage and SLAs so high-impact issues are addressed first, with clear communication until resolution.",
+  },
+  {
+    q: "Do you support both Windows and Mac environments?",
+    a: "Yes. We support Windows and macOS environments, plus iOS/Android device management using practical security baselines and compliance checks.",
   },
   {
     q: "Can you help if we already have an internal IT person?",
-    a: "Yes. We can work alongside an in-house IT contact to handle monitoring, patching, security tools and documentation.",
+    a: "Yes. We offer co-managed IT—supporting your internal IT with monitoring, patching, security tooling, documentation and escalation coverage.",
   },
   {
-    q: "Is there a long-term contract?",
-    a: "Most customers work with us on a rolling agreement. Terms are kept simple and clear so there are no surprises.",
+    q: "What cybersecurity services do you provide?",
+    a: "We help with identity security (MFA/SSO guidance), endpoint protection, email security, and backup/disaster recovery planning with security-first baselines.",
+  },
+  {
+    q: "Do you help with Microsoft 365 or Google Workspace?",
+    a: "Yes. We support migrations, tenant security, identity, device management, and ongoing optimization for Microsoft 365 and Google Workspace.",
+  },
+  {
+    q: "Do you support remote and in-office teams?",
+    a: "Yes. We help with laptops, desktops, VPNs, cloud tools and baseline security for people working from home or in the office.",
+  },
+  {
+    q: "Do you offer onsite support in the Lehigh Valley?",
+    a: "Yes. We provide onsite and remote support for businesses in Allentown and nearby areas across the Lehigh Valley when needed.",
   },
   {
     q: "How do we get started?",
-    a: "Send us a short email or give us a call. We will ask a few questions about your team and systems, then suggest a simple next step.",
+    a: "Start with a quick call or message. We’ll learn about your users, devices and priorities, then recommend a practical next step (assessment, cleanup or onboarding).",
   },
 ];
 
 export default function FaqsPage() {
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/faqs`;
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "@id": "https://supremeitexperts.com/faqs#faq",
+    "@id": `${canonical}#faq`,
     mainEntity: FAQS.map((item) => ({
       "@type": "Question",
       name: item.q,
@@ -80,10 +102,10 @@ export default function FaqsPage() {
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "@id": "https://supremeitexperts.com/faqs#breadcrumb",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://supremeitexperts.com/" },
-      { "@type": "ListItem", position: 2, name: "FAQs", item: "https://supremeitexperts.com/faqs" },
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "FAQs", item: canonical },
     ],
   };
 
