@@ -19,22 +19,51 @@ export default function OfferPopup() {
   const [lottieReady, setLottieReady] = useState(false);
   const scrInjected = useRef(false);
   const pathname = usePathname();
+
   const lockedRef = useRef(false);
   const scrollYRef = useRef(0);
 
-  // open logic
+  // ✅ OPEN ONLY AFTER USER INTERACTION (prevents CLS in Lighthouse/PSI)
   useEffect(() => {
     if (typeof window === "undefined") return;
+
     const isProd = process.env.NODE_ENV === "production";
-    if (!isProd) {
-      setTimeout(() => setOpen(true), 500);
-      return;
-    }
     const seen = localStorage.getItem(SEEN_KEY);
-    if (!seen) {
-      setTimeout(() => setOpen(true), 700);
-      localStorage.setItem(SEEN_KEY, "1");
+
+    // dev me quick open (optional)
+    if (!isProd) {
+      const t = setTimeout(() => setOpen(true), 500);
+      return () => clearTimeout(t);
     }
+
+    if (seen) return;
+
+    let opened = false;
+
+    const openNow = () => {
+      if (opened) return;
+      opened = true;
+      setOpen(true);
+      localStorage.setItem(SEEN_KEY, "1");
+      cleanup();
+    };
+
+    const onInteract = () => openNow();
+
+    const cleanup = () => {
+      window.removeEventListener("scroll", onInteract);
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
+      window.removeEventListener("touchstart", onInteract);
+    };
+
+    // first interaction triggers open
+    window.addEventListener("scroll", onInteract, { passive: true });
+    window.addEventListener("pointerdown", onInteract, { passive: true });
+    window.addEventListener("touchstart", onInteract, { passive: true });
+    window.addEventListener("keydown", onInteract);
+
+    return cleanup;
   }, []);
 
   // close on route change
@@ -43,15 +72,17 @@ export default function OfferPopup() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // inject lottie script once
+  // inject lottie script once (only when popup opens)
   useEffect(() => {
     if (!open || scrInjected.current) return;
     if (typeof window === "undefined") return;
+
     if (customElements.get("lottie-player")) {
       setLottieReady(true);
       scrInjected.current = true;
       return;
     }
+
     const s = document.createElement("script");
     s.src =
       "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
@@ -62,7 +93,7 @@ export default function OfferPopup() {
     scrInjected.current = true;
   }, [open]);
 
-  // BODY SCROLL LOCK (mobile-safe: preserve scroll position)
+  // BODY SCROLL LOCK (keep as is, but safe)
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
@@ -70,24 +101,27 @@ export default function OfferPopup() {
     const lock = () => {
       if (lockedRef.current) return;
       scrollYRef.current = window.scrollY || window.pageYOffset || 0;
+
       html.style.overflow = "hidden";
-      // iOS-friendly fix: freeze body
       body.style.position = "fixed";
       body.style.top = `-${scrollYRef.current}px`;
       body.style.left = "0";
       body.style.right = "0";
       body.style.width = "100%";
+
       lockedRef.current = true;
     };
 
     const unlock = () => {
       if (!lockedRef.current) return;
+
       html.style.overflow = "";
       body.style.position = "";
       body.style.top = "";
       body.style.left = "";
       body.style.right = "";
       body.style.width = "";
+
       window.scrollTo(0, scrollYRef.current);
       lockedRef.current = false;
     };
@@ -124,10 +158,8 @@ export default function OfferPopup() {
         className="absolute inset-0 bg-black/70"
       />
 
-      {/* Modal wrapper (own scroll if needed) */}
       <div className="absolute inset-0 z-[1000] flex items-center justify-center p-3 md:p-6 h-[100dvh]">
         <div className="relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220] shadow-2xl max-h-[100dvh]">
-          {/* internal scroll container */}
           <div className="max-h-[100dvh] overflow-y-auto">
             <button
               onClick={() => setOpen(false)}
@@ -139,7 +171,7 @@ export default function OfferPopup() {
             </button>
 
             <div className="grid md:grid-cols-2">
-              {/* Left: Content */}
+              {/* Left */}
               <div className="relative bg-gradient-to-br from-white/[0.03] to-white/[0.01]">
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.22),transparent_60%)]" />
                 <div className="relative px-5 pt-6 pb-6 sm:px-6 sm:pt-10 sm:pb-8 md:p-10">
@@ -209,26 +241,34 @@ export default function OfferPopup() {
                 </div>
               </div>
 
-              {/* Right: Visual */}
+              {/* Right (reserve space to avoid internal shifts) */}
               <div className="relative flex items-center justify-center bg-[#0e1628] p-5 sm:p-6 md:p-8">
                 <div className="w-full max-w-[560px]">
-                  {lottieReady ? (
-                    <lottie-player
-                      src={LOTTIE_SIDE}
-                      autoplay
-                      loop
-                      mode="normal"
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  ) : (
-                    <div className="aspect-[16/12] w-full rounded-2xl border border-white/10 bg-gradient-to-br from-cyan-400/10 to-fuchsia-400/10" />
-                  )}
+                  <div className="relative w-full aspect-[16/12] rounded-2xl overflow-hidden border border-white/10">
+                    {lottieReady ? (
+                      <lottie-player
+                        src={LOTTIE_SIDE}
+                        autoplay
+                        loop
+                        mode="normal"
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-fuchsia-400/10" />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }
