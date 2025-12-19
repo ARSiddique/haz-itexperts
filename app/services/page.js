@@ -226,13 +226,41 @@ export default async function ServicesPage() {
     url: `${baseUrl}${s.href}`,
   }));
 
+  // ✅ Quick FAQs (source of truth)
+  const faqs = [
+    {
+      q: "Fully managed vs co-managed?",
+      a: "We can run IT end-to-end or augment your in-house team. Access, tooling, and SOPs are aligned either way.",
+    },
+    {
+      q: "SLA details?",
+      a: "P1 ≤ 15 minutes, P2 ≤ 1 hour, P3 same business day. Monthly KPI reports for leadership.",
+    },
+    {
+      q: "What tooling is included?",
+      a: "EDR/XDR, patching, monitoring, email security, backup/DR, and MDM baselines — with clear reporting.",
+    },
+  ];
+
+  // ✅ FAQPage JSON-LD (the missing piece for “100% on-page”)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   return (
     <>
-      {/* ✅ Schema Day JSON-LD */}
+      {/* ✅ Schema JSON-LD: Breadcrumb + WebPage + ItemList + Services + FAQPage */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas, faqSchema]),
         }}
       />
 
@@ -458,20 +486,7 @@ export default async function ServicesPage() {
           <Reveal className="mt-6">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <div className="mt-1 divide-y divide-white/10">
-                {[
-                  [
-                    "Fully managed vs co-managed?",
-                    "We can run IT end-to-end or augment your in-house team. Access, tooling, and SOPs are aligned either way.",
-                  ],
-                  [
-                    "SLA details?",
-                    "P1 ≤ 15 minutes, P2 ≤ 1 hour, P3 same business day. Monthly KPI reports for leadership.",
-                  ],
-                  [
-                    "What tooling is included?",
-                    "EDR/XDR, patching, monitoring, email security, backup/DR, and MDM baselines — with clear reporting.",
-                  ],
-                ].map(([q, a]) => (
+                {faqs.map(({ q, a }) => (
                   <details key={q} className="py-3 group">
                     <summary className="cursor-pointer list-none flex items-center justify-between gap-2">
                       <span className="font-medium">{q}</span>
