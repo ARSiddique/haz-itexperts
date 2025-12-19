@@ -162,11 +162,7 @@ export default function GalleryClient({ items }) {
             <button
               key={t}
               type="button"
-              onClick={() => {
-                setTag(t);
-                // optional: close lightbox on filter change
-                // setOpen(false);
-              }}
+              onClick={() => setTag(t)}
               className={`px-3 py-1.5 rounded-lg text-xs border transition ${
                 tag === t
                   ? "border-cyan-300/40 text-cyan-300 bg-cyan-400/10"
@@ -233,9 +229,17 @@ export default function GalleryClient({ items }) {
         <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold">Want the full tour?</h3>
-            <p className="text-slate-300">
-              We’ll walkthrough our stack, reporting, and a before/after case.
-            </p>
+            <p className="text-slate-300">We’ll walkthrough our stack, reporting, and a before/after case.</p>
+
+            {/* ✅ extra internal links (optional but good for SEO) */}
+            <div className="mt-3 flex flex-wrap gap-2 text-sm">
+              <Link href="/services" className="rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10">
+                View services
+              </Link>
+              <Link href="/areas" className="rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10">
+                Areas we serve
+              </Link>
+            </div>
           </div>
 
           <Link
@@ -248,13 +252,7 @@ export default function GalleryClient({ items }) {
       </Reveal>
 
       {/* Lightbox */}
-      <Lightbox
-        open={open}
-        items={filtered}
-        index={at}
-        onClose={() => setOpen(false)}
-        onMove={move}
-      />
+      <Lightbox open={open} items={filtered} index={at} onClose={() => setOpen(false)} onMove={move} />
     </section>
   );
 }
