@@ -27,14 +27,16 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
+  const siteUrl = site?.url || "https://supremeitexperts.com";
 
   const baseTitle =
-    "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
+    "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA";
   const title = `${baseTitle} | ${brand}`;
   const description =
-    "Supreme IT Experts provides managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown, Macungie, Emmaus and the wider Lehigh Valley. Fixed-fee helpdesk, device management, cloud, backup and disaster recovery.";
+    "Managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley (Macungie, Emmaus). Fixed-fee helpdesk, monitoring, cloud, backup and disaster recovery.";
 
   return {
+    metadataBase: new URL(siteUrl),
     title,
     description,
     keywords: [
@@ -50,13 +52,24 @@ export async function generateMetadata() {
       description,
       url: "/",
       type: "website",
-      images: ["/og-image.png?v=7"],
+      images: [
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Managed IT Services`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       images: ["/og-image.png?v=7"],
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
@@ -195,7 +208,9 @@ export default function HomePage() {
   const areas = site?.areas?.length
     ? site.areas
     : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"];
+
   const brand = site?.name || "Supreme IT Experts";
+  const SITE_URL = site?.url || "https://supremeitexperts.com";
 
   // ✅ schema sameAs should be an array (site.socials is usually an object)
   const sameAs = Object.values(site?.socials || {}).filter(Boolean);
@@ -256,6 +271,121 @@ export default function HomePage() {
     "Lehigh Valley, PA": "/areas",
   };
 
+  // FAQ (Home) — on-page + FAQPage schema
+  const FAQS = [
+    {
+      q: "What’s included in managed IT services?",
+      a: "Our managed IT services typically include helpdesk support, proactive monitoring, patch management, endpoint security baselines, reporting, and an ongoing roadmap aligned with your business goals.",
+    },
+    {
+      q: "Do you provide 24/7 IT support?",
+      a: "Yes — we offer 24/7 helpdesk and monitoring for businesses in Allentown and the Lehigh Valley, with clear SLAs and escalation paths for urgent issues.",
+    },
+    {
+      q: "Do you support both Windows and Mac environments?",
+      a: "Yes. We support mixed environments (Windows and macOS) and can manage iOS/Android devices with MDM baselines, compliance checks, and app deployment.",
+    },
+    {
+      q: "How fast is your response time?",
+      a: "Response time depends on priority. We use SLAs and ticket triage so high-impact issues are handled first, with clear communication and ownership until resolution.",
+    },
+    {
+      q: "Can you help us improve cybersecurity quickly?",
+      a: "Yes. We can rapidly strengthen identity and endpoint security with MFA/SSO guidance, endpoint protection (EDR/XDR where appropriate), email security, and backup/DR planning.",
+    },
+  ];
+
+  // JSON-LD objects (WebSite + Organization + LocalBusiness/ITService + WebPage + FAQPage + BreadcrumbList)
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: brand,
+      url: `${SITE_URL}/`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: brand,
+      url: `${SITE_URL}/`,
+      sameAs,
+      logo: `${SITE_URL}/logo.png`,
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          telephone: phoneRaw,
+          contactType: "customer service",
+          areaServed: areas,
+          availableLanguage: ["en"],
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": ["LocalBusiness", "ITService"],
+      "@id": `${SITE_URL}/#localbusiness`,
+      name: brand,
+      url: `${SITE_URL}/`,
+      description:
+        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+      telephone: phoneRaw,
+      priceRange: "$$",
+      areaServed: areas,
+      logo: `${SITE_URL}/logo.png`,
+      image: [`${SITE_URL}/og-image.png?v=7`],
+      // NOTE: Add full address ONLY if you have a real public address
+      // address: {
+      //   "@type": "PostalAddress",
+      //   streetAddress: "123 Main St",
+      //   addressLocality: "Allentown",
+      //   addressRegion: "PA",
+      //   postalCode: "18101",
+      //   addressCountry: "US",
+      // },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/#webpage`,
+      url: `${SITE_URL}/`,
+      name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      about: { "@id": `${SITE_URL}/#localbusiness` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/og-image.png?v=7`,
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${SITE_URL}/`,
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": `${SITE_URL}/#faq`,
+      mainEntity: FAQS.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: f.a,
+        },
+      })),
+    },
+  ];
+
   return (
     <div className="relative overflow-hidden bg-[#0b1220]">
       {/* ✅ ONE global background for whole page (seamless) */}
@@ -267,53 +397,11 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_30%)]" />
       </div>
 
-      {/* WebSite + Organization + LocalBusiness JSON-LD */}
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": "https://supremeitexperts.com/#website",
-              name: brand,
-              url: "https://supremeitexperts.com/",
-              // NOTE: SearchAction removed until a real /search page exists
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "@id": "https://supremeitexperts.com/#organization",
-              name: brand,
-              url: "https://supremeitexperts.com/",
-              sameAs,
-              contactPoint: [
-                {
-                  "@type": "ContactPoint",
-                  telephone: site?.phone || "+1-610-500-9209",
-                  contactType: "customer service",
-                  areaServed: areas,
-                  availableLanguage: ["en"],
-                },
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": ["LocalBusiness", "ITService"],
-              "@id": "https://supremeitexperts.com/#localbusiness",
-              name: brand,
-              url: "https://supremeitexperts.com/",
-              telephone: site?.phone || "+1-610-500-9209",
-              priceRange: "$$",
-              areaServed: areas,
-              address: {
-                "@type": "PostalAddress",
-                addressLocality: "Allentown",
-                addressRegion: "PA",
-                addressCountry: "US",
-              },
-            },
-          ]),
+          __html: JSON.stringify(jsonLd),
         }}
       />
 
@@ -372,7 +460,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-3 gap-4 mt-10">
               <Stat k="<15 min" v="P1 response target" />
-              <Stat k="99.9%" v="EDR/XDR coverage" />
+              <Stat k="99.9%" v="EDR/XDR coverage target" />
               <Stat k="24/7" v="Helpdesk & monitoring" />
             </div>
           </div>
@@ -471,7 +559,10 @@ export default function HomePage() {
 
       {/* ───────────── SERVICES ───────────── */}
       <Section id="services" className="py-16">
-        <Title k="Services" sub="Managed IT, IT support & cybersecurity for SMBs" />
+        <Title
+          k="Services"
+          sub="Managed IT, IT support & cybersecurity for SMBs"
+        />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
           Choose fully-managed or co-managed IT with our{" "}
           <Link
@@ -518,7 +609,7 @@ export default function HomePage() {
               ]}
             />
             <div className="mt-3">
-              <div className="font-medium">Faster P1 handling</div>
+              <h3 className="font-medium">Faster P1 handling</h3>
               <p className="text-sm text-slate-300">
                 First response down to ≤12 min with SOPs and queue hygiene.
               </p>
@@ -535,9 +626,9 @@ export default function HomePage() {
               ]}
             />
             <div className="mt-3">
-              <div className="font-medium">Fleet visibility</div>
+              <h3 className="font-medium">Fleet visibility</h3>
               <p className="text-sm text-slate-300">
-                99.9% EDR coverage + leadership KPIs that tell the truth.
+                Strong endpoint visibility + leadership KPIs that tell the truth.
               </p>
             </div>
           </div>
@@ -551,7 +642,7 @@ export default function HomePage() {
               ]}
             />
             <div className="mt-3">
-              <div className="font-medium">Onboarding without chaos</div>
+              <h3 className="font-medium">Onboarding without chaos</h3>
               <p className="text-sm text-slate-300">
                 MDM baselines in 10 days; predictable new-hire workflow.
               </p>
@@ -577,7 +668,7 @@ export default function HomePage() {
               {
                 icon: Lock,
                 title: "Stabilize",
-                text: "Patch, EDR/XDR, baselines for M365/Google and backup/DR so your IT is secure and predictable.",
+                text: "Patch, endpoint protection, baselines for M365/Google and backup/DR so your IT is secure and predictable.",
               },
               {
                 icon: LineChart,
@@ -646,8 +737,8 @@ export default function HomePage() {
         <Title k="Trust" sub="Security-first and SLA-backed" />
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            ["SLA", "P1 ≤ 15 min, P2 ≤ 1 hr, P3 same day"],
-            ["Coverage", "99.9% EDR/XDR on managed endpoints"],
+            ["SLA", "P1 ≤ 15 min (target), P2 ≤ 1 hr, P3 same day"],
+            ["Coverage", "EDR/XDR coverage targets on managed endpoints"],
             ["MDM", "Windows/Mac/iOS/Android baselines & compliance"],
           ].map(([t, d]) => (
             <div
@@ -657,7 +748,7 @@ export default function HomePage() {
             >
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-cyan-300" />
-                <span className="font-medium">{t}</span>
+                <h3 className="font-medium">{t}</h3>
               </div>
               <p className="text-sm text-slate-300 mt-1">{d}</p>
             </div>
@@ -683,6 +774,42 @@ export default function HomePage() {
         </p>
       </Section>
 
+      {/* ───────────── FAQ ───────────── */}
+      <Section id="faq" className="py-16">
+        <Title k="FAQs" sub="Quick answers before you book a call" />
+
+        <div className="grid md:grid-cols-2 gap-4">
+          {FAQS.map((f) => (
+            <div
+              key={f.q}
+              className="rounded-2xl border border-white/10 bg-white/[0.06] p-5"
+              data-reveal="up"
+            >
+              <h3 className="font-semibold">{f.q}</h3>
+              <p className="mt-2 text-sm text-slate-300">{f.a}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
+          Still not sure what you need?{" "}
+          <Link
+            href="/contact"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            Contact us
+          </Link>{" "}
+          or{" "}
+          <Link
+            href="/get-quote"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
+            request a quote
+          </Link>
+          .
+        </p>
+      </Section>
+
       {/* ───────────── GALLERY ───────────── */}
       <Section id="gallery" className="py-16">
         <Title k="Gallery" sub="Real work. Real environments." />
@@ -690,7 +817,10 @@ export default function HomePage() {
           {[
             ["/media/hero-1.jpg", "Fiber and cabling work for business networks"],
             ["/media/rack.jpg", "Tidy network rack in a small business"],
-            ["/media/dashboard.jpg", "Monitoring dashboard for managed IT services"],
+            [
+              "/media/dashboard.jpg",
+              "Monitoring dashboard for managed IT services",
+            ],
           ].map(([src, cap]) => (
             <figure
               key={src}
@@ -743,7 +873,7 @@ export default function HomePage() {
                 data-reveal="up"
                 aria-label={`IT services in ${a}`}
               >
-                <div className="font-medium">{a}</div>
+                <h3 className="font-medium">{a}</h3>
                 <div className="mt-1 text-xs text-slate-400">
                   View local coverage <span className="text-cyan-300">→</span>
                 </div>
@@ -797,8 +927,8 @@ export default function HomePage() {
               Ready to tighten IT and security?
             </div>
             <h2 className="mt-3 text-2xl md:text-4xl font-extrabold leading-tight text-slate-100">
-              Get a clear plan for your IT — fast response, real SLAs, predictable
-              costs.
+              Get a clear plan for your IT — fast response, real SLAs,
+              predictable costs.
             </h2>
             <p className="mt-3 text-slate-300 max-w-3xl">
               Request a quote, run a quick assessment, or just call — we’ll map
