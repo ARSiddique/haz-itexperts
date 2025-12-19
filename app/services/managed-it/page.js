@@ -7,9 +7,10 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/managed-it`;
 
-  const title = `Managed IT | ${brand}`;
+  // ✅ stronger intent + local + keywords
+  const title = `Managed IT Services (Helpdesk, Monitoring, Patching) | ${brand}`;
   const description =
-    "Proactive helpdesk, patching, monitoring, and reporting with clear SLAs.";
+    "Managed IT for SMBs in Allentown & the Lehigh Valley: helpdesk with SLAs, patching, monitoring, endpoint baselines, and executive reporting — fully managed or co-managed.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -163,6 +164,7 @@ export default function Page() {
     ],
   };
 
+  // ✅ Breadcrumbs
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -174,41 +176,82 @@ export default function Page() {
     ],
   };
 
+  // ✅ Service (with description + offer CTA)
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${canonical}#service`,
-    name: "Managed IT",
+    name: "Managed IT Services",
     serviceType: "Managed IT Services",
+    description:
+      "Helpdesk with SLAs, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and executive reporting for small and mid-sized businesses.",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      availability: "https://schema.org/InStock",
+    },
   };
 
+  // ✅ WebPage (IDs aligned)
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `Managed IT | ${brand}`,
+    "@id": `${canonical}#webpage`,
     url: canonical,
+    name: `Managed IT Services | ${brand}`,
     description:
-      "Proactive helpdesk, patching, monitoring, and reporting with clear SLAs.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+      "Managed IT for SMBs: helpdesk with SLAs, patching, monitoring, endpoint baselines, and leadership reporting.",
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
+  // ✅ FAQ (rich result support)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What’s included in managed IT?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Helpdesk (email/chat/portal), patching, monitoring, endpoint baselines, onboarding/offboarding, and reporting. Security basics like EDR guidance, encryption, and MFA recommendations are included.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you offer co-managed IT?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We can run IT end-to-end or work alongside your internal team with shared tooling, SOPs, and reporting.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What are your SLA targets?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "SLA targets depend on your plan and environment. Typical priorities include rapid response for critical issues and same-day handling for standard requests, with monthly KPI/SLA reporting.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

@@ -7,9 +7,10 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/cybersecurity`;
 
-  const title = `Cybersecurity | ${brand}`;
+  // ✅ stronger title/desc (service + intent + local)
+  const title = `Cybersecurity Services (EDR/XDR, MFA, Backup/DR) | ${brand}`;
   const description =
-    "CIS/NIST aligned: zero-trust identity, EDR/XDR, phishing defense, immutable backups.";
+    "CIS/NIST-aligned cybersecurity for SMBs in Allentown & the Lehigh Valley: zero-trust identity (MFA/Conditional Access), EDR/XDR, phishing defense, and immutable backups with tested restores.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -139,6 +140,7 @@ export default function Page() {
     ],
   };
 
+  // ✅ JSON-LD (aligned IDs)
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -156,37 +158,77 @@ export default function Page() {
     "@id": `${canonical}#service`,
     name: "Cybersecurity",
     serviceType: "Cybersecurity Services",
+    description:
+      "CIS/NIST aligned cybersecurity: zero-trust identity (MFA/Conditional Access), EDR/XDR, phishing defense, and immutable backups with tested restores.",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `Cybersecurity | ${brand}`,
+    "@id": `${canonical}#webpage`,
     url: canonical,
+    name: `Cybersecurity | ${brand}`,
     description:
       "CIS/NIST aligned: zero-trust identity, EDR/XDR, phishing defense, immutable backups.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
+  // ✅ FAQ schema (quick rich-result support)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What’s included in your cybersecurity program?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Identity hardening (MFA/Conditional Access), EDR/XDR deployment, phishing defense, vulnerability management, and immutable backup + restore testing.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you provide incident response support?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes — we use EDR/XDR playbooks to isolate endpoints, investigate alerts, and guide recovery. We also run tabletop exercises and maintain an IR playbook.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can you support compliance-oriented SMBs?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes — controls and documentation can be mapped to CIS/NIST practices, with evidence-ready reporting and periodic reviews.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
+
       <ServiceClientPage cfg={cfg} />
     </>
   );

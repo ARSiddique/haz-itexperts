@@ -7,9 +7,10 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/device-management`;
 
-  const title = `Device Management | ${brand}`;
+  // ✅ stronger title/description (intent + platforms + local)
+  const title = `Device Management (MDM/Autopilot/Jamf) | ${brand}`;
   const description =
-    "Zero-touch enrollment, hardening, patch & app management, compliance, and lifecycle.";
+    "Windows, macOS, iOS & Android device management for SMBs in Allentown & the Lehigh Valley: zero-touch enrollment, hardening, patch & app management, compliance reporting, and lifecycle control.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -108,6 +109,7 @@ export default function Page() {
     ],
   };
 
+  // ✅ Breadcrumbs
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -119,41 +121,82 @@ export default function Page() {
     ],
   };
 
+  // ✅ Service
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${canonical}#service`,
     name: "Device Management",
     serviceType: "Endpoint & Mobile Device Management",
+    description:
+      "Zero-touch enrollment, security hardening, patch & app management, compliance reporting, and device lifecycle control for Windows, macOS, iOS, and Android.",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      availability: "https://schema.org/InStock",
+    },
   };
 
+  // ✅ WebPage (IDs aligned)
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `Device Management | ${brand}`,
+    "@id": `${canonical}#webpage`,
     url: canonical,
+    name: `Device Management | ${brand}`,
     description:
       "Zero-touch enrollment, hardening, patch & app management, compliance, and lifecycle.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
+  // ✅ FAQ (rich-result support)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Which platforms do you manage?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Windows, macOS, iOS, and Android — including zero-touch enrollment, baselines, patching, app deployment, and compliance reporting.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you support BYOD devices?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We apply app protection and compliance policies so corporate data stays protected without overreaching on personal use.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How fast do critical patches get applied?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "We follow a defined patch cadence with an SLA target for critical updates (typically within 7 days), with pilot rings and rollback plans.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

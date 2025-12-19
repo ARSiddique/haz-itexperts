@@ -7,9 +7,10 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/vcio-strategy`;
 
-  const title = `vCIO / Strategy | ${brand}`;
+  // ✅ stronger keyword intent + local intent
+  const title = `vCIO & IT Strategy (Roadmaps, Budgets, KPI Reporting) | ${brand}`;
   const description =
-    "Roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.";
+    "vCIO / IT strategy for SMBs in Allentown & the Lehigh Valley: 90-day roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -26,9 +27,7 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        { url: ogImage, width: 1200, height: 630, alt: `${brand} — vCIO / Strategy` },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — vCIO / Strategy` }],
     },
 
     twitter: {
@@ -114,41 +113,81 @@ export default function Page() {
     ],
   };
 
+  // ✅ richer Service schema
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${canonical}#service`,
-    name: "vCIO / Strategy",
+    name: "vCIO & IT Strategy",
     serviceType: "Virtual CIO & IT Strategy",
+    description:
+      "Quarterly business reviews (QBRs), 90-day roadmaps, 12–18 month budget forecasts, vendor consolidation, governance/policies, and executive reporting with measurable KPIs.",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
     name: `vCIO / Strategy | ${brand}`,
     url: canonical,
     description:
       "Roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
+  // ✅ FAQ schema (helps on-page + rich snippets)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What does a vCIO do?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "A vCIO aligns IT with business goals by building a roadmap, forecasting budgets, managing vendors, and reporting KPIs and risk in a leadership-friendly format.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How often do we review progress?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "We run regular check-ins and formal QBR/board-style reviews quarterly, including KPIs, risks, initiatives, and next-quarter priorities.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you help with vendor consolidation and renewals?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We evaluate overlap, right-size licensing, build a renewal calendar, and provide scorecards so vendor decisions are data-driven.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

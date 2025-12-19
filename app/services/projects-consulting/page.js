@@ -7,9 +7,10 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/projects-consulting`;
 
-  const title = `Projects & Consulting | ${brand}`;
+  // ✅ stronger intent + local + keywords
+  const title = `IT Projects & Consulting (Network Refresh, Migrations, Audits) | ${brand}`;
   const description =
-    "Audits, office moves, network refresh, directory cleanup, decommissions — fixed scope & clean handovers.";
+    "Fixed-scope IT projects for SMBs in Allentown & the Lehigh Valley: audits, office moves, network refresh, migrations, directory cleanup, decommissions — with runbooks, rollback plans, and clean handovers.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -26,9 +27,7 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        { url: ogImage, width: 1200, height: 630, alt: `${brand} — Projects & Consulting` },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Projects & Consulting` }],
     },
 
     twitter: {
@@ -121,41 +120,81 @@ export default function Page() {
     ],
   };
 
+  // ✅ richer service schema (desc + offer CTA)
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${canonical}#service`,
-    name: "Projects & Consulting",
+    name: "IT Projects & Consulting",
     serviceType: "IT Projects & Consulting",
+    description:
+      "Fixed-scope IT projects including audits, office moves, network refresh, migrations, directory cleanup, decommissions, and automation — delivered with runbooks, rollback plans, acceptance tests, and clean handover documentation.",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
     name: `Projects & Consulting | ${brand}`,
     url: canonical,
     description:
-      "Audits, office moves, network refresh, directory cleanup, decommissions — fixed scope & clean handovers.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+      "Fixed-scope audits, moves, network refresh, directory cleanup, and decommissions — with runbooks, rollback plans, acceptance tests, and clean handovers.",
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
+  // ✅ FAQ (optional but strong for on-page SEO + rich results)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Do you provide fixed-scope projects?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We can deliver fixed-scope projects with clear milestones, acceptance tests, and a defined handover package. Time-and-materials is available when scope is evolving.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can projects be done after-hours or on weekends?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We plan change windows to reduce business disruption, including evenings and weekends, with rollback steps documented in advance.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What does the handover include?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "As-built documentation, runbooks, admin training, and a short warranty/support path so your team can operate the new environment confidently.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />

@@ -7,9 +7,9 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/cloud-workspace`;
 
-  const title = `Cloud & 365/Workspace | ${brand}`;
+  const title = `Cloud & Microsoft 365 / Google Workspace | ${brand}`;
   const description =
-    "Migrations, identity, governance, collaboration tuning, and SaaS backup.";
+    "Microsoft 365 & Google Workspace migrations, identity/SSO hardening, SharePoint/Drive governance, DLP/retention, and SaaS backup — built for SMBs in Allentown & the Lehigh Valley.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -49,6 +49,26 @@ export default function Page() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
   const canonical = `${baseUrl}/services/cloud-workspace`;
+
+  // ✅ FAQs (also used for FAQPage schema)
+  const faqs = [
+    {
+      q: "How long does a Microsoft 365 / Workspace migration take?",
+      a: "Most SMB migrations run 4–7 weeks depending on mailbox count, file volume, and governance needs. We start with a pilot and migrate in throttled batches to keep disruption low.",
+    },
+    {
+      q: "Can you migrate without downtime?",
+      a: "We plan cutovers to keep downtime near zero. Most users experience minimal interruption; we validate results and keep rollback options available.",
+    },
+    {
+      q: "Do you set up DLP and retention policies?",
+      a: "Yes. We implement DLP/retention labels, sharing rules, auditing, and reporting so collaboration stays least-privilege by design.",
+    },
+    {
+      q: "Is SaaS backup really necessary if we use Microsoft/Google?",
+      a: "Native retention/recycle bin features are not the same as independent backup. SaaS backup gives point-in-time restores and tested recoverability for mail, Drive/SharePoint, and critical content.",
+    },
+  ];
 
   const cfg = {
     title: "Cloud & 365/Workspace",
@@ -97,11 +117,7 @@ export default function Page() {
       { icon: "Database", title: "SaaS Backup", desc: "Mailbox, Drive, and SharePoint restores you can trust." },
       { icon: "Globe", title: "Collaboration", desc: "Teams/Channels/Spaces standards and lifecycle controls." },
     ],
-    gallery: [
-      "/images/illus/screens-1.svg",
-      "/images/illus/screens-3.svg",
-      "/images/illus/screens-2.svg",
-    ],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-3.svg", "/images/illus/screens-2.svg"],
     steps: [
       {
         title: "Plan",
@@ -134,11 +150,17 @@ export default function Page() {
       { quote: "Hundreds of mailboxes moved with minimal disruption.", author: "R. Iqbal", role: "IT Manager", avatar: "/images/avatars/a2.svg", rating: 5 },
       { quote: "Information architecture finally made sharing sane and secure.", author: "F. Tariq", role: "PM", avatar: "/images/avatars/a1.svg", rating: 5 },
     ],
+    // ✅ pass FAQs so they can be rendered on page (if ServiceClientPage supports it)
+    faqs,
   };
 
+  // ─────────────────────────────
+  // ✅ JSON-LD (Breadcrumb + WebPage + Service + FAQPage)
+  // ─────────────────────────────
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
       { "@type": "ListItem", position: 2, name: "Services", item: `${baseUrl}/services` },
@@ -149,40 +171,57 @@ export default function Page() {
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${canonical}#service`,
     name: "Cloud & 365/Workspace",
+    description:
+      "Microsoft 365 & Google Workspace migrations, identity/SSO hardening, SharePoint/Drive governance, DLP/retention, and SaaS backup.",
     serviceType: "Cloud Migration & Productivity",
     url: canonical,
     provider: {
       "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
       name: brand,
       url: baseUrl,
-      "@id": `${baseUrl}/#organization`,
     },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `Cloud & 365/Workspace | ${brand}`,
+    "@id": `${canonical}#webpage`,
     url: canonical,
-    description: "Migrations, identity, governance, collaboration tuning, and SaaS backup.",
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
+    name: `Cloud & 365/Workspace | ${brand}`,
+    description:
+      "Migrations, identity, governance, collaboration tuning, and SaaS backup — built for SMBs in Allentown & the Lehigh Valley.",
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    mainEntity: { "@id": `${canonical}#service` },
   };
 
-  // attach ids (optional but nice)
-  breadcrumbsSchema["@id"] = `${canonical}#breadcrumb`;
-  serviceSchema["@id"] = `${canonical}#service`;
-  webPageSchema.mainEntity = { "@id": `${canonical}#service` };
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: faqs.map((x) => ({
+      "@type": "Question",
+      name: x.q,
+      acceptedAnswer: { "@type": "Answer", text: x.a },
+    })),
+  };
 
   return (
     <>
-      {/* Breadcrumbs + Service + WebPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
       <ServiceClientPage cfg={cfg} />
