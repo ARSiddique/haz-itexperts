@@ -1,3 +1,4 @@
+// app/get-quote/QuoteFormClient.jsx
 "use client";
 
 import { useState } from "react";
@@ -8,14 +9,20 @@ function cx(...a) {
   return a.filter(Boolean).join(" ");
 }
 
+// ✅ small helper: sanitize phone for tel:
+const cleanTel = (p) => {
+  const s = String(p || "");
+  const keep = s.replace(/[^+\d]/g, "");
+  if (!keep) return "";
+  return keep.startsWith("+") ? keep : `+${keep}`;
+};
+
 const Input = ({ error, className, ...props }) => (
   <input
     {...props}
     className={cx(
       "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error
-        ? "border-red-500/70 focus:border-red-400"
-        : "border-white/20 focus:border-cyan-300/50",
+      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
@@ -26,9 +33,7 @@ const TextArea = ({ error, className, ...props }) => (
     {...props}
     className={cx(
       "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error
-        ? "border-red-500/70 focus:border-red-400"
-        : "border-white/20 focus:border-cyan-300/50",
+      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
@@ -36,6 +41,8 @@ const TextArea = ({ error, className, ...props }) => (
 
 export default function QuoteFormClient({ source = "get-quote-page" }) {
   const email = site?.email ?? "supremeitexperts@gmail.com";
+  const phone = site?.phone ?? "+1 610-500-9209";
+  const telHref = cleanTel(phone);
 
   const [form, setForm] = useState({
     name: "",
@@ -46,6 +53,8 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
     tools: "",
     budget: "",
     message: "",
+    // ✅ honeypot
+    website: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -59,17 +68,12 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
 
   const validate = () => {
     const next = {};
-
     if (!form.name.trim()) next.name = "Please enter your name.";
     if (!form.company.trim()) next.company = "Please enter your company.";
-    if (!form.workEmail.trim()) {
-      next.workEmail = "Please enter your work email.";
-    } else if (!/\S+@\S+\.\S+/.test(form.workEmail.trim())) {
-      next.workEmail = "Please enter a valid email.";
-    }
+    if (!form.workEmail.trim()) next.workEmail = "Please enter your work email.";
+    else if (!/\S+@\S+\.\S+/.test(form.workEmail.trim())) next.workEmail = "Please enter a valid email.";
     if (!form.teamSize) next.teamSize = "Select your team size.";
     if (!form.message.trim()) next.message = "Tell us what you’d like a quote for.";
-
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -78,10 +82,15 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
     e.preventDefault();
     if (!validate()) return;
 
+    // ✅ bot trap
+    if (form.website?.trim()) {
+      setDone(true);
+      return;
+    }
+
     setSending(true);
 
     try {
-      // Quote-specific message ko top me embed kar rahe hain
       const composedMessage = [
         "QUOTE REQUEST DETAILS",
         "---------------------",
@@ -98,13 +107,21 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
 
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name: form.name,
+          company: form.company,
           email: form.workEmail,
           phone: form.phone,
+          users: form.teamSize, // map to contact payload field if needed
+          stack: form.tools ? [form.tools] : [],
+          location: "", // optional
+          priority: "P2",
+          slaTarget: "≤ 1 hour",
           message: composedMessage,
-          source, // "get-quote-page"
+          source,
+          tz: "America/New_York",
+          page: typeof window !== "undefined" ? window.location.href : "",
         }),
       });
 
@@ -134,9 +151,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
       ].filter(Boolean);
 
       const body = encodeURIComponent(lines.join("\n"));
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-        "Quote request — " + form.company
-      )}&body=${body}`;
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent("Quote request — " + form.company)}&body=${body}`;
 
       setSending(false);
       setDone(true);
@@ -146,16 +161,30 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-7 space-y-6">
       <div>
-        <h2 className="text-base md:text-lg font-semibold text-slate-50">
-          Tell us what you’d like a quote for
-        </h2>
+        <h2 className="text-base md:text-lg font-semibold text-slate-50">Tell us what you’d like a quote for</h2>
         <p className="mt-1 text-sm text-slate-300">
-          A short, concrete description is enough. We’ll reply with options and
-          a simple, transparent breakdown.
+          A short, concrete description is enough. We’ll reply with options and a simple, transparent breakdown.
         </p>
+
+        {/* ✅ tiny trust/CTA line (helps UX + conversions) */}
+        <div className="mt-3 text-xs text-slate-400">
+          Or call us:{" "}
+          <a className="text-cyan-300 hover:underline" href={telHref ? `tel:${telHref}` : "#"}>
+            {phone}
+          </a>
+        </div>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-5">
+        {/* honeypot */}
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          className="hidden"
+          value={form.website}
+          onChange={(e) => updateField("website", e.target.value)}
+        />
+
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-slate-400">Your name</label>
@@ -165,9 +194,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               onChange={(e) => updateField("name", e.target.value)}
               error={!!errors.name}
             />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-400">{errors.name}</p>
-            )}
+            {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
           </div>
 
           <div>
@@ -178,9 +205,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               onChange={(e) => updateField("company", e.target.value)}
               error={!!errors.company}
             />
-            {errors.company && (
-              <p className="mt-1 text-xs text-red-400">{errors.company}</p>
-            )}
+            {errors.company && <p className="mt-1 text-xs text-red-400">{errors.company}</p>}
           </div>
 
           <div>
@@ -192,15 +217,11 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               onChange={(e) => updateField("workEmail", e.target.value)}
               error={!!errors.workEmail}
             />
-            {errors.workEmail && (
-              <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>
-            )}
+            {errors.workEmail && <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>}
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">
-              Phone (optional)
-            </label>
+            <label className="text-xs text-slate-400">Phone (optional)</label>
             <Input
               placeholder="e.g. +1 (610) 555-1234"
               value={form.phone}
@@ -217,9 +238,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               onChange={(e) => updateField("teamSize", e.target.value)}
               className={cx(
                 "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-                errors.teamSize
-                  ? "border-red-500/70 focus:border-red-400"
-                  : "border-white/20 focus:border-cyan-300/50"
+                errors.teamSize ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50"
               )}
             >
               {["10–24", "25–50", "51–100", "101–200", "200+"].map((opt) => (
@@ -228,15 +247,11 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
                 </option>
               ))}
             </select>
-            {errors.teamSize && (
-              <p className="mt-1 text-xs text-red-400">{errors.teamSize}</p>
-            )}
+            {errors.teamSize && <p className="mt-1 text-xs text-red-400">{errors.teamSize}</p>}
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">
-              Current tools (optional)
-            </label>
+            <label className="text-xs text-slate-400">Current tools (optional)</label>
             <Input
               placeholder="e.g. Microsoft 365, Google Workspace"
               value={form.tools}
@@ -245,9 +260,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">
-              Rough monthly budget (optional)
-            </label>
+            <label className="text-xs text-slate-400">Rough monthly budget (optional)</label>
             <Input
               placeholder="e.g. $1,500–$2,500"
               value={form.budget}
@@ -257,34 +270,29 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
         </div>
 
         <div>
-          <label className="text-xs text-slate-400">
-            What would you like us to cover in the quote?
-          </label>
+          <label className="text-xs text-slate-400">What would you like us to cover in the quote?</label>
           <TextArea
             rows={5}
-            placeholder="Example: Fully managed IT + security for ~40 staff across 2 offices. Please include options for 24/7 support and backup/DR."
+            placeholder="Example: Fully managed IT + security for ~40 staff across 2 offices. Include options for 24/7 support and backup/DR."
             value={form.message}
             onChange={(e) => updateField("message", e.target.value)}
             error={!!errors.message}
           />
-          {errors.message && (
-            <p className="mt-1 text-xs text-red-400">{errors.message}</p>
-          )}
+          {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="h-3.5 w-3.5 text-cyan-300" />
             No spam. We only use these details to prepare your quote.
           </span>
+
           <button
             type="submit"
             disabled={sending}
             className={cx(
               "rounded-lg px-5 py-2.5 text-sm font-semibold border transition inline-flex items-center gap-2",
-              sending
-                ? "border-white/10 text-slate-400"
-                : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+              sending ? "border-white/10 text-slate-400" : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
             )}
           >
             {sending ? "Sending…" : "Request quote"}
@@ -294,8 +302,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
 
         {done && (
           <div className="mt-3 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm">
-            Thanks! We’ve received your quote request. We’ll reply with a clear
-            proposal soon.
+            Thanks! We’ve received your quote request. We’ll reply with a clear proposal soon.
           </div>
         )}
       </form>

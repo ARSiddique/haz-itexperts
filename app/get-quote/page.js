@@ -7,30 +7,34 @@ import { site } from "@/lib/siteConfig";
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/get-quote`;
 
   const title = `Get a Quote — ${brand}`;
   const description =
     "See how our pricing works and request a tailored quote for your team, tools and risk profile.";
 
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
     metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/get-quote" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
     openGraph: {
       title,
       description,
       type: "website",
-      url: `${baseUrl}/get-quote`,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      url: canonical,
+      siteName: brand,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Get a Quote` }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      images: [ogImage],
     },
   };
 }
@@ -39,19 +43,13 @@ const PLANS = [
   {
     name: "Essentials",
     priceNote: "Suitable for small teams",
-    description:
-      "Core managed IT for endpoints and standard office tools. Simple, reliable support.",
-    includes: [
-      "Day-to-day support for staff",
-      "Patching and basic monitoring",
-      "Help with email and account issues",
-    ],
+    description: "Core managed IT for endpoints and standard office tools. Simple, reliable support.",
+    includes: ["Day-to-day support for staff", "Patching and basic monitoring", "Help with email and account issues"],
   },
   {
     name: "Secure",
     priceNote: "For growing teams",
-    description:
-      "Everything in Essentials plus stronger security controls, backup guidance and reviews.",
+    description: "Everything in Essentials plus stronger security controls, backup guidance and reviews.",
     includes: [
       "Security-first configuration for users and devices",
       "Simple backup and recovery plan",
@@ -61,8 +59,7 @@ const PLANS = [
   {
     name: "Plus",
     priceNote: "For multi-site or higher-risk teams",
-    description:
-      "More time for planning, reporting and working with your leadership on roadmap and risk.",
+    description: "More time for planning, reporting and working with your leadership on roadmap and risk.",
     includes: [
       "Scheduled check-ins with a senior engineer",
       "Higher-touch support for key systems",
@@ -72,32 +69,52 @@ const PLANS = [
 ];
 
 export default function GetQuotePage() {
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/get-quote`;
+
+  const WEBSITE_ID = `${baseUrl}/#website`;
+  const ORG_ID = `${baseUrl}/#organization`;
+
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Get a Quote", item: canonical },
+    ],
+  };
+
+  // ✅ WebPage/CollectionPage understanding
+  const quotePageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `Get a Quote — ${brand}`,
+    isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
+    about: { "@type": "Organization", "@id": ORG_ID },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+  };
+
+  // ✅ Optional org stub (remove if your layout already outputs Organization JSON-LD)
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": ORG_ID,
+    name: brand,
+    url: baseUrl,
+    telephone: site?.phone || "+1-610-500-9209",
+  };
 
   return (
     <>
-      {/* Breadcrumbs JSON-LD */}
+      {/* JSON-LD: Breadcrumbs + WebPage (+ optional org) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: `${baseUrl}/`,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Get a Quote",
-                item: `${baseUrl}/get-quote`,
-              },
-            ],
-          }),
+          __html: JSON.stringify([breadcrumbsSchema, quotePageSchema, orgSchema]),
         }}
       />
 
@@ -110,22 +127,18 @@ export default function GetQuotePage() {
       <main className="max-w-5xl mx-auto px-4 pb-20 space-y-10">
         <section className="text-sm text-slate-300 leading-7">
           <p>
-            Pricing is based mainly on the number of people we support, the
-            tools you use and how critical your systems are. We keep the
-            structure simple so it&apos;s easy to budget for.
+            Pricing is based mainly on the number of people we support, the tools you use and how critical your systems
+            are. We keep the structure simple so it&apos;s easy to budget for.
           </p>
           <p className="mt-3">
-            The examples below are guidelines only. We&apos;ll confirm an exact
-            quote after a short conversation about your environment.
+            The examples below are guidelines only. We&apos;ll confirm an exact quote after a short conversation about
+            your environment.
           </p>
         </section>
 
         <section className="grid gap-6 md:grid-cols-3">
           {PLANS.map((plan) => (
-            <div
-              key={plan.name}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col"
-            >
+            <div key={plan.name} className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col">
               <h2 className="text-lg font-semibold text-slate-100">{plan.name}</h2>
               <p className="mt-1 text-xs text-cyan-300/90">{plan.priceNote}</p>
               <p className="mt-3 text-sm text-slate-300">{plan.description}</p>
@@ -140,17 +153,14 @@ export default function GetQuotePage() {
 
         <section className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-slate-100">
-              Prefer to talk it through?
-            </h2>
+            <h2 className="text-base font-semibold text-slate-100">Prefer to talk it through?</h2>
             <p className="mt-2 text-sm text-slate-300">
-              If you&apos;re not sure which plan fits, we can walk through your
-              current setup and give clear options.
+              If you&apos;re not sure which plan fits, we can walk through your current setup and give clear options.
             </p>
           </div>
           <div className="flex gap-3">
             <Link
-              href="/contact"
+              href="/contact?type=assessment&source=get-quote"
               className="rounded-lg px-5 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
             >
               Talk to us
