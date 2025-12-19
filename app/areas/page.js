@@ -16,21 +16,16 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-// ✅ SEO (server-side) — handles query params to avoid duplicate indexing
-export async function generateMetadata({ searchParams }) {
+// --- SEO (server-side)
+export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/areas`;
 
-  const sp = (await searchParams) || {};
-  const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
-  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
-  const hasFilters = Boolean(regionParam || qParam);
-
-  const titleCore = "Areas We Serve";
-  const title = `${titleCore} | ${brand}`;
+  // IMPORTANT: layout already appends brand, so keep title clean
+  const title = "Areas We Serve";
   const description =
-    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, and Emmaus — with clear SLAs, fast response, and consistent service.";
+    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, Emmaus, and the Lehigh Valley — clear SLAs, fast response, consistent service.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -39,30 +34,20 @@ export async function generateMetadata({ searchParams }) {
     title,
     description,
     alternates: { canonical },
-
-    // ✅ index only the clean /areas URL
-    robots: hasFilters
-      ? { index: false, follow: true }
-      : { index: true, follow: true },
+    robots: { index: true, follow: true },
 
     openGraph: {
-      title,
+      title: `${title} | ${brand}`,
       description,
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Areas We Serve`,
-        },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Areas We Serve` }],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | ${brand}`,
       description,
       images: [ogImage],
     },
@@ -116,7 +101,7 @@ const SHARED_SERVICES = [
   },
 ];
 
-const normalize = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
+const normalize = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
 
 const Pill = ({ children }) => (
   <span className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[12px] border border-white/10 bg-white/5">
@@ -147,24 +132,16 @@ function RegionMap({ regions, active }) {
     <div className="relative rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.18),transparent_60%)]" />
 
-      <svg viewBox="0 0 100 100" className="w-full h-[360px] md:h-[500px]">
+      <svg viewBox="0 0 100 100" className="w-full h-[360px] md:h-[500px]" aria-label="Service area map">
         <g className="fill-white/6 stroke-white/10">
           <path d="M28,20 C34,16 46,14 58,18 C68,21 76,28 82,36 C88,44 92,54 88,64 C84,72 76,78 66,82 C58,84 48,85 40,82 C28,78 22,70 18,60 C14,50 16,40 20,32 C22,26 24,22 28,20 Z" />
         </g>
 
         {regions.map((r) =>
           r.cities.map((c) => (
-            <a key={r.key + c.name} href={buildHref(r.key)} aria-label={`View ${r.name}`}>
+            <a key={r.key + c.name} href={buildHref(r.key)} aria-label={`View ${r.name} cities`}>
               <circle cx={c.pin[0]} cy={c.pin[1]} r="1.15" fill={r.color} className="opacity-90" />
-              <circle
-                cx={c.pin[0]}
-                cy={c.pin[1]}
-                r="2.3"
-                fill="none"
-                stroke={r.color}
-                strokeWidth="0.2"
-                className="opacity-40"
-              />
+              <circle cx={c.pin[0]} cy={c.pin[1]} r="2.3" fill="none" stroke={r.color} strokeWidth="0.2" className="opacity-40" />
             </a>
           ))
         )}
@@ -201,8 +178,8 @@ function RegionMap({ regions, active }) {
 export default async function AreasPage({ searchParams }) {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
-  const canonical = `${baseUrl}/areas`;
 
+  // Works whether searchParams is object or Promise
   const sp = (await searchParams) || {};
   const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
@@ -228,21 +205,21 @@ export default async function AreasPage({ searchParams }) {
     { name: "Emmaus, PA", slug: "emmaus-pa" },
   ];
 
-  // ---- JSON-LD (clean + avoids duplicating org schema if it already exists globally)
+  // ---- JSON-LD (SEO)
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "@id": `${canonical}#breadcrumb`,
+    "@id": `${baseUrl}/areas#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: canonical },
+      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: `${baseUrl}/areas` },
     ],
   };
 
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": `${canonical}#locations`,
+    "@id": `${baseUrl}/areas#locations`,
     name: "Popular IT Support Locations",
     itemListElement: popularLocations.map((x, idx) => ({
       "@type": "ListItem",
@@ -255,24 +232,30 @@ export default async function AreasPage({ searchParams }) {
   const collectionPageSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": `${canonical}#collection`,
+    "@id": `${baseUrl}/areas#collection`,
     name: "Areas We Serve",
-    url: canonical,
-    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    url: `${baseUrl}/areas`,
+    isPartOf: { "@type": "WebSite", url: `${baseUrl}/`, name: brand },
     about: { "@type": "Service", name: "Managed IT Services & Cybersecurity" },
-    description:
-      "Remote-first managed IT services and cybersecurity across Allentown, Macungie, Emmaus and the Lehigh Valley.",
+  };
+
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${baseUrl}/#organization`,
+    name: brand,
+    url: baseUrl,
+    telephone: site?.phone || "+1-610-500-9209",
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
   };
 
   return (
     <>
-      {/* Breadcrumbs + CollectionPage + ItemList JSON-LD */}
+      {/* Breadcrumbs + CollectionPage + ItemList + Organization JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema, orgSchema]),
         }}
       />
 
@@ -365,6 +348,7 @@ export default async function AreasPage({ searchParams }) {
                               <Link
                                 href={`/locations/${c.slug}`}
                                 className="inline-flex items-center gap-2 text-xs rounded-lg px-3 py-1.5 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                                aria-label={`Open ${c.name} location page`}
                               >
                                 View location page <ExternalLink className="h-3.5 w-3.5" />
                               </Link>
@@ -533,10 +517,7 @@ export default async function AreasPage({ searchParams }) {
                     </div>
 
                     <div className="mt-3">
-                      <a
-                        href={href}
-                        className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-                      >
+                      <a href={href} className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
                         View this region
                       </a>
                     </div>
