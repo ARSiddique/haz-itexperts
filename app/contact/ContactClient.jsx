@@ -50,18 +50,29 @@ const TextArea = ({ error, className, ...props }) => (
   />
 );
 
+// E.164-ish for tel: links
 const cleanTel = (p) => {
-  const s = String(p || "");
-  const keep = s.replace(/[^+\d]/g, "");
-  if (!keep) return "";
-  return keep.startsWith("+") ? keep : `+${keep}`;
+  const s = String(p || "").trim();
+  if (!s) return "";
+  // keep digits and leading +
+  const cleaned = s.replace(/[^\d+]/g, "");
+  if (!cleaned) return "";
+  // normalize multiple +
+  const normalized = cleaned.replace(/\++/g, "+");
+  return normalized.startsWith("+") ? normalized : `+${normalized}`;
 };
 
-export default function ContactClient({
-  source = "contact-page",
-  mode = "full",
-  tz = "America/New_York",
-}) {
+const STACK_OPTIONS = [
+  "Microsoft 365",
+  "Google Workspace",
+  "Windows",
+  "macOS",
+  "Android/iOS",
+  "Servers/AD",
+  "Firewalls/Wi-Fi",
+];
+
+export default function ContactClient({ source = "contact-page", mode = "full", tz = "America/New_York" }) {
   const email = site?.email ?? "supremeitexperts@gmail.com";
   const phone = site?.phone ?? "+1 610-500-9209";
   const telHref = cleanTel(phone);
@@ -72,6 +83,7 @@ export default function ContactClient({
   const [copied, setCopied] = useState("");
   const copy = async (txt, key) => {
     try {
+      if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) return;
       await navigator.clipboard.writeText(txt);
       setCopied(key);
       setTimeout(() => setCopied(""), 1300);
@@ -202,7 +214,7 @@ export default function ContactClient({
       }
 
       throw new Error("api failed");
-    } catch (err) {
+    } catch {
       // fallback to mailto
       const lines = [
         `Name: ${form.name}`,
@@ -252,7 +264,6 @@ export default function ContactClient({
 
   return (
     <>
-      {/* ✅ mode support */}
       {mode === "full" && (
         <PageHero
           eyebrow="Contact"
@@ -277,6 +288,7 @@ export default function ContactClient({
                   type="button"
                   onClick={() => copy(email, "email")}
                   className="ms-2 text-xs inline-flex items-center gap-1 opacity-80 hover:opacity-100"
+                  aria-label="Copy email"
                 >
                   {copied === "email" ? (
                     <>
@@ -291,13 +303,20 @@ export default function ContactClient({
               </div>
 
               <div className="mt-1 text-sm">
-                <a className="inline-flex items-center gap-2 hover:text-cyan-300 transition" href={telHref ? `tel:${telHref}` : "#"}>
-                  <Phone className="w-4 h-4" /> {phone}
-                </a>
+                {telHref ? (
+                  <a className="inline-flex items-center gap-2 hover:text-cyan-300 transition" href={`tel:${telHref}`}>
+                    <Phone className="w-4 h-4" /> {phone}
+                  </a>
+                ) : (
+                  <div className="inline-flex items-center gap-2 opacity-90">
+                    <Phone className="w-4 h-4" /> {phone}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => copy(phone, "phone")}
                   className="ms-2 text-xs inline-flex items-center gap-1 opacity-80 hover:opacity-100"
+                  aria-label="Copy phone"
                 >
                   {copied === "phone" ? (
                     <>
@@ -383,19 +402,23 @@ export default function ContactClient({
                   <div
                     className={cx(
                       "size-6 grid place-items-center rounded-full border",
-                      step >= i + 1 ? "border-cyan-300/40 bg-cyan-400/10 text-cyan-300" : "border-white/10 text-slate-400"
+                      step >= i + 1
+                        ? "border-cyan-300/40 bg-cyan-400/10 text-cyan-300"
+                        : "border-white/10 text-slate-400"
                     )}
                   >
                     {i + 1}
                   </div>
-                  <span className={cx("hidden sm:inline", step >= i + 1 ? "text-slate-200" : "text-slate-400")}>{t}</span>
+                  <span className={cx("hidden sm:inline", step >= i + 1 ? "text-slate-200" : "text-slate-400")}>
+                    {t}
+                  </span>
                   {i < 2 && <span className="w-6 h-[2px] bg-white/10 rounded-full" />}
                 </div>
               ))}
             </div>
 
             <form className="mt-6 space-y-5" onSubmit={onSubmit}>
-              {/* honeypot (hidden) */}
+              {/* honeypot */}
               <input
                 tabIndex={-1}
                 autoComplete="off"
@@ -405,7 +428,7 @@ export default function ContactClient({
               />
 
               {done ? (
-                <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm">
+                <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm" aria-live="polite">
                   Thanks! We’ve received your request.{" "}
                   <span className="text-emerald-300">Target response {sla.eta}</span>.
                 </div>
@@ -416,6 +439,8 @@ export default function ContactClient({
                       <div>
                         <label className="text-xs text-slate-400">Your name</label>
                         <Input
+                          name="name"
+                          autoComplete="name"
                           placeholder="Your full name"
                           value={form.name}
                           onChange={(e) => updateField("name", e.target.value)}
@@ -427,6 +452,8 @@ export default function ContactClient({
                       <div>
                         <label className="text-xs text-slate-400">Company</label>
                         <Input
+                          name="company"
+                          autoComplete="organization"
                           placeholder="Company name"
                           value={form.company}
                           onChange={(e) => updateField("company", e.target.value)}
@@ -438,6 +465,8 @@ export default function ContactClient({
                       <div>
                         <label className="text-xs text-slate-400">Work email</label>
                         <Input
+                          name="email"
+                          autoComplete="email"
                           type="email"
                           placeholder="you@company.com"
                           value={form.workEmail}
@@ -450,6 +479,9 @@ export default function ContactClient({
                       <div>
                         <label className="text-xs text-slate-400">Phone (optional)</label>
                         <Input
+                          name="phone"
+                          autoComplete="tel"
+                          inputMode="tel"
                           placeholder="e.g. +1 (610) 555-1234"
                           value={form.phone}
                           onChange={(e) => updateField("phone", e.target.value)}
@@ -468,8 +500,11 @@ export default function ContactClient({
                             onChange={(e) => updateField("users", e.target.value)}
                             className={cx(
                               "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-                              errors.users ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50"
+                              errors.users
+                                ? "border-red-500/70 focus:border-red-400"
+                                : "border-white/20 focus:border-cyan-300/50"
                             )}
+                            name="users"
                           >
                             {["10-24", "25-50", "51-100", "101-200", "200+"].map((x) => (
                               <option key={x} value={x} className="bg-[#0b1220]">
@@ -483,6 +518,8 @@ export default function ContactClient({
                         <div>
                           <label className="text-xs text-slate-400">Primary location</label>
                           <Input
+                            name="location"
+                            autoComplete="address-level2"
                             placeholder="City / region"
                             value={form.location}
                             onChange={(e) => updateField("location", e.target.value)}
@@ -519,9 +556,9 @@ export default function ContactClient({
                       <div className="mt-2">
                         <label className="text-xs text-slate-400">Current stack</label>
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {["Microsoft 365", "Google Workspace", "Windows", "macOS", "Android/iOS", "Servers/AD", "Firewalls/Wi-Fi"].map(
-                            (x) => <StackChip key={x} label={x} />
-                          )}
+                          {STACK_OPTIONS.map((x) => (
+                            <StackChip key={x} label={x} />
+                          ))}
                         </div>
                       </div>
                     </>
@@ -532,6 +569,7 @@ export default function ContactClient({
                       <div>
                         <label className="text-xs text-slate-400">How can we help?</label>
                         <TextArea
+                          name="message"
                           rows={6}
                           placeholder="Example: Co-managed helpdesk and MDM baseline for ~80 users. Also email security & backup/DR."
                           value={form.message}
@@ -549,7 +587,11 @@ export default function ContactClient({
 
                       <label className="text-xs flex flex-col gap-1 text-slate-300 mt-2">
                         <span className="inline-flex items-center gap-2">
-                          <input type="checkbox" checked={form.consent} onChange={(e) => updateField("consent", e.target.checked)} />
+                          <input
+                            type="checkbox"
+                            checked={form.consent}
+                            onChange={(e) => updateField("consent", e.target.checked)}
+                          />
                           You agree to be contacted about this request.
                         </span>
                         {errors.consent && <span className="text-xs text-red-400">{errors.consent}</span>}
@@ -589,7 +631,9 @@ export default function ContactClient({
                           disabled={sending}
                           className={cx(
                             "rounded-lg px-5 py-2.5 text-sm font-semibold border transition inline-flex items-center gap-2",
-                            sending ? "border-white/10 text-slate-400" : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                            sending
+                              ? "border-white/10 text-slate-400"
+                              : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                           )}
                         >
                           {sending ? "Sending…" : "Send"} {!sending && <ArrowRight className="h-4 w-4" />}
@@ -656,12 +700,19 @@ export default function ContactClient({
                   <p className="text-slate-300">15-min no-pressure assessment — we’ll map gaps and next steps.</p>
                 </div>
                 <div className="flex gap-3">
-                  <a
-                    href={telHref ? `tel:${telHref}` : "#"}
-                    className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
-                  >
-                    Call now <Phone className="h-4 w-4" />
-                  </a>
+                  {telHref ? (
+                    <a
+                      href={`tel:${telHref}`}
+                      className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
+                    >
+                      Call now <Phone className="h-4 w-4" />
+                    </a>
+                  ) : (
+                    <span className="rounded-lg px-5 py-3 font-semibold border border-white/10 text-slate-300 bg-white/5 inline-flex items-center gap-2">
+                      {phone} <Phone className="h-4 w-4" />
+                    </span>
+                  )}
+
                   <Link
                     href="/get-quote"
                     className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center gap-2"
