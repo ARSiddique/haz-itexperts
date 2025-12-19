@@ -296,95 +296,41 @@ export default function HomePage() {
   ];
 
   // JSON-LD objects (WebSite + Organization + LocalBusiness/ITService + WebPage + FAQPage + BreadcrumbList)
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      name: brand,
-      url: `${SITE_URL}/`,
+ const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${SITE_URL}/#webpage`,
+    url: `${SITE_URL}/`,
+    name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#organization` },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/og-image.png?v=7`,
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: brand,
-      url: `${SITE_URL}/`,
-      sameAs,
-      logo: `${SITE_URL}/logo.png`,
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          telephone: phoneRaw,
-          contactType: "customer service",
-          areaServed: areas,
-          availableLanguage: ["en"],
-        },
-      ],
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": ["LocalBusiness", "ITService"],
-      "@id": `${SITE_URL}/#localbusiness`,
-      name: brand,
-      url: `${SITE_URL}/`,
-      description:
-        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
-      telephone: phoneRaw,
-      priceRange: "$$",
-      areaServed: areas,
-      logo: `${SITE_URL}/logo.png`,
-      image: [`${SITE_URL}/og-image.png?v=7`],
-      // NOTE: Add full address ONLY if you have a real public address
-      // address: {
-      //   "@type": "PostalAddress",
-      //   streetAddress: "123 Main St",
-      //   addressLocality: "Allentown",
-      //   addressRegion: "PA",
-      //   postalCode: "18101",
-      //   addressCountry: "US",
-      // },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/#webpage`,
-      url: `${SITE_URL}/`,
-      name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
-      isPartOf: { "@id": `${SITE_URL}/#website` },
-      about: { "@id": `${SITE_URL}/#localbusiness` },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: `${SITE_URL}/og-image.png?v=7`,
-      },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "@id": `${SITE_URL}/#breadcrumb`,
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: `${SITE_URL}/`,
-        },
-      ],
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "@id": `${SITE_URL}/#faq`,
-      mainEntity: FAQS.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: f.a,
-        },
-      })),
-    },
-  ];
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${SITE_URL}/#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${SITE_URL}/#faq`,
+    mainEntity: FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  },
+];
+
+
 
   return (
     <div className="relative overflow-hidden bg-[#0b1220]">

@@ -20,7 +20,11 @@ const DEFAULT_DESC =
 const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
 
 const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
+const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
 const email = site?.email || "supremeitexperts@gmail.com";
+
+// socials (if site.socials is an object)
+const sameAs = Object.values(site?.socials || {}).filter(Boolean);
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
@@ -31,9 +35,6 @@ export const metadata = {
   },
 
   description: DEFAULT_DESC,
-
-  // ✅ IMPORTANT: root layout me canonical mat do
-  // har page (generateMetadata) apna canonical set kare
 
   robots: {
     index: true,
@@ -78,11 +79,6 @@ export const metadata = {
     description: DEFAULT_DESC,
     images: [OG_IMAGE],
   },
-
-  // Optional: agar GSC verify code ho to yahan add kar dena
-  // verification: {
-  //   google: "YOUR_GSC_VERIFICATION_CODE",
-  // },
 };
 
 export const viewport = {
@@ -95,8 +91,9 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  // Global schema (Organization + WebSite)
+  // ✅ Keep ONE global schema set here
   const schema = [
+    // Organization
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -104,13 +101,14 @@ export default function RootLayout({ children }) {
       name: BRAND,
       url: BASE_URL,
       logo: new URL("/favicon-48.png", BASE_URL).toString(),
+      sameAs,
       contactPoint: [
         {
           "@type": "ContactPoint",
           contactType: "customer support",
-          telephone: cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`,
+          telephone: phoneE164,
           email,
-          availableLanguage: ["English"],
+          availableLanguage: ["en"],
         },
       ],
       areaServed: [
@@ -119,29 +117,52 @@ export default function RootLayout({ children }) {
         "Emmaus, PA",
         "Lehigh Valley, PA",
       ],
-      // Optional: real social profile URLs add karna ho to uncomment:
-      // sameAs: [
-      //   "https://www.linkedin.com/company/....",
-      //   "https://www.facebook.com/....",
-      // ],
     },
+
+    // WebSite
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "@id": `${BASE_URL}/#website`,
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       name: BRAND,
       publisher: { "@id": `${BASE_URL}/#organization` },
+    },
+
+    // ✅ LocalBusiness / ITService (ONE PLACE ONLY)
+    // Note: no fake streetAddress. Only locality/region/country to satisfy validator.
+    {
+      "@context": "https://schema.org",
+      "@type": ["LocalBusiness", "ITService"],
+      "@id": `${BASE_URL}/#localbusiness`,
+      name: BRAND,
+      url: `${BASE_URL}/`,
+      description:
+        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+      telephone: phoneE164,
+      priceRange: "$$",
+      areaServed: [
+        "Allentown, PA",
+        "Macungie, PA",
+        "Emmaus, PA",
+        "Lehigh Valley, PA",
+      ],
+      image: [OG_IMAGE],
+      logo: new URL("/logo.png", BASE_URL).toString(),
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Allentown",
+        addressRegion: "PA",
+        addressCountry: "US",
+      },
     },
   ];
 
   return (
     <html lang="en">
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
-        {/* GA4 */}
         <Analytics />
 
-        {/* Global JSON-LD */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
