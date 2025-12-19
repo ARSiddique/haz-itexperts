@@ -1,35 +1,42 @@
 // app/about/page.js
 import Link from "next/link";
+import Script from "next/script";
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
 
-// --- SEO (server-side)
+// ─────────────────────────────────────────────────────────────────────────────
+// SEO (server-side)
+// ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/about`;
 
-  const title = "About"; // ✅ brand yahan mat lagao (layout template already adds it)
+  const title = "About";
   const description =
     "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.";
 
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
+  const ogImage = `/og-image.png?v=7`;
 
   return {
     metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical },
+    alternates: { canonical: "/about" }, // ✅ relative canonical (best w/ metadataBase)
     robots: { index: true, follow: true },
 
     openGraph: {
       title: `${title} | ${brand}`,
       description,
       type: "website",
-      url: canonical,
+      url: "/about", // ✅ relative (metadataBase handles absolute)
       siteName: brand,
       images: [
-        { url: ogImage, width: 1200, height: 630, alt: `${brand} — About` },
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — About`,
+        },
       ],
     },
 
@@ -47,37 +54,43 @@ export default function AboutPage() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/about`;
 
-  const breadcrumbsSchema = {
+  // JSON-LD (BreadcrumbList + WebPage) — clean and valid
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "@id": `${canonical}#breadcrumb`,
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "About", item: canonical },
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+          { "@type": "ListItem", position: 2, name: "About", item: canonical },
+        ],
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: `About | ${brand}`,
+        description:
+          "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.",
+        isPartOf: { "@id": `${baseUrl}/#website` },
+        about: { "@id": `${baseUrl}/#organization` },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: `${baseUrl}/og-image.png?v=7`,
+        },
+      },
     ],
-  };
-
-  const webPageSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": `${canonical}#webpage`,
-    url: canonical,
-    name: `About | ${brand}`,
-    description:
-      "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.",
-    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-    breadcrumb: { "@id": `${canonical}#breadcrumb` },
   };
 
   return (
     <>
-      {/* Breadcrumbs + WebPage JSON-LD */}
-      <script
+      {/* ✅ JSON-LD (best practice via next/script) */}
+      <Script
+        id="about-jsonld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, webPageSchema]),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <PageHero
