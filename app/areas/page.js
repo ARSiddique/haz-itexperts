@@ -16,32 +16,55 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-// --- SEO (server-side)
-export async function generateMetadata() {
+// ✅ SEO (server-side) — handles query params to avoid duplicate indexing
+export async function generateMetadata({ searchParams }) {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/areas`;
 
-  const title = `Areas We Serve | Remote Managed IT for Allentown & Lehigh Valley — ${brand}`;
+  const sp = (await searchParams) || {};
+  const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
+  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
+  const hasFilters = Boolean(regionParam || qParam);
+
+  const titleCore = "Areas We Serve";
+  const title = `${titleCore} | ${brand}`;
   const description =
     "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, and Emmaus — with clear SLAs, fast response, and consistent service.";
 
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
-    alternates: { canonical: "/areas" },
-    robots: { index: true, follow: true },
+    alternates: { canonical },
+
+    // ✅ index only the clean /areas URL
+    robots: hasFilters
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+
     openGraph: {
       title,
       description,
       type: "website",
-      url: `${baseUrl}/areas`,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      url: canonical,
+      siteName: brand,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Areas We Serve`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      images: [ogImage],
     },
   };
 }
@@ -176,10 +199,10 @@ function RegionMap({ regions, active }) {
 }
 
 export default async function AreasPage({ searchParams }) {
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
+  const canonical = `${baseUrl}/areas`;
 
-  // Next 15: searchParams is a Promise (reading it opts into dynamic rendering) :contentReference[oaicite:1]{index=1}
   const sp = (await searchParams) || {};
   const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
@@ -188,7 +211,9 @@ export default async function AreasPage({ searchParams }) {
   const q = (qParam ?? "").toString();
 
   const region =
-    REGIONS.find((r) => r.key === regionKey) ?? REGIONS.find((r) => r.key === "lehigh") ?? REGIONS[0];
+    REGIONS.find((r) => r.key === regionKey) ??
+    REGIONS.find((r) => r.key === "lehigh") ??
+    REGIONS[0];
 
   const nq = normalize(q);
   const order = { A: 0, B: 1, C: 2 };
@@ -203,19 +228,21 @@ export default async function AreasPage({ searchParams }) {
     { name: "Emmaus, PA", slug: "emmaus-pa" },
   ];
 
-  // ---- JSON-LD (better SEO)
+  // ---- JSON-LD (clean + avoids duplicating org schema if it already exists globally)
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: `${baseUrl}/areas` },
+      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: canonical },
     ],
   };
 
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
+    "@id": `${canonical}#locations`,
     name: "Popular IT Support Locations",
     itemListElement: popularLocations.map((x, idx) => ({
       "@type": "ListItem",
@@ -228,28 +255,24 @@ export default async function AreasPage({ searchParams }) {
   const collectionPageSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
+    "@id": `${canonical}#collection`,
     name: "Areas We Serve",
-    url: `${baseUrl}/areas`,
-    isPartOf: { "@type": "WebSite", url: `${baseUrl}/`, name: brand },
+    url: canonical,
+    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
     about: { "@type": "Service", name: "Managed IT Services & Cybersecurity" },
-  };
-
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: brand,
-    url: baseUrl,
-    telephone: site?.phone || "+1-610-500-9209",
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    description:
+      "Remote-first managed IT services and cybersecurity across Allentown, Macungie, Emmaus and the Lehigh Valley.",
   };
 
   return (
     <>
-      {/* Breadcrumbs + CollectionPage + ItemList + Organization JSON-LD */}
+      {/* Breadcrumbs + CollectionPage + ItemList JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema, orgSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema]),
         }}
       />
 
@@ -540,7 +563,10 @@ export default async function AreasPage({ searchParams }) {
               >
                 Book a 20-min Assessment
               </Link>
-              <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20">
+              <Link
+                href="/contact"
+                className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
+              >
                 Talk to us
               </Link>
             </div>
