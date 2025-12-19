@@ -1,6 +1,7 @@
 // app/page.js
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { Suspense } from "react";
 import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
@@ -52,6 +53,7 @@ export async function generateMetadata() {
       description,
       url: "/",
       type: "website",
+      siteName: brand, // ✅ added
       images: [
         {
           url: "/og-image.png?v=7",
@@ -212,9 +214,6 @@ export default function HomePage() {
   const brand = site?.name || "Supreme IT Experts";
   const SITE_URL = site?.url || "https://supremeitexperts.com";
 
-  // ✅ schema sameAs should be an array (site.socials is usually an object)
-  const sameAs = Object.values(site?.socials || {}).filter(Boolean);
-
   const phoneRaw = site?.phone || "+1-610-500-9209";
   const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
 
@@ -295,42 +294,45 @@ export default function HomePage() {
     },
   ];
 
-  // JSON-LD objects (WebSite + Organization + LocalBusiness/ITService + WebPage + FAQPage + BreadcrumbList)
- const jsonLd = [
-  {
+  // JSON-LD (Home) — WebPage + BreadcrumbList + FAQPage
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": `${SITE_URL}/#webpage`,
-    url: `${SITE_URL}/`,
-    name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
-    isPartOf: { "@id": `${SITE_URL}/#website` },
-    about: { "@id": `${SITE_URL}/#organization` },
-    primaryImageOfPage: {
-      "@type": "ImageObject",
-      url: `${SITE_URL}/og-image.png?v=7`,
-    },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "@id": `${SITE_URL}/#breadcrumb`,
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/#webpage`,
+        url: `${SITE_URL}/`,
+        name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        about: { "@id": `${SITE_URL}/#organization` },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: `${SITE_URL}/og-image.png?v=7`,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${SITE_URL}/`,
+          },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faq`,
+        mainEntity: FAQS.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
     ],
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${SITE_URL}/#faq`,
-    mainEntity: FAQS.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  },
-];
-
-
+  };
 
   return (
     <div className="relative overflow-hidden bg-[#0b1220]">
@@ -343,12 +345,11 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_30%)]" />
       </div>
 
-      {/* JSON-LD */}
-      <script
+      {/* ✅ JSON-LD (best practice) */}
+      <Script
+        id="home-jsonld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       {/* Popup – client component */}
@@ -386,6 +387,17 @@ export default function HomePage() {
               &amp; Emmaus. 24/7 helpdesk, proactive monitoring and real
               security backed by SLAs.
             </p>
+
+            {/* ✅ extra internal link (crawl depth) */}
+            <div className="mt-2 text-sm text-slate-300">
+              Explore all plans:{" "}
+              <Link
+                href="/services"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Managed IT service plans
+              </Link>
+            </div>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link

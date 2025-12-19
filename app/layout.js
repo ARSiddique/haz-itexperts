@@ -4,6 +4,7 @@ import { site } from "@/lib/siteConfig";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import Script from "next/script";
 
 const RAW_BASE_URL =
   (site?.url && site.url.startsWith("http") ? site.url : null) ||
@@ -29,6 +30,11 @@ const sameAs = Object.values(site?.socials || {}).filter(Boolean);
 export const metadata = {
   metadataBase: new URL(BASE_URL),
 
+  // ✅ add canonical default (home)
+  alternates: {
+    canonical: "/",
+  },
+
   title: {
     default: `${BRAND} — Managed IT & Cybersecurity`,
     template: `%s | ${BRAND}`,
@@ -48,6 +54,15 @@ export const metadata = {
     },
   },
 
+  // ✅ verification (optional but recommended)
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      // bing: "xxxx" (optional)
+      // "msvalidate.01": "xxxx"
+    },
+  },
+
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -59,7 +74,8 @@ export const metadata = {
   openGraph: {
     title: `${BRAND} — Managed IT & Cybersecurity`,
     description: DEFAULT_DESC,
-    url: BASE_URL,
+    // ✅ better: relative url + metadataBase handles domain
+    url: "/",
     siteName: BRAND,
     type: "website",
     locale: "en_US",
@@ -91,9 +107,8 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  // ✅ Keep ONE global schema set here
+  // ✅ ONE global schema set here (good)
   const schema = [
-    // Organization
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -119,7 +134,6 @@ export default function RootLayout({ children }) {
       ],
     },
 
-    // WebSite
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -129,8 +143,6 @@ export default function RootLayout({ children }) {
       publisher: { "@id": `${BASE_URL}/#organization` },
     },
 
-    // ✅ LocalBusiness / ITService (ONE PLACE ONLY)
-    // Note: no fake streetAddress. Only locality/region/country to satisfy validator.
     {
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "ITService"],
@@ -140,6 +152,7 @@ export default function RootLayout({ children }) {
       description:
         "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
       telephone: phoneE164,
+      email, // ✅ add email here too
       priceRange: "$$",
       areaServed: [
         "Allentown, PA",
@@ -163,7 +176,9 @@ export default function RootLayout({ children }) {
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <Analytics />
 
-        <script
+        {/* ✅ Recommended way */}
+        <Script
+          id="global-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
