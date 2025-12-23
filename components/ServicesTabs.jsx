@@ -3,10 +3,51 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { ArrowRight, Cpu } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
-const Pill = ({ children }) => (
-  <span className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[12px] border border-white/10 bg-white/5">
+const META = {
+  managed: {
+    outcomes: ["Fewer recurring tickets", "Predictable patching & uptime", "Clear SLAs + leadership visibility"],
+    bestFor: ["Teams that want proactive IT (not reactive)", "SMBs that need consistency + reporting"],
+    timeline: "Stabilize in 2–4 weeks",
+  },
+  security: {
+    outcomes: ["Reduced phishing & account risk", "Faster detection + response", "Backups you can actually restore"],
+    bestFor: ["Compliance-aware SMBs", "Teams targeted by phishing/ransomware"],
+    timeline: "Baseline in 2–3 weeks",
+  },
+  cloud: {
+    outcomes: ["Smoother collaboration + sharing control", "Cleaner tenants & access", "Recoverability beyond recycle-bin"],
+    bestFor: ["M365/Workspace migrations or cleanup", "Teams with file sprawl + permission issues"],
+    timeline: "Migrations often 4–7 weeks",
+  },
+  projects: {
+    outcomes: ["Runbooks + rollback plans", "Clean cutovers with less downtime", "As-built docs & handover"],
+    bestFor: ["Network refresh / office moves", "Audits, migrations, or decommissions"],
+    timeline: "Depends on scope",
+  },
+  mdm: {
+    outcomes: ["Standardized devices with less drift", "Faster onboarding/offboarding", "Compliance reporting you can prove"],
+    bestFor: ["Hybrid fleets (Windows/Mac/iOS/Android)", "Teams needing zero-touch enrollment"],
+    timeline: "Baselines in 1–2 weeks",
+  },
+  vcio: {
+    outcomes: ["Roadmap tied to business goals", "Budget clarity & vendor control", "KPIs that leadership understands"],
+    bestFor: ["Owners/leadership wanting direction", "Teams tired of ad-hoc IT decisions"],
+    timeline: "Roadmap in 30–45 days",
+  },
+};
+
+function safeMeta(key) {
+  return META[key] || {
+    outcomes: ["Clear deliverables", "Reduced risk & surprises", "Better visibility & control"],
+    bestFor: ["Growing SMBs", "Teams that want structure"],
+    timeline: "Varies by environment",
+  };
+}
+
+const Chip = ({ children }) => (
+  <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[12px] border border-white/10 bg-white/5 text-slate-200">
     {children}
   </span>
 );
@@ -19,7 +60,6 @@ export default function ServicesTabs({ services = [] }) {
   const initialKey = keys.includes("managed") ? "managed" : keys[0] || "managed";
   const [tab, setTab] = useState(initialKey);
 
-  // keep tab valid if services change
   useEffect(() => {
     if (!keys.length) return;
     if (!keys.includes(tab)) setTab(keys.includes("managed") ? "managed" : keys[0]);
@@ -98,6 +138,11 @@ export default function ServicesTabs({ services = [] }) {
           const selected = tab === s.key;
           const tabId = `tab-${uid}-${s.key}`;
           const panelId = `panel-${uid}-${s.key}`;
+          const m = safeMeta(s.key);
+
+          const bullets = Array.isArray(s.bullets) ? s.bullets.slice(0, 3) : [];
+          const modules = Array.isArray(s.deep) ? s.deep.slice(0, 3) : [];
+          const href = s.href || "/services";
 
           return (
             <section
@@ -108,42 +153,59 @@ export default function ServicesTabs({ services = [] }) {
               hidden={!selected}
             >
               <div className="grid md:grid-cols-2 gap-6 items-start">
+                {/* LEFT */}
                 <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
-                    What you get
-                  </div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Overview</div>
 
-                  {/* NOTE: keep H3 here (page already has H1/H2) */}
+                  {/* Keep H3 (page already has H1/H2) */}
                   <h3 className="text-2xl font-semibold mt-1">{s.title}</h3>
 
                   <p className="text-slate-300 mt-2">{s.desc}</p>
 
-                  <ul className="mt-4 space-y-2">
-                    {(s.deep || []).map(([t, d]) => (
-                      <li key={t} className="flex items-start gap-2 text-sm text-slate-200">
-                        <svg
-                          className="mt-0.5 h-4 w-4 text-cyan-300"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          aria-hidden="true"
-                        >
-                          <path d="M9 16.2 4.8 12l1.4-1.4L9 13.4l8.8-8.8L19.2 6z" />
-                        </svg>
-                        <span>
-                          <strong className="text-slate-100">{t}</strong> — {d}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* What you get (generic-friendly) */}
+                  {bullets.length > 0 && (
+                    <>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {bullets.map((b) => (
+                          <Chip key={b}>{b}</Chip>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
-                  <div className="mt-5 flex gap-2">
+                  {/* Key modules (short + not salesy) */}
+                  {modules.length > 0 && (
+                    <div className="mt-5">
+                      <div className="text-sm font-medium">Key modules</div>
+                      <ul className="mt-2 space-y-2">
+                        {modules.map(([t, d]) => (
+                          <li key={t} className="text-sm text-slate-200">
+                            <span className="font-semibold text-slate-100">{t}</span>
+                            {d ? <span className="text-slate-300"> — {d}</span> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* CTAs: Learn more (internal link) + Get quote */}
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    <Link
+                      href={href}
+                      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                      aria-label={`Learn more about ${s.title}`}
+                    >
+                      Learn more <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+
                     <Link
                       href="/get-quote"
-                      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10"
                       aria-label={`Get a quote for ${s.title}`}
                     >
                       Get a Quote <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
+
                     <Link
                       href="/contact"
                       className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10"
@@ -154,34 +216,38 @@ export default function ServicesTabs({ services = [] }) {
                   </div>
                 </div>
 
-                {/* small visual pack */}
+                {/* RIGHT (non-generic, per-service) */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <div className="font-medium text-sm mb-2">Typical outcomes</div>
+                    <div className="font-medium text-sm mb-2">Outcomes</div>
                     <ul className="space-y-1 text-sm text-slate-300">
-                      <li>• Faster P1 response</li>
-                      <li>• Stronger baselines</li>
-                      <li>• Leadership reporting</li>
+                      {m.outcomes.slice(0, 3).map((x) => (
+                        <li key={x}>• {x}</li>
+                      ))}
                     </ul>
                   </div>
 
                   <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <div className="font-medium text-sm mb-2">Who it’s for</div>
+                    <div className="font-medium text-sm mb-2">Best for</div>
                     <ul className="space-y-1 text-sm text-slate-300">
-                      <li>• 10–500 users</li>
-                      <li>• Compliance-aware teams</li>
-                      <li>• Growing SMBs</li>
+                      {m.bestFor.slice(0, 2).map((x) => (
+                        <li key={x}>• {x}</li>
+                      ))}
                     </ul>
                   </div>
 
-                  <div className="col-span-2 rounded-xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-4 flex items-center justify-between">
+                  <div className="col-span-2 rounded-xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-4 flex items-center justify-between gap-3">
                     <div className="text-sm">
-                      <div className="font-semibold">Kickoff in 7–10 business days</div>
-                      <div className="text-slate-300">Assessment → Baselines → Quick wins</div>
+                      <div className="font-semibold">Typical timeline</div>
+                      <div className="text-slate-300">{m.timeline}</div>
                     </div>
-                    <Pill>
-                      <Cpu className="h-4 w-4 text-cyan-300" aria-hidden="true" /> SOP-driven
-                    </Pill>
+                    <Link
+                      href={href}
+                      className="inline-flex items-center gap-1 text-sm text-cyan-300 hover:underline whitespace-nowrap"
+                      aria-label={`Open ${s.title} details`}
+                    >
+                      Details <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
                   </div>
                 </div>
               </div>

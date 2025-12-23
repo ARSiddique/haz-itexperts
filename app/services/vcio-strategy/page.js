@@ -7,10 +7,9 @@ export async function generateMetadata() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/vcio-strategy`;
 
-  // ✅ stronger keyword intent + local intent
   const title = `vCIO & IT Strategy (Roadmaps, Budgets, KPI Reporting) | ${brand}`;
   const description =
-    "vCIO / IT strategy for SMBs in Allentown & the Lehigh Valley: 90-day roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.";
+    "vCIO / IT strategy for SMBs in Allentown & the Lehigh Valley: practical roadmaps, budget planning, vendor reviews, executive reporting, and measurable KPIs.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -19,7 +18,17 @@ export async function generateMetadata() {
     title,
     description,
     alternates: { canonical },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
 
     openGraph: {
       title,
@@ -47,55 +56,69 @@ export default function Page() {
   const cfg = {
     title: "vCIO / Strategy",
     lede:
-      "We translate business goals into a practical IT roadmap—with budgets, risks, vendors, and KPIs you can actually act on.",
+      "Turn IT into a plan you can run: roadmaps, budgets, vendor decisions, and KPIs presented in a leadership-friendly format.",
     hero: "/images/services/vcio-hero.svg",
+
+    // ✅ neutral & believable
     stats: [
-      { kpi: "90-day", label: "Roadmaps" },
-      { kpi: "12–18m", label: "Budget forecast" },
-      { kpi: "OKRs", label: "Outcome-driven" },
-      { kpi: "Quarterly", label: "Board pack" },
+      { kpi: "Roadmap", label: "Prioritized initiatives" },
+      { kpi: "Budget", label: "Forecast + refresh planning" },
+      { kpi: "KPIs", label: "Operational visibility" },
+      { kpi: "QBR", label: "Leadership reviews" },
     ],
+
     sections: [
       {
-        heading: "From wishlist to measurable outcomes",
+        heading: "A roadmap that matches business reality",
         body:
-          "We tie every initiative to revenue, efficiency, or risk reduction. That makes spend defensible, priorities clear, and progress easy to track across leadership.",
+          "We translate goals into a clear sequence of initiatives—what to do first, what to defer, and why. Each initiative is tied to outcomes like risk reduction, reliability, efficiency, or growth.",
         image: "/images/illus/roadmap.svg",
         imageSide: "right",
       },
       {
-        heading: "Vendors under control",
+        heading: "Budget and vendor decisions without surprises",
         body:
-          "We right-size your stack and remove overlap. With a renewal calendar and scorecards, surprises disappear and decisions become data-driven.",
+          "We create a practical forecast for licensing, device refresh, and security needs. Vendor reviews reduce overlap, and a renewal calendar keeps decisions proactive instead of last-minute.",
         image: "/images/illus/vendors.svg",
         imageSide: "left",
       },
+      {
+        heading: "KPIs leadership can actually use",
+        body:
+          "We report on service health, security posture, projects, and risks in a simple dashboard format. You get the context behind the numbers and the next actions—so meetings end with decisions, not confusion.",
+        image: "/images/illus/screens-2.svg",
+        imageSide: "right",
+      },
     ],
+
     features: [
       { icon: "LineChart", title: "QBRs", desc: "KPIs, risks, and health reviews with leadership." },
-      { icon: "BookOpen", title: "Policies & Standards", desc: "A practical and auditable operating model." },
-      { icon: "BarChart3", title: "Budget & Forecast", desc: "12–18 month view of spend, refresh, and licensing." },
-      { icon: "Network", title: "Vendor Management", desc: "Right-size the stack and remove overlap." },
-      { icon: "Sparkles", title: "Innovation Sprints", desc: "Pilot to prove value before committing." },
-      { icon: "Building2", title: "Board Reporting", desc: "Clear visuals and risk summaries for exec teams." },
+      { icon: "BookOpen", title: "Standards & Governance", desc: "Practical policies and an operating model your team can follow." },
+      { icon: "BarChart3", title: "Budget & Forecast", desc: "12–18 month view of spend, refresh cycles, and licensing." },
+      { icon: "Network", title: "Vendor Management", desc: "Right-size tools, reduce overlap, and manage renewals." },
+      { icon: "Sparkles", title: "Pilot Before You Commit", desc: "Small, low-risk trials to validate value." },
+      { icon: "Building2", title: "Exec Reporting", desc: "Clear summaries that work for owners and leadership teams." },
     ],
+
     timeline: [
-      { when: "Month 1", title: "Baseline & KPIs", desc: "Scorecard and OKRs" },
-      { when: "Month 2", title: "Vendors & budget", desc: "Consolidation plan" },
-      { when: "Quarterly", title: "Board / QBR", desc: "Progress and risk review" },
+      { when: "Month 1", title: "Baseline & priorities", desc: "Current-state review, risks, and first roadmap draft" },
+      { when: "Month 2", title: "Budget + vendor review", desc: "Forecast, renewals, and consolidation recommendations" },
+      { when: "Quarterly", title: "QBR / leadership review", desc: "KPIs, progress, and next-quarter plan" },
     ],
+
+    // ✅ generic roles (no random names)
     testimonials: [
       {
-        quote: "Strategy finally ties to revenue and risk—the board loved it.",
-        author: "N. Rahman",
-        role: "CEO",
+        quote: "The roadmap made priorities clear and helped leadership make faster decisions.",
+        author: "Business Owner",
+        role: "SMB (Lehigh Valley)",
         avatar: "/images/avatars/a4.svg",
         rating: 5,
       },
       {
-        quote: "Spend is predictable now, and the vendor stack is streamlined.",
-        author: "R. Saleem",
-        role: "COO",
+        quote: "Renewals and vendor choices feel controlled now—no last-minute surprises.",
+        author: "Operations Lead",
+        role: "Local business",
         avatar: "/images/avatars/a3.svg",
         rating: 5,
       },
@@ -113,7 +136,6 @@ export default function Page() {
     ],
   };
 
-  // ✅ richer Service schema
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -121,7 +143,7 @@ export default function Page() {
     name: "vCIO & IT Strategy",
     serviceType: "Virtual CIO & IT Strategy",
     description:
-      "Quarterly business reviews (QBRs), 90-day roadmaps, 12–18 month budget forecasts, vendor consolidation, governance/policies, and executive reporting with measurable KPIs.",
+      "Roadmaps, budget planning, vendor reviews, governance, and executive reporting with measurable KPIs for small and mid-sized businesses.",
     url: canonical,
     provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
@@ -139,14 +161,13 @@ export default function Page() {
     name: `vCIO / Strategy | ${brand}`,
     url: canonical,
     description:
-      "Roadmaps, budgets, vendor consolidation, exec/board reporting, and measurable KPIs.",
+      "Roadmaps, budgets, vendor decisions, executive reporting, and measurable KPIs—built for SMBs.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
     publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
 
-  // ✅ FAQ schema (helps on-page + rich snippets)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -167,7 +188,7 @@ export default function Page() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "We run regular check-ins and formal QBR/board-style reviews quarterly, including KPIs, risks, initiatives, and next-quarter priorities.",
+            "We run regular check-ins and formal QBR-style reviews quarterly, including KPIs, risks, initiatives, and next-quarter priorities.",
         },
       },
       {
@@ -176,7 +197,7 @@ export default function Page() {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "Yes. We evaluate overlap, right-size licensing, build a renewal calendar, and provide scorecards so vendor decisions are data-driven.",
+            "Yes. We evaluate overlap, right-size licensing, build a renewal calendar, and provide simple scorecards so decisions are data-driven.",
         },
       },
     ],

@@ -8,7 +8,7 @@ import ServicesTabs from "@/components/ServicesTabs";
 import PricingRoi from "@/components/PricingRoi";
 import { site } from "@/lib/siteConfig";
 import {
-  Shield,
+  ShieldCheck,
   Server,
   Cloud,
   Wrench,
@@ -28,9 +28,9 @@ export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
 
-  const title = `Managed IT Services & Cybersecurity | ${brand}`;
+  const title = `Managed IT Services & Cybersecurity in Allentown | ${brand}`;
   const description =
-    "Helpdesk, patching, monitoring, cybersecurity (EDR/XDR, backup/DR, email security), cloud and device management — fully managed or co-managed for SMBs in Allentown and the Lehigh Valley.";
+    "Managed IT, cybersecurity, cloud, and device management for SMBs in Allentown & the Lehigh Valley — helpdesk, monitoring, patching, backup/DR, and Microsoft 365 support.";
 
   const canonical = `${baseUrl}/services`;
   const ogImage = `${baseUrl}/og-image.png?v=7`;
@@ -48,34 +48,28 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Services`,
-        },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Services` }],
     },
 
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
 }
 
-/* small server-safe helper */
+// --- server-safe helpers
+function cx(...a) {
+  return a.filter(Boolean).join(" ");
+}
+
 const Badge = ({ children, tone = "cyan" }) => (
   <span
-    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border
-      ${
-        tone === "cyan"
-          ? "text-cyan-300 border-cyan-300/30 bg-cyan-400/10"
-          : "text-fuchsia-300 border-fuchsia-300/30 bg-fuchsia-400/10"
-      }`}
+    className={cx(
+      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border",
+      tone === "cyan" && "text-cyan-300 border-cyan-300/30 bg-cyan-400/10",
+      tone === "fuchsia" && "text-fuchsia-300 border-fuchsia-300/30 bg-fuchsia-400/10",
+      tone === "violet" && "text-violet-300 border-violet-300/30 bg-violet-400/10",
+      tone === "emerald" && "text-emerald-300 border-emerald-300/30 bg-emerald-400/10",
+      tone === "amber" && "text-amber-300 border-amber-300/30 bg-amber-400/10"
+    )}
   >
     {children}
   </span>
@@ -86,18 +80,19 @@ export default async function ServicesPage() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services`;
 
-  // ── Source of truth for services (includes `href` for deep pages)
+  // ── Services (source of truth) ─────────────────────────────
   const services = [
     {
       key: "managed",
-      icon: Shield,
-      title: "Managed IT",
-      desc: "Helpdesk, patching, monitoring, and reporting with SLAs.",
+      icon: ShieldCheck,
+      title: "Managed IT Services",
+      tier: { label: "Core", tone: "cyan" },
+      desc: "Helpdesk, patching, monitoring, and reporting — with clear SLAs and predictable processes.",
       bullets: ["Helpdesk workflows", "Proactive maintenance", "Leadership KPIs"],
       deep: [
-        ["Helpdesk", "Omni-channel (email/chat/portal), triage SOPs, and CSAT."],
-        ["Patch Management", "OS and app updates with pilot rings and rollback plans."],
-        ["Monitoring", "Endpoints, servers, network, and cloud signals."],
+        ["Helpdesk", "Omni-channel support (email/chat/portal) with triage SOPs and CSAT."],
+        ["Patch Management", "OS + app updates using pilot rings, maintenance windows, and rollback plans."],
+        ["Monitoring", "Endpoint, server, network, and cloud signals with actionable alerts."],
       ],
       href: "/services/managed-it",
     },
@@ -105,24 +100,26 @@ export default async function ServicesPage() {
       key: "security",
       icon: Server,
       title: "Cybersecurity",
-      desc: "EDR/XDR, MFA/SSO, email security, backup/DR, and vCISO.",
+      tier: { label: "Security", tone: "fuchsia" },
+      desc: "EDR/XDR, identity hardening, email security, and backup/DR — designed for SMB risk reduction.",
       bullets: ["EDR/XDR coverage", "Identity hardening", "BCP/DR playbooks"],
       deep: [
-        ["EDR/XDR", "Managed detections, isolation, and post-incident SOPs."],
+        ["EDR/XDR", "Managed detections, isolation, and response runbooks."],
         ["Identity", "MFA/SSO, conditional access, and least privilege."],
-        ["Email", "Anti-spoofing/phishing plus impersonation protection."],
+        ["Email", "Anti-phishing/impersonation controls plus SPF/DKIM/DMARC alignment."],
       ],
       href: "/services/cybersecurity",
     },
     {
       key: "cloud",
       icon: Cloud,
-      title: "Cloud & 365/Workspace",
-      desc: "Migrations, identity, MDM, and cost optimization.",
+      title: "Cloud & Microsoft 365",
+      tier: { label: "Cloud", tone: "violet" },
+      desc: "Migrations, tenant security baselines, device enrollment, and cost optimization for 365/Workspace.",
       bullets: ["Tenant security", "License hygiene", "Automation"],
       deep: [
-        ["Migrations", "Cutover or hybrid with a comms plan and rollback."],
-        ["Governance", "Secure baselines, DLP, retention, and logging."],
+        ["Migrations", "Cutover or hybrid with communication plan + rollback."],
+        ["Governance", "Secure baselines, retention, audit logs, and DLP guidance."],
         ["FinOps", "License cleanup, storage policies, and rightsizing."],
       ],
       href: "/services/cloud-workspace",
@@ -130,45 +127,47 @@ export default async function ServicesPage() {
     {
       key: "projects",
       icon: Wrench,
-      title: "Projects & Consulting",
-      desc: "Audits, office moves, network refresh, and server/cloud projects.",
-      bullets: ["Zero-trust rollout", "Network redesign", "Server refresh"],
+      title: "IT Projects & Consulting",
+      tier: { label: "Project", tone: "amber" },
+      desc: "Audits, network refresh, office moves, and server/cloud modernization — planned and delivered cleanly.",
+      bullets: ["Security audits", "Network redesign", "Server refresh"],
       deep: [
-        ["Audits", "Infrastructure, security, and process scorecards."],
-        ["Moves", "ISP, cabling, Wi-Fi heat maps, and cutover plans."],
-        ["Servers", "AD, file/print, virtualization, and backup/DR."],
+        ["Audits", "Infrastructure, security, and process scorecards with a remediation plan."],
+        ["Moves", "ISP, cabling, Wi-Fi planning, and cutover execution."],
+        ["Servers", "AD, file/print, virtualization, and backup/DR modernization."],
       ],
       href: "/services/projects-consulting",
     },
     {
       key: "mdm",
       icon: Smartphone,
-      title: "Device Management",
-      desc: "Windows/Mac/iOS/Android baselines and app deployments.",
+      title: "Device Management (MDM)",
+      tier: { label: "Add-on", tone: "emerald" },
+      desc: "Windows/Mac/iOS/Android configuration baselines, compliance, and app deployment with reporting.",
       bullets: ["Baseline config", "Compliance checks", "App catalogs"],
       deep: [
-        ["Baselines", "CIS-aligned controls per platform."],
-        ["Provisioning", "Autopilot/ABM zero-touch rollouts."],
-        ["Health", "Drift detection, remediations, and reporting."],
+        ["Baselines", "Security controls per platform (policy + configuration standards)."],
+        ["Provisioning", "Autopilot/ABM zero-touch rollouts and enrollment flows."],
+        ["Health", "Drift detection, remediations, and compliance reporting."],
       ],
       href: "/services/device-management",
     },
     {
       key: "vcio",
       icon: Users,
-      title: "vCIO / Strategy",
-      desc: "Quarterly roadmap, budget planning, and measurable KPIs.",
+      title: "vCIO / IT Strategy",
+      tier: { label: "Strategy", tone: "violet" },
+      desc: "Quarterly roadmap, budget planning, vendor alignment, and measurable KPIs for leadership.",
       bullets: ["Roadmaps", "Budgeting", "Risk register"],
       deep: [
         ["Roadmap", "Quarterly OKRs tied to business outcomes."],
-        ["KPIs", "Board-friendly scorecards and action plans."],
-        ["Vendors", "Stack review, contracts, and consolidation."],
+        ["KPIs", "Board-friendly scorecards with action plans."],
+        ["Vendors", "Stack review, contracts, and consolidation opportunities."],
       ],
       href: "/services/vcio-strategy",
     },
   ];
 
-  // ── Plain JSON copy for client islands (includes `href`)
   const servicesForClient = services.map(({ key, title, desc, bullets, deep, href }) => ({
     key,
     title,
@@ -178,10 +177,11 @@ export default async function ServicesPage() {
     href,
   }));
 
-  // ✅ Schema Day: Breadcrumb + WebPage + ItemList + Service
+  // ✅ Schema: Breadcrumb + WebPage + ItemList + Service + FAQ
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
       { "@type": "ListItem", position: 2, name: "Services", item: canonical },
@@ -195,10 +195,11 @@ export default async function ServicesPage() {
     url: canonical,
     name: `Services | ${brand}`,
     description:
-      "Managed IT services and cybersecurity modules for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
+      "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    about: { "@type": "Thing", name: "Managed IT & Cybersecurity" },
     publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    mainEntity: { "@id": `${canonical}#servicelist` },
   };
 
   const itemListSchema = {
@@ -226,23 +227,21 @@ export default async function ServicesPage() {
     url: `${baseUrl}${s.href}`,
   }));
 
-  // ✅ Quick FAQs (source of truth)
   const faqs = [
     {
       q: "Fully managed vs co-managed?",
-      a: "We can run IT end-to-end or augment your in-house team. Access, tooling, and SOPs are aligned either way.",
+      a: "We can run IT end-to-end or support your in-house team. Tooling, access, and SOPs are aligned either way.",
     },
     {
-      q: "SLA details?",
-      a: "P1 ≤ 15 minutes, P2 ≤ 1 hour, P3 same business day. Monthly KPI reports for leadership.",
+      q: "How do SLAs work?",
+      a: "We define priorities (P1/P2/P3), response targets, and escalation. You also get regular KPI reporting.",
     },
     {
-      q: "What tooling is included?",
-      a: "EDR/XDR, patching, monitoring, email security, backup/DR, and MDM baselines — with clear reporting.",
+      q: "Can we start small and add modules?",
+      a: "Yes. Most clients start with core managed IT, then add security and cloud/device modules as needs grow.",
     },
   ];
 
-  // ✅ FAQPage JSON-LD (the missing piece for “100% on-page”)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -256,135 +255,153 @@ export default async function ServicesPage() {
 
   return (
     <>
-      {/* ✅ Schema JSON-LD: Breadcrumb + WebPage + ItemList + Services + FAQPage */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas, faqSchema]),
+          __html: JSON.stringify([
+            breadcrumbsSchema,
+            webPageSchema,
+            itemListSchema,
+            ...serviceSchemas,
+            faqSchema,
+          ]),
         }}
       />
 
-      {/* HERO */}
       <PageHero
         eyebrow="Services"
-        title="Everything you need for reliable, secure IT"
-        sub="Choose fully managed or co-managed. Start with SupremeCare™ Core and add security modules as you scale."
+        title="Managed IT & cybersecurity for Allentown SMBs"
+        sub="Pick the coverage you need: managed IT, cybersecurity, Microsoft 365, device management, and strategy. Simple onboarding. Clear deliverables."
       />
 
-      {/* Short intro with internal links */}
-      <section className="max-w-6xl mx-auto px-4 pt-4 pb-6 text-sm text-slate-300 space-y-2">
+      {/* ✅ Quick Links / TOC (makes page feel structured, not generic) */}
+      <section className="max-w-6xl mx-auto px-4 pt-4 pb-8">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">On this page</div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link href="#services-overview" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+              Services overview
+            </Link>
+            <Link href="#services-deepdives" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+              Compare services
+            </Link>
+            <Link href="#services-pricing" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+              Pricing & ROI
+            </Link>
+            <Link href="#services-faq" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+              FAQs
+            </Link>
+            <Link href="/areas" className="text-sm rounded-full px-3 py-1.5 border border-cyan-300/20 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">
+              Areas we serve
+            </Link>
+          </div>
+
+          {/* Direct service links (SEO-friendly + user-friendly) */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {services.map((s) => (
+              <Link
+                key={s.key}
+                href={s.href}
+                className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+              >
+                {s.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Intro */}
+      <section className="max-w-6xl mx-auto px-4 pb-10 text-sm text-slate-300 space-y-2">
         <p>
-          This page gives you a high-level view of our{" "}
-          <Link href="/services/managed-it" className="text-cyan-300 hover:underline">
-            Managed IT
-          </Link>{" "}
-          and{" "}
-          <Link href="/services/cybersecurity" className="text-cyan-300 hover:underline">
-            Cybersecurity
-          </Link>{" "}
-          programs, plus cloud, device management, and vCIO strategy.
+          This page gives you a clear overview of what we do. Open any service to see deliverables and what’s included.
         </p>
         <p>
-          To see our primary service areas, visit{" "}
+          Looking for locations? See{" "}
           <Link href="/areas" className="text-cyan-300 hover:underline">
             Areas we serve
           </Link>
-          . For common questions, check the{" "}
-          <Link href="/faqs" className="text-cyan-300 hover:underline">
-            FAQs
-          </Link>{" "}
-          page, or go straight to{" "}
-          <Link href="/get-quote" className="text-cyan-300 hover:underline">
-            Get a Quote
-          </Link>{" "}
-          or{" "}
+          . Want to talk first?{" "}
           <Link href="/contact" className="text-cyan-300 hover:underline">
-            Contact
+            Contact us
+          </Link>{" "}
+          or request a{" "}
+          <Link href="/get-quote" className="text-cyan-300 hover:underline">
+            free IT assessment
           </Link>
           .
         </p>
       </section>
 
-      {/* STICKY IN-PAGE NAV */}
-      <nav className="sticky top-14 z-20 bg-gradient-to-b from-slate-950/90 to-slate-950/70 backdrop-blur border-y border-white/5">
-        <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-2">
-          {services.map((s) => (
-            <a
-              key={s.key}
-              href={`#${s.key}`}
-              className="text-xs md:text-sm rounded-lg px-3 py-1.5 border border-white/10 text-slate-300 hover:text-cyan-300 hover:border-cyan-300/30"
-            >
-              {s.title}
-            </a>
-          ))}
+      <main className="max-w-6xl mx-auto px-4 pb-24">
+        {/* Services Grid */}
+        <section aria-labelledby="services-overview">
+          <div className="flex items-end justify-between gap-3 flex-wrap">
+            <div>
+              <h2 id="services-overview" className="text-2xl md:text-3xl font-semibold">
+                Services
+              </h2>
+              <p className="mt-2 text-sm text-slate-300 max-w-3xl">
+                Straightforward coverage for SMBs — stability, security, fast support, and reporting.
+              </p>
+            </div>
 
-          <span className="ms-auto">
             <Link
               href="/get-quote"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
             >
               Get a Quote <ArrowRight className="h-4 w-4" />
             </Link>
-          </span>
-        </div>
-      </nav>
-
-      {/* ✅ semantic main */}
-      <main className="max-w-6xl mx-auto px-4 pb-24">
-        {/* OVERVIEW */}
-        <section aria-labelledby="services-overview" className="mt-10">
-          <h2 id="services-overview" className="text-2xl md:text-3xl font-semibold">
-            Service overview
-          </h2>
-          <p className="mt-2 text-sm text-slate-300 max-w-3xl">
-            Click any service to view full details, deliverables, and what’s included.
-          </p>
+          </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            {services.map(({ key, icon: Icon, title, desc, bullets, href }) => (
+            {services.map(({ key, icon: Icon, title, tier, desc, bullets, href }) => (
               <Reveal key={key}>
-                <div id={key}>
-                  <Link
-                    href={href}
-                    className="block group p-6 rounded-2xl bg-gradient-to-br from-white/6 to-white/[0.03] border border-white/10 hover:border-cyan-300/30 transition relative overflow-hidden"
-                    aria-label={`${title} details`}
-                  >
-                    <div className="absolute -right-10 -top-10 size-36 rounded-full bg-cyan-500/10 blur-2xl group-hover:scale-125 transition" />
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
-                        <Icon className="h-5 w-5 text-cyan-300" />
-                      </span>
-                      <h3 className="font-semibold text-lg">{title}</h3>
-                      <Badge>Included in SupremeCare™ Core</Badge>
+                <Link
+                  href={href}
+                  className="group block h-full p-6 rounded-2xl bg-gradient-to-br from-white/6 to-white/[0.03] border border-white/10 hover:border-cyan-300/30 transition relative overflow-hidden"
+                  aria-label={`${title} details`}
+                >
+                  <div className="absolute -right-10 -top-10 size-36 rounded-full bg-cyan-500/10 blur-2xl group-hover:scale-125 transition" />
+
+                  <div className="flex items-center gap-3">
+                    <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
+                      <Icon className="h-5 w-5 text-cyan-300" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-lg">{title}</h3>
+                        <Badge tone={tier.tone}>{tier.label}</Badge>
+                      </div>
+                      <p className="text-sm text-slate-300 mt-1">{desc}</p>
                     </div>
+                  </div>
 
-                    <p className="text-sm text-slate-300 mt-2">{desc}</p>
+                  <ul className="mt-4 space-y-1.5">
+                    {bullets.map((b) => (
+                      <li key={b} className="text-sm text-slate-300 flex gap-2">
+                        <Sparkles className="h-4 w-4 text-cyan-300" /> {b}
+                      </li>
+                    ))}
+                  </ul>
 
-                    <ul className="mt-3 space-y-1">
-                      {bullets.map((b) => (
-                        <li key={b} className="text-sm text-slate-300 flex gap-2">
-                          <Sparkles className="h-4 w-4 text-cyan-300" /> {b}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-4 inline-flex items-center gap-2 text-sm text-cyan-300">
-                      View details <ChevronRight className="h-4 w-4" />
-                    </div>
-                  </Link>
-                </div>
+                  <div className="mt-5 inline-flex items-center gap-2 text-sm text-cyan-300">
+                    Learn more <ChevronRight className="h-4 w-4" />
+                  </div>
+                </Link>
               </Reveal>
             ))}
           </div>
         </section>
 
-        {/* DEEP-DIVES */}
+        {/* Deep Dives */}
         <section aria-labelledby="services-deepdives" className="mt-14">
           <h2 id="services-deepdives" className="text-2xl md:text-3xl font-semibold">
-            Deep dives
+            Compare services
           </h2>
           <p className="mt-2 text-sm text-slate-300 max-w-3xl">
-            Compare service deliverables and see what changes as you add modules.
+            Quick comparison of deliverables — then open the service page for full details.
           </p>
 
           <Reveal className="mt-6">
@@ -392,109 +409,34 @@ export default async function ServicesPage() {
           </Reveal>
         </section>
 
-        {/* PRICING & ROI */}
+        {/* Pricing */}
         <section aria-labelledby="services-pricing" className="mt-14">
           <h2 id="services-pricing" className="text-2xl md:text-3xl font-semibold">
             Pricing & ROI
           </h2>
+          <p className="mt-2 text-sm text-slate-300 max-w-3xl">
+            Estimate cost based on user count and modules — then we confirm after discovery.
+          </p>
+
           <Reveal className="mt-6">
             <PricingRoi />
-          </Reveal>
-        </section>
-
-        {/* PLAN MATRIX */}
-        <section aria-labelledby="services-matrix" className="mt-14">
-          <h2 id="services-matrix" className="text-2xl md:text-3xl font-semibold">
-            What’s included
-          </h2>
-
-          <Reveal className="mt-6">
-            <div className="rounded-2xl border border-white/10 overflow-x-auto">
-              <table className="min-w-[720px] w-full text-sm">
-                <thead className="bg-white/5">
-                  <tr>
-                    <th className="text-left p-3">Capability</th>
-                    <th className="p-3">SupremeCare™</th>
-                    <th className="p-3">Add-on</th>
-                    <th className="p-3">Project</th>
-                  </tr>
-                </thead>
-                <tbody className="[&>tr:nth-child(even)]:bg-white/[0.03]">
-                  {[
-                    ["Helpdesk & SLAs", true, false, false],
-                    ["Patching & Monitoring", true, false, false],
-                    ["EDR/XDR Baseline", true, false, false],
-                    ["Email Security+", false, true, false],
-                    ["Backup/DR (SaaS + endpoints)", false, true, false],
-                    ["Identity Hardening / SSO", false, true, false],
-                    ["Audits / Migrations / Moves", false, false, true],
-                  ].map(([cap, a, b, c]) => (
-                    <tr key={cap}>
-                      <td className="p-3">{cap}</td>
-                      <td className="text-center p-3">{a ? "✅" : ""}</td>
-                      <td className="text-center p-3">{b ? "🧩" : ""}</td>
-                      <td className="text-center p-3">{c ? "🛠️" : ""}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* PROCESS */}
-        <section aria-labelledby="services-process" className="mt-14">
-          <h2 id="services-process" className="text-2xl md:text-3xl font-semibold">
-            How we start
-          </h2>
-
-          <Reveal className="mt-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
-                Onboarding
-              </div>
-              <h3 className="text-xl font-semibold mt-1">Predictable onboarding</h3>
-
-              <ol className="relative border-s border-white/10 ps-6 mt-4 space-y-6">
-                {[
-                  [Building2, "Assess", "Light discovery: users, devices, identity, and risks."],
-                  [CloudCog, "Stabilize", "Patching, EDR/XDR, secure baselines, and backup/DR."],
-                  [Network, "Optimize", "SLAs, workflows, reporting, and roadmap alignment."],
-                  [LineChart, "Grow", "New hires and projects — without chaos."],
-                ].map(([Icon, t, d]) => (
-                  <li key={t} className="ms-2">
-                    <span className="absolute -start-3.5 mt-1 grid place-items-center size-6 rounded-full bg-cyan-400/20 border border-cyan-300/40">
-                      <Icon className="h-3.5 w-3.5 text-cyan-300" />
-                    </span>
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                      <div className="font-medium">{t}</div>
-                      <p className="text-slate-300 text-sm mt-0.5">{d}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
           </Reveal>
         </section>
 
         {/* FAQs */}
         <section aria-labelledby="services-faq" className="mt-14">
           <h2 id="services-faq" className="text-2xl md:text-3xl font-semibold">
-            Quick FAQs
+            FAQs
           </h2>
 
           <Reveal className="mt-6">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="mt-1 divide-y divide-white/10">
+              <div className="divide-y divide-white/10">
                 {faqs.map(({ q, a }) => (
                   <details key={q} className="py-3 group">
                     <summary className="cursor-pointer list-none flex items-center justify-between gap-2">
                       <span className="font-medium">{q}</span>
-                      <svg
-                        className="h-4 w-4 transition group-open:rotate-180"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
+                      <svg className="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 15.5 6.5 10l1.4-1.4L12 12.7l4.1-4.1L17.5 10z" />
                       </svg>
                     </summary>
@@ -504,9 +446,9 @@ export default async function ServicesPage() {
               </div>
 
               <p className="mt-4 text-sm text-slate-400">
-                For more questions, visit the{" "}
+                More questions? Visit{" "}
                 <Link href="/faqs" className="text-cyan-300 hover:underline">
-                  FAQs page
+                  FAQs
                 </Link>{" "}
                 or{" "}
                 <Link href="/contact" className="text-cyan-300 hover:underline">
@@ -514,39 +456,6 @@ export default async function ServicesPage() {
                 </Link>
                 .
               </p>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* CTA */}
-        <section aria-labelledby="services-cta" className="mt-14">
-          <h2 id="services-cta" className="text-2xl md:text-3xl font-semibold">
-            Next step
-          </h2>
-
-          <Reveal className="mt-6">
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold">Ready for a no-pressure IT assessment?</h3>
-                <p className="text-slate-300">
-                  We’ll map gaps and share clear next steps for your business in Allentown, the Lehigh Valley, and beyond.
-                </p>
-              </div>
-
-              <div className="flex gap-3">
-                <Link
-                  href="/get-quote"
-                  className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
-                >
-                  Get a Quote
-                </Link>
-                <Link
-                  href="/contact"
-                  className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
-                >
-                  Contact us
-                </Link>
-              </div>
             </div>
           </Reveal>
         </section>
