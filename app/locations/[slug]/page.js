@@ -5,6 +5,7 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import { site } from "@/lib/siteConfig";
 import { LOCATIONS, getLocationBySlug } from "@/lib/locations";
+import { SERVICES } from "@/lib/services";
 import { ArrowRight, CheckCircle2, MapPin } from "lucide-react";
 
 export async function generateStaticParams() {
@@ -69,15 +70,6 @@ export default async function LocationPage({ params }) {
   const phone = site?.phone || "+1-610-500-9209";
   const canonical = `${baseUrl}/locations/${loc.slug}`;
 
-  const services = [
-    { t: "Managed IT", href: "/services/managed-it" },
-    { t: "Cybersecurity", href: "/services/cybersecurity" },
-    { t: "Cloud & 365/Workspace", href: "/services/cloud-workspace" },
-    { t: "Device Management", href: "/services/device-management" },
-    { t: "Projects & Consulting", href: "/services/projects-consulting" },
-    { t: "vCIO / Strategy", href: "/services/vcio-strategy" },
-  ];
-
   // Breadcrumb schema
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
@@ -95,24 +87,23 @@ export default async function LocationPage({ params }) {
   };
 
   // LocalBusiness (remote-first coverage page)
- const localBusinessSchema = {
-  "@context": "https://schema.org",
-  "@type": ["LocalBusiness", "ITService"],
-  "@id": `${canonical}#localbusiness`,
-  name: brand,
-  url: canonical,
-  telephone: phone,
-  areaServed: [`${loc.city}, ${loc.state}`],
-  provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-  serviceType: [
-    "Managed IT Services",
-    "Cybersecurity",
-    "Cloud Services",
-    "Device Management",
-    "IT Consulting",
-  ],
-};
-
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": ["LocalBusiness", "ITService"],
+    "@id": `${canonical}#localbusiness`,
+    name: brand,
+    url: canonical,
+    telephone: phone,
+    areaServed: [`${loc.city}, ${loc.state}`],
+    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    serviceType: [
+      "Managed IT Services",
+      "Cybersecurity",
+      "Cloud Services",
+      "Device Management",
+      "IT Consulting",
+    ],
+  };
 
   // WebPage schema for the location landing page
   const webPageSchema = {
@@ -167,7 +158,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* what we do */}
+        {/* what we do + services */}
         <Reveal className="mt-10">
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -194,14 +185,16 @@ export default async function LocationPage({ params }) {
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h3 className="text-xl font-semibold">Popular services</h3>
+
+              {/* ✅ Uses central service map */}
               <div className="mt-4 grid sm:grid-cols-2 gap-3">
-                {services.map((s) => (
+                {SERVICES.map((s) => (
                   <Link
                     key={s.href}
                     href={s.href}
                     className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
                   >
-                    {s.t}
+                    {s.title}
                   </Link>
                 ))}
               </div>
@@ -211,6 +204,43 @@ export default async function LocationPage({ params }) {
                   Nearby coverage focus: {loc.nearby.join(", ")}.
                 </p>
               )}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ✅ NEW: Services in this area (full internal linking block) */}
+        <Reveal className="mt-10">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <h3 className="text-xl font-semibold">Services in {loc.city}</h3>
+                <p className="text-slate-300 mt-2 max-w-3xl">
+                  Browse deliverables, process, and what’s included. These pages are designed for fast comparison.
+                </p>
+              </div>
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+              >
+                View all services <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {SERVICES.map((s) => (
+                <Link
+                  key={s.key}
+                  href={s.href}
+                  className="group block rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-300/30 transition"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-extrabold">{s.title}</div>
+                    <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-cyan-200 transition" />
+                  </div>
+                  <p className="mt-2 text-sm text-slate-300 leading-6">{s.blurb}</p>
+                  <div className="mt-4 h-1 w-0 bg-cyan-400/70 group-hover:w-full transition-all rounded-full" />
+                </Link>
+              ))}
             </div>
           </div>
         </Reveal>

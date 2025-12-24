@@ -14,6 +14,10 @@ import {
   Server,
   Shield,
   ExternalLink,
+  ChevronRight,
+  Lock,
+  Wrench,
+  LineChart,
 } from "lucide-react";
 
 // --- SEO (server-side)
@@ -73,31 +77,61 @@ const TIER = {
   C: { label: "Tier C", note: "Standard remote response", bg: "bg-fuchsia-500/15", ring: "ring-fuchsia-400/30" },
 };
 
-const SHARED_SERVICES = [
+// ✅ Stronger “Services Hub” (internal linking boost)
+const SERVICE_HUB = [
   {
+    key: "managed",
     title: "Managed IT (SupremeCare™)",
-    bullets: ["Helpdesk with P1 ≤ 15 min response", "Proactive monitoring & patching", "Asset & license management"],
+    desc: "Helpdesk + monitoring + patching with SLA-backed response times.",
+    bullets: ["Helpdesk (P1 ≤ 15 min)", "Monitoring & patching", "Asset & license tracking"],
     href: "/services/managed-it",
+    icon: ShieldCheck,
+    tags: ["Helpdesk", "Monitoring", "Patching"],
   },
   {
-    title: "Cybersecurity (EDR/XDR + Hardening)",
-    bullets: ["Identity-first security controls", "Phishing defense + training", "Immutable backups + recovery drills"],
+    key: "security",
+    title: "Cybersecurity",
+    desc: "Identity-first hardening, EDR/XDR protection, email security & recovery.",
+    bullets: ["MFA/SSO hardening", "EDR/XDR + policies", "Backup/DR + drills"],
     href: "/services/cybersecurity",
+    icon: Lock,
+    tags: ["EDR/XDR", "MFA", "Backup/DR"],
   },
   {
+    key: "cloud",
     title: "Cloud & Microsoft 365",
-    bullets: ["Tenant security & governance", "Exchange/SharePoint/Teams tuning", "Microsoft 365 backup & restores"],
+    desc: "Tenant governance, migrations, security baselines and cost control.",
+    bullets: ["Security baselines", "Migrations & tuning", "M365 backups & restores"],
     href: "/services/cloud-workspace",
+    icon: Server,
+    tags: ["M365", "Governance", "Migrations"],
   },
   {
+    key: "mdm",
+    title: "Device Management (MDM)",
+    desc: "Enrollment, compliance, app management & device hardening at scale.",
+    bullets: ["Zero-touch enrollment", "Patch & app mgmt", "Compliance policies"],
+    href: "/services/device-management",
+    icon: Laptop2,
+    tags: ["MDM", "Compliance", "Hardening"],
+  },
+  {
+    key: "projects",
     title: "Projects & Consulting",
-    bullets: ["Network refresh planning", "Migrations & rebrands", "Decommissions with clean handover"],
+    desc: "Network refresh, migrations, office moves, and modernization projects.",
+    bullets: ["Network refresh", "Migrations/rebrands", "Clean decommissions"],
     href: "/services/projects-consulting",
+    icon: Wrench,
+    tags: ["Network", "Migrations", "Modernization"],
   },
   {
+    key: "vcio",
     title: "vCIO / Strategy",
-    bullets: ["Roadmaps & budgets", "Vendor consolidation", "Exec-ready KPIs & reporting"],
+    desc: "Roadmaps, budgets, vendor consolidation and KPI reporting.",
+    bullets: ["Roadmaps & budgets", "Vendor consolidation", "Exec-ready KPIs"],
     href: "/services/vcio-strategy",
+    icon: LineChart,
+    tags: ["Roadmaps", "Budgets", "KPIs"],
   },
 ];
 
@@ -172,6 +206,55 @@ function RegionMap({ regions, active }) {
         </Link>
       </div>
     </div>
+  );
+}
+
+function ServiceCard({ s }) {
+  const Icon = s.icon;
+  return (
+    <Link
+      href={s.href}
+      className="group block rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-300/30 hover:bg-cyan-400/10 transition"
+      aria-label={`Open ${s.title}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="mt-0.5 grid place-items-center size-10 rounded-xl bg-white/10 border border-white/10 shrink-0">
+            <Icon className="h-5 w-5 text-cyan-200" />
+          </div>
+
+          <div className="min-w-0">
+            <div className="font-semibold">{s.title}</div>
+            <p className="mt-1 text-sm text-slate-300 leading-6">{s.desc}</p>
+          </div>
+        </div>
+
+        <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-cyan-200 transition shrink-0" />
+      </div>
+
+      {Array.isArray(s.tags) && s.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {s.tags.slice(0, 3).map((t) => (
+            <span
+              key={t}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {Array.isArray(s.bullets) && s.bullets.length > 0 && (
+        <ul className="mt-4 space-y-1 text-sm text-slate-300">
+          {s.bullets.slice(0, 3).map((b) => (
+            <li key={b}>• {b}</li>
+          ))}
+        </ul>
+      )}
+
+      <div className="mt-4 h-1 w-0 bg-cyan-400/70 group-hover:w-full transition-all rounded-full" />
+    </Link>
   );
 }
 
@@ -286,6 +369,49 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
+        {/* ✅ NEW: Services Hub Links (strong internal linking block) */}
+        <Reveal className="mt-6">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Services hub</div>
+                <h2 className="text-xl md:text-2xl font-semibold">Explore services teams bundle together</h2>
+                <p className="mt-2 text-slate-300 max-w-3xl">
+                  This hub strengthens SEO: <span className="text-slate-200">Areas → Services</span> and your Service pages already do{" "}
+                  <span className="text-slate-200">Services → Areas</span>. Better crawl paths, better topical relevance.
+                </p>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <Link
+                  href="/services"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  View all services <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/faqs"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  FAQs <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/contact?type=assessment&source=areas-services-hub"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {SERVICE_HUB.map((s) => (
+                <ServiceCard key={s.key} s={s} />
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
         <div className="grid md:grid-cols-2 gap-6 items-start mt-6">
           <Reveal>
             <RegionMap regions={REGIONS} active={region.key} />
@@ -389,49 +515,6 @@ export default async function AreasPage({ searchParams }) {
           </Reveal>
         </div>
 
-        {/* Services section */}
-        <Reveal className="mt-12">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Every location, same value</div>
-            <h3 className="text-lg font-semibold">Managed IT & cybersecurity — remote-first delivery</h3>
-
-            <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
-              {SHARED_SERVICES.map((s) => (
-                <div key={s.title} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="font-medium">{s.title}</div>
-                    {s.href && (
-                      <Link href={s.href} className="text-xs text-cyan-300 hover:underline">
-                        View
-                      </Link>
-                    )}
-                  </div>
-                  <ul className="mt-2 space-y-1 text-slate-300">
-                    {s.bullets.map((b) => (
-                      <li key={b}>• {b}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
-              >
-                View all services <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/contact?type=assessment&source=areas-services"
-                className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
-              >
-                Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </Reveal>
-
         {/* Same stack everywhere */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -517,7 +600,10 @@ export default async function AreasPage({ searchParams }) {
                     </div>
 
                     <div className="mt-3">
-                      <a href={href} className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+                      <a
+                        href={href}
+                        className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+                      >
                         View this region
                       </a>
                     </div>
