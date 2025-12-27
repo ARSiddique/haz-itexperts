@@ -4,6 +4,7 @@ import { site } from "@/lib/siteConfig";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import Script from "next/script";
 
 const RAW_BASE_URL =
   (site?.url && site.url.startsWith("http") ? site.url : null) ||
@@ -18,25 +19,38 @@ const DEFAULT_DESC =
   "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
 
 const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
-const LOGO_URL = new URL("/logo.png", BASE_URL).toString();
 
 const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
 const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
 const email = site?.email || "supremeitexperts@gmail.com";
 
-// ✅ socials: remove "#", non-urls, and dedupe
+// ✅ socials: remove empty/# + dedupe
 const sameAs = Array.from(
   new Set(
     Object.values(site?.socials || {})
-      .map((v) => String(v || "").trim())
-      .filter((v) => v && v !== "#" && v !== "/" && /^https?:\/\//i.test(v))
+      .map((v) => (v ? String(v).trim() : ""))
+      .filter((v) => v && v !== "#" && v !== "https://#" && v !== "http://#")
   )
 );
+
+// ✅ address: keep it present (critical for LocalBusiness rich results)
+// If you have real address fields in siteConfig, it will use them; otherwise fallback is partial (still valid)
+const addr = site?.address || {};
+const postalAddress = {
+  "@type": "PostalAddress",
+  ...(addr.streetAddress ? { streetAddress: String(addr.streetAddress) } : {}),
+  ...(addr.postalCode ? { postalCode: String(addr.postalCode) } : {}),
+  addressLocality: String(addr.addressLocality || "Allentown"),
+  addressRegion: String(addr.addressRegion || "PA"),
+  addressCountry: String(addr.addressCountry || "US"),
+};
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
 
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+  },
 
   title: {
     default: `${BRAND} — Managed IT & Cybersecurity`,
@@ -59,6 +73,9 @@ export const metadata = {
 
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      // "msvalidate.01": "xxxx"
+    },
   },
 
   icons: {
@@ -104,73 +121,61 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  // ✅ SINGLE business entity (prevents duplicate url/logo/image/sameAs in Rich Results)
-  const businessId = `${BASE_URL}/#localbusiness`;
+  // ✅ ONE graph, ONE business entity (prevents duplicate url/logo/image/sameAs)
+  const schemaGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        // ✅ Single “business” node acts as Organization + LocalBusiness + ITService
+        "@type": ["Organization", "LocalBusiness", "ITService"],
+        "@id": `${BASE_URL}/#business`,
+        name: BRAND,
+        url: `${BASE_URL}/`,
+        description:
+          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+        telephone: phoneE164,
+        email,
+        priceRange: "$$",
+        logo: new URL("/logo.png", BASE_URL).toString(),
+        image: [OG_IMAGE],
+        sameAs,
+        address: postalAddress,
+        areaServed: [
+          "Allentown, PA",
+          "Macungie, PA",
+          "Emmaus, PA",
+          "Lehigh Valley, PA",
+        ],
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            contactType: "customer support",
+            telephone: phoneE164,
+            email,
+            availableLanguage: ["en"],
+          },
+        ],
+      },
 
-  const schema = [
-    {
-      "@context": "https://schema.org",
-      "@type": ["LocalBusiness", "ITService"],
-      "@id": businessId,
-      name: BRAND,
-      url: `${BASE_URL}/`,
-      description:
-        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
-      telephone: phoneE164,
-      email,
-      priceRange: "$$",
-      logo: LOGO_URL,
-      image: OG_IMAGE, // ✅ keep single value (not duplicate array)
-      sameAs, // ✅ deduped + cleaned
-      areaServed: [
-        "Allentown, PA",
-        "Macungie, PA",
-        "Emmaus, PA",
-        "Lehigh Valley, PA",
-      ],
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          telephone: phoneE164,
-          email,
-          availableLanguage: ["en"],
-        },
-      ],
-
-      // ✅ IMPORTANT:
-      // If you don't have a real office address/zip (SAB), keep address OMITTED.
-      // Add address only when you have exact street + postalCode.
-      // address: {
-      //   "@type": "PostalAddress",
-      //   streetAddress: "YOUR STREET",
-      //   addressLocality: "Allentown",
-      //   addressRegion: "PA",
-      //   postalCode: "18101",
-      //   addressCountry: "US",
-      // },
-    },
-
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": `${BASE_URL}/#website`,
-      url: `${BASE_URL}/`,
-      name: BRAND,
-      publisher: { "@id": businessId },
-      inLanguage: "en-US",
-    },
-  ];
+      {
+        "@type": "WebSite",
+        "@id": `${BASE_URL}/#website`,
+        url: `${BASE_URL}/`,
+        name: BRAND,
+        publisher: { "@id": `${BASE_URL}/#business` },
+      },
+    ],
+  };
 
   return (
     <html lang="en">
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <Analytics />
 
-        {/* ✅ Plain script in SSR HTML (safe + no duplication quirks) */}
-        <script
+        <Script
+          id="global-schema"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
         />
 
         <Header className="site-header" />
