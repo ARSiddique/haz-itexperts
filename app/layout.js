@@ -13,12 +13,14 @@ const RAW_BASE_URL =
 
 // normalize (no trailing slash)
 const BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
+const HOME_URL = `${BASE_URL}/`;
 
 const BRAND = site?.name || "Supreme IT Experts";
 const DEFAULT_DESC =
   "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
 
 const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
+const LOGO_URL = new URL("/logo.png", BASE_URL).toString();
 
 const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
 const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
@@ -30,7 +32,6 @@ const sameAs = Object.values(site?.socials || {}).filter(Boolean);
 export const metadata = {
   metadataBase: new URL(BASE_URL),
 
-  // ✅ add canonical default (home)
   alternates: {
     canonical: "/",
   },
@@ -54,11 +55,9 @@ export const metadata = {
     },
   },
 
-  // ✅ verification (optional but recommended)
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     other: {
-      // bing: "xxxx" (optional)
       // "msvalidate.01": "xxxx"
     },
   },
@@ -74,7 +73,6 @@ export const metadata = {
   openGraph: {
     title: `${BRAND} — Managed IT & Cybersecurity`,
     description: DEFAULT_DESC,
-    // ✅ better: relative url + metadataBase handles domain
     url: "/",
     siteName: BRAND,
     type: "website",
@@ -107,80 +105,59 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  // ✅ ONE global schema set here (good)
-  const schema = [
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": `${BASE_URL}/#organization`,
-      name: BRAND,
-      url: BASE_URL,
-      logo: new URL("/favicon-48.png", BASE_URL).toString(),
-      sameAs,
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          telephone: phoneE164,
-          email,
-          availableLanguage: ["en"],
+  /**
+   * ✅ IMPORTANT:
+   * Ensure `/#localbusiness` schema is NOT injected anywhere else (Footer/Header/pages).
+   * Otherwise Google will merge → duplicate url/logo/image.
+   */
+  const globalSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["LocalBusiness", "ITService"],
+        "@id": `${BASE_URL}/#localbusiness`,
+        name: BRAND,
+        url: HOME_URL,
+        description:
+          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+        telephone: phoneE164,
+        email,
+        priceRange: "$$",
+        image: OG_IMAGE,
+        logo: LOGO_URL,
+        sameAs,
+        areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Allentown",
+          addressRegion: "PA",
+          addressCountry: "US",
+          // Optional (add when you have them):
+          // streetAddress: "YOUR STREET ADDRESS",
+          // postalCode: "YOUR ZIP CODE",
         },
-      ],
-      areaServed: [
-        "Allentown, PA",
-        "Macungie, PA",
-        "Emmaus, PA",
-        "Lehigh Valley, PA",
-      ],
-    },
-
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": `${BASE_URL}/#website`,
-      url: `${BASE_URL}/`,
-      name: BRAND,
-      publisher: { "@id": `${BASE_URL}/#organization` },
-    },
-
-    {
-      "@context": "https://schema.org",
-      "@type": ["LocalBusiness", "ITService"],
-      "@id": `${BASE_URL}/#localbusiness`,
-      name: BRAND,
-      url: `${BASE_URL}/`,
-      description:
-        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
-      telephone: phoneE164,
-      email, // ✅ add email here too
-      priceRange: "$$",
-      areaServed: [
-        "Allentown, PA",
-        "Macungie, PA",
-        "Emmaus, PA",
-        "Lehigh Valley, PA",
-      ],
-      image: [OG_IMAGE],
-      logo: new URL("/logo.png", BASE_URL).toString(),
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Allentown",
-        addressRegion: "PA",
-        addressCountry: "US",
       },
-    },
-  ];
+
+      {
+        "@type": "WebSite",
+        "@id": `${BASE_URL}/#website`,
+        url: HOME_URL,
+        name: BRAND,
+        publisher: { "@id": `${BASE_URL}/#localbusiness` },
+      },
+    ],
+  };
 
   return (
     <html lang="en">
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <Analytics />
 
-        {/* ✅ Recommended way */}
+        {/* ✅ ONE global schema only (prevents duplicate field url/logo/image warnings) */}
         <Script
           id="global-schema"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalSchema) }}
         />
 
         <Header className="site-header" />
