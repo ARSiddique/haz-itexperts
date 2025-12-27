@@ -102,7 +102,8 @@ export default function GetQuotePage() {
   // ✅ Optional org stub (remove if your layout already outputs Organization JSON-LD)
   const orgSchema = {
     "@context": "https://schema.org",
-    "@id": ORG_ID,
+"@id": BUSINESS_ID,
+
     name: brand,
     url: baseUrl,
     telephone: site?.phone || "+1-610-500-9209",
