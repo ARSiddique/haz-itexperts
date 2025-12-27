@@ -1,6 +1,8 @@
 // app/contact/page.js
 import { site } from "@/lib/siteConfig";
 import ContactClient from "./ContactClient";
+import { BASE_URL, BUSINESS_ID } from "@/lib/seoIds";
+
 
 // --- SEO (server-side)
 export async function generateMetadata() {
