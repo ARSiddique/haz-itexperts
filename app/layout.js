@@ -4,7 +4,6 @@ import { site } from "@/lib/siteConfig";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
-import Script from "next/script";
 
 const RAW_BASE_URL =
   (site?.url && site.url.startsWith("http") ? site.url : null) ||
@@ -13,7 +12,6 @@ const RAW_BASE_URL =
 
 // normalize (no trailing slash)
 const BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
-const HOME_URL = `${BASE_URL}/`;
 
 const BRAND = site?.name || "Supreme IT Experts";
 const DEFAULT_DESC =
@@ -26,15 +24,19 @@ const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
 const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
 const email = site?.email || "supremeitexperts@gmail.com";
 
-// socials (if site.socials is an object)
-const sameAs = Object.values(site?.socials || {}).filter(Boolean);
+// ✅ socials: remove "#", non-urls, and dedupe
+const sameAs = Array.from(
+  new Set(
+    Object.values(site?.socials || {})
+      .map((v) => String(v || "").trim())
+      .filter((v) => v && v !== "#" && v !== "/" && /^https?:\/\//i.test(v))
+  )
+);
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
 
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
 
   title: {
     default: `${BRAND} — Managed IT & Cybersecurity`,
@@ -57,9 +59,6 @@ export const metadata = {
 
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    other: {
-      // "msvalidate.01": "xxxx"
-    },
   },
 
   icons: {
@@ -105,59 +104,73 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  /**
-   * ✅ IMPORTANT:
-   * Ensure `/#localbusiness` schema is NOT injected anywhere else (Footer/Header/pages).
-   * Otherwise Google will merge → duplicate url/logo/image.
-   */
-  const globalSchema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": ["LocalBusiness", "ITService"],
-        "@id": `${BASE_URL}/#localbusiness`,
-        name: BRAND,
-        url: HOME_URL,
-        description:
-          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
-        telephone: phoneE164,
-        email,
-        priceRange: "$$",
-        image: OG_IMAGE,
-        logo: LOGO_URL,
-        sameAs,
-        areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Allentown",
-          addressRegion: "PA",
-          addressCountry: "US",
-          // Optional (add when you have them):
-          // streetAddress: "YOUR STREET ADDRESS",
-          // postalCode: "YOUR ZIP CODE",
-        },
-      },
+  // ✅ SINGLE business entity (prevents duplicate url/logo/image/sameAs in Rich Results)
+  const businessId = `${BASE_URL}/#localbusiness`;
 
-      {
-        "@type": "WebSite",
-        "@id": `${BASE_URL}/#website`,
-        url: HOME_URL,
-        name: BRAND,
-        publisher: { "@id": `${BASE_URL}/#localbusiness` },
-      },
-    ],
-  };
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": ["LocalBusiness", "ITService"],
+      "@id": businessId,
+      name: BRAND,
+      url: `${BASE_URL}/`,
+      description:
+        "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+      telephone: phoneE164,
+      email,
+      priceRange: "$$",
+      logo: LOGO_URL,
+      image: OG_IMAGE, // ✅ keep single value (not duplicate array)
+      sameAs, // ✅ deduped + cleaned
+      areaServed: [
+        "Allentown, PA",
+        "Macungie, PA",
+        "Emmaus, PA",
+        "Lehigh Valley, PA",
+      ],
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          telephone: phoneE164,
+          email,
+          availableLanguage: ["en"],
+        },
+      ],
+
+      // ✅ IMPORTANT:
+      // If you don't have a real office address/zip (SAB), keep address OMITTED.
+      // Add address only when you have exact street + postalCode.
+      // address: {
+      //   "@type": "PostalAddress",
+      //   streetAddress: "YOUR STREET",
+      //   addressLocality: "Allentown",
+      //   addressRegion: "PA",
+      //   postalCode: "18101",
+      //   addressCountry: "US",
+      // },
+    },
+
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      url: `${BASE_URL}/`,
+      name: BRAND,
+      publisher: { "@id": businessId },
+      inLanguage: "en-US",
+    },
+  ];
 
   return (
     <html lang="en">
       <body className="bg-[var(--bg)] text-slate-100 antialiased isolate min-h-screen overflow-x-hidden">
         <Analytics />
 
-        {/* ✅ ONE global schema only (prevents duplicate field url/logo/image warnings) */}
-        <Script
-          id="global-schema"
+        {/* ✅ Plain script in SSR HTML (safe + no duplication quirks) */}
+        <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
 
         <Header className="site-header" />
