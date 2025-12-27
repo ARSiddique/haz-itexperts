@@ -14,7 +14,7 @@ export async function generateMetadata() {
   const description =
     "See how our pricing works and request a tailored quote for your team, tools and risk profile.";
 
-  const ogImage = new URL("/og-image.png?v=7", BASE_URL).toString();
+  const ogImage = `${BASE_URL}/og-image.png?v=7`;
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -43,13 +43,19 @@ const PLANS = [
   {
     name: "Essentials",
     priceNote: "Suitable for small teams",
-    description: "Core managed IT for endpoints and standard office tools. Simple, reliable support.",
-    includes: ["Day-to-day support for staff", "Patching and basic monitoring", "Help with email and account issues"],
+    description:
+      "Core managed IT for endpoints and standard office tools. Simple, reliable support.",
+    includes: [
+      "Day-to-day support for staff",
+      "Patching and basic monitoring",
+      "Help with email and account issues",
+    ],
   },
   {
     name: "Secure",
     priceNote: "For growing teams",
-    description: "Everything in Essentials plus stronger security controls, backup guidance and reviews.",
+    description:
+      "Everything in Essentials plus stronger security controls, backup guidance and reviews.",
     includes: [
       "Security-first configuration for users and devices",
       "Simple backup and recovery plan",
@@ -59,7 +65,8 @@ const PLANS = [
   {
     name: "Plus",
     priceNote: "For multi-site or higher-risk teams",
-    description: "More time for planning, reporting and working with your leadership on roadmap and risk.",
+    description:
+      "More time for planning, reporting and working with your leadership on roadmap and risk.",
     includes: [
       "Scheduled check-ins with a senior engineer",
       "Higher-touch support for key systems",
@@ -71,37 +78,33 @@ const PLANS = [
 export default function GetQuotePage() {
   const brand = site?.name || "Supreme IT Experts";
   const canonical = `${BASE_URL}/get-quote`;
-
-  // Must match layout.js IDs
   const WEBSITE_ID = `${BASE_URL}/#website`;
-  const BREADCRUMB_ID = `${canonical}#breadcrumb`;
-  const PAGE_ID = `${canonical}#webpage`;
 
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "@id": BREADCRUMB_ID,
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
       { "@type": "ListItem", position: 2, name: "Get a Quote", item: canonical },
     ],
   };
 
-  // ✅ Page schema only — DO NOT define BUSINESS_ID here (layout.js already does)
+  // ✅ WebPage schema references ONLY (no duplicate business entity here)
   const quotePageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": PAGE_ID,
+    "@id": `${canonical}#webpage`,
     url: canonical,
     name: `Get a Quote — ${brand}`,
-    isPartOf: { "@id": WEBSITE_ID },
+    isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
     about: { "@id": BUSINESS_ID },
-    breadcrumb: { "@id": BREADCRUMB_ID },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
   };
 
   return (
     <>
-      {/* JSON-LD: Breadcrumbs + WebPage (no org/business duplicates) */}
+      {/* JSON-LD: Breadcrumbs + WebPage (no orgSchema here) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -118,18 +121,21 @@ export default function GetQuotePage() {
       <main className="max-w-5xl mx-auto px-4 pb-20 space-y-10">
         <section className="text-sm text-slate-300 leading-7">
           <p>
-            Pricing is based mainly on the number of people we support, the tools you use and how critical your systems
-            are. We keep the structure simple so it&apos;s easy to budget for.
+            Pricing is based mainly on the number of people we support, the tools you use and how
+            critical your systems are. We keep the structure simple so it&apos;s easy to budget for.
           </p>
           <p className="mt-3">
-            The examples below are guidelines only. We&apos;ll confirm an exact quote after a short conversation about
-            your environment.
+            The examples below are guidelines only. We&apos;ll confirm an exact quote after a short
+            conversation about your environment.
           </p>
         </section>
 
         <section className="grid gap-6 md:grid-cols-3">
           {PLANS.map((plan) => (
-            <div key={plan.name} className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col">
+            <div
+              key={plan.name}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col"
+            >
               <h2 className="text-lg font-semibold text-slate-100">{plan.name}</h2>
               <p className="mt-1 text-xs text-cyan-300/90">{plan.priceNote}</p>
               <p className="mt-3 text-sm text-slate-300">{plan.description}</p>
@@ -146,9 +152,11 @@ export default function GetQuotePage() {
           <div>
             <h2 className="text-base font-semibold text-slate-100">Prefer to talk it through?</h2>
             <p className="mt-2 text-sm text-slate-300">
-              If you&apos;re not sure which plan fits, we can walk through your current setup and give clear options.
+              If you&apos;re not sure which plan fits, we can walk through your current setup and
+              give clear options.
             </p>
           </div>
+
           <div className="flex gap-3">
             <Link
               href="/contact?type=assessment&source=get-quote"
@@ -159,7 +167,6 @@ export default function GetQuotePage() {
           </div>
         </section>
 
-        {/* Quote-only form (different from /contact) */}
         <div className="mt-4">
           <QuoteFormClient source="get-quote-page" />
         </div>
