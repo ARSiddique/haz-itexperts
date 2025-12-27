@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import HomeFX from "@/components/HomeFX";
 import { site } from "@/lib/siteConfig";
 import ClientOfferPopup from "@/components/ClientOfferPopup";
+import { BASE_URL, BUSINESS_ID } from "@/lib/seoIds"; // ✅ unified base + org id
 import {
   Shield,
   Server,
@@ -24,11 +25,15 @@ import {
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEO (server-side)
+// SEO (server-side) — ✅ unified with BASE_URL (same as layout.js)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const siteUrl = site?.url || "https://supremeitexperts.com";
+
+  // ✅ single source of truth
+  const baseUrl = String(
+    BASE_URL || site?.url || "https://supremeitexperts.com"
+  ).replace(/\/$/, "");
 
   const baseTitle =
     "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA";
@@ -37,7 +42,7 @@ export async function generateMetadata() {
     "Managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley (Macungie, Emmaus). Fixed-fee helpdesk, monitoring, cloud, backup and disaster recovery.";
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(baseUrl),
     title,
     description,
     keywords: [
@@ -47,13 +52,13 @@ export async function generateMetadata() {
       "small business IT support",
       "cybersecurity services Allentown",
     ],
-    alternates: { canonical: "/" },
+    alternates: { canonical: "/" }, // ✅ relative canonical (metadataBase makes absolute)
     openGraph: {
       title,
       description,
-      url: "/",
+      url: "/", // ✅ relative
       type: "website",
-      siteName: brand, // ✅ added
+      siteName: brand,
       images: [
         {
           url: "/og-image.png?v=7",
@@ -69,10 +74,7 @@ export async function generateMetadata() {
       description,
       images: ["/og-image.png?v=7"],
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -212,7 +214,17 @@ export default function HomePage() {
     : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"];
 
   const brand = site?.name || "Supreme IT Experts";
-  const SITE_URL = site?.url || "https://supremeitexperts.com";
+
+  // ✅ unify with layout.js base + ids
+  const baseUrl = String(
+    BASE_URL || site?.url || "https://supremeitexperts.com"
+  ).replace(/\/$/, "");
+  const canonical = `${baseUrl}/`;
+
+  const WEBSITE_ID = `${baseUrl}/#website`;
+  const BREADCRUMB_ID = `${baseUrl}/#breadcrumb`;
+  const WEBPAGE_ID = `${baseUrl}/#webpage`;
+  const FAQ_ID = `${baseUrl}/#faq`;
 
   const phoneRaw = site?.phone || "+1-610-500-9209";
   const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
@@ -294,42 +306,57 @@ export default function HomePage() {
     },
   ];
 
-  // JSON-LD (Home) — WebPage + BreadcrumbList + FAQPage
+  // JSON-LD (Home) — ✅ IDs aligned with BASE_URL + connects to BUSINESS_ID
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
+      // ✅ WebPage
       {
         "@type": "WebPage",
-        "@id": `${SITE_URL}/#webpage`,
-        url: `${SITE_URL}/`,
+        "@id": WEBPAGE_ID,
+        url: canonical,
         name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
-        isPartOf: { "@id": `${SITE_URL}/#website` },
-        about: { "@id": `${SITE_URL}/#organization` },
+        isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
+        breadcrumb: { "@id": BREADCRUMB_ID },
+        about: { "@id": BUSINESS_ID },
         primaryImageOfPage: {
           "@type": "ImageObject",
-          url: `${SITE_URL}/og-image.png?v=7`,
+          url: new URL("/og-image.png?v=7", baseUrl).toString(),
         },
       },
+
+      // ✅ Breadcrumbs
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/#breadcrumb`,
+        "@id": BREADCRUMB_ID,
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: `${SITE_URL}/`,
+            item: canonical,
           },
         ],
       },
+
+      // ✅ FAQPage
       {
         "@type": "FAQPage",
-        "@id": `${SITE_URL}/#faq`,
+        "@id": FAQ_ID,
         mainEntity: FAQS.map((f) => ({
           "@type": "Question",
           name: f.q,
           acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
+      },
+
+      // ✅ (Optional but helpful) WebSite node referencing Organization/LocalBusiness id
+      {
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        url: canonical,
+        name: brand,
+        publisher: { "@id": BUSINESS_ID },
       },
     ],
   };
@@ -345,7 +372,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_30%)]" />
       </div>
 
-      {/* ✅ JSON-LD (best practice) */}
+      {/* ✅ JSON-LD */}
       <Script
         id="home-jsonld"
         type="application/ld+json"
@@ -517,10 +544,7 @@ export default function HomePage() {
 
       {/* ───────────── SERVICES ───────────── */}
       <Section id="services" className="py-16">
-        <Title
-          k="Services"
-          sub="Managed IT, IT support & cybersecurity for SMBs"
-        />
+        <Title k="Services" sub="Managed IT, IT support & cybersecurity for SMBs" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
           Choose fully-managed or co-managed IT with our{" "}
           <Link
@@ -613,10 +637,7 @@ export default function HomePage() {
       <Section id="process" className="py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
-          <ol
-            className="relative border-s border-white/10 ps-6 space-y-8"
-            data-reveal="up"
-          >
+          <ol className="relative border-s border-white/10 ps-6 space-y-8" data-reveal="up">
             {[
               {
                 icon: Cpu,
@@ -775,10 +796,7 @@ export default function HomePage() {
           {[
             ["/media/hero-1.jpg", "Fiber and cabling work for business networks"],
             ["/media/rack.jpg", "Tidy network rack in a small business"],
-            [
-              "/media/dashboard.jpg",
-              "Monitoring dashboard for managed IT services",
-            ],
+            ["/media/dashboard.jpg", "Monitoring dashboard for managed IT services"],
           ].map(([src, cap]) => (
             <figure
               key={src}

@@ -2,6 +2,7 @@
 import PageHero from "@/components/PageHero";
 import GalleryClient from "./GalleryClient";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
@@ -59,12 +60,11 @@ export default function GalleryPage() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/gallery`;
 
-  // ✅ Keep same IDs across site (if your layout uses these, great)
+  // Only reference the website id (layout should define it globally)
   const WEBSITE_ID = `${baseUrl}/#website`;
-  const ORG_ID = `${baseUrl}/#organization`;
 
+  // Breadcrumb schema
   const breadcrumbsSchema = {
-    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "@id": `${canonical}#breadcrumb`,
     itemListElement: [
@@ -73,26 +73,24 @@ export default function GalleryPage() {
     ],
   };
 
-  // ✅ WebPage/CollectionPage for better page understanding
+  // CollectionPage schema
   const collectionPageSchema = {
-    "@context": "https://schema.org",
     "@type": "CollectionPage",
     "@id": `${canonical}#collectionpage`,
     url: canonical,
     name: `Gallery — ${brand}`,
-    isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
-    about: { "@type": "Organization", "@id": ORG_ID },
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": BUSINESS_ID }, // ✅ reference only
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
   };
 
-  // ✅ Gallery schema
+  // ImageGallery schema
   const gallerySchema = {
-    "@context": "https://schema.org",
     "@type": "ImageGallery",
     "@id": `${canonical}#imagegallery`,
     name: `${brand} Gallery`,
     url: canonical,
-    isPartOf: { "@type": "WebPage", "@id": `${canonical}#collectionpage` },
+    isPartOf: { "@id": `${canonical}#collectionpage` },
     image: ALL_ITEMS.map((x, idx) => ({
       "@type": "ImageObject",
       "@id": `${canonical}#img-${idx + 1}`,
@@ -104,25 +102,17 @@ export default function GalleryPage() {
     })),
   };
 
-  // ✅ Optional: Organization stub (ONLY if your layout doesn’t already inject it)
-  // If layout already has Organization JSON-LD, you can remove this block.
-  const orgSchema = {
+  // ✅ One JSON-LD block (no Organization here)
+  const pageJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": ORG_ID,
-    name: brand,
-    url: baseUrl,
-    telephone: site?.phone || "+1-610-500-9209",
+    "@graph": [breadcrumbsSchema, collectionPageSchema, gallerySchema],
   };
 
   return (
     <>
-      {/* JSON-LD: Breadcrumbs + CollectionPage + ImageGallery (+ optional org) */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, gallerySchema, orgSchema]),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }}
       />
 
       <PageHero

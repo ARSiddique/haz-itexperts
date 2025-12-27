@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
+import { BUSINESS_ID } from "@/lib/seoIds";
 import { site } from "@/lib/siteConfig";
 import {
   MapPin,
@@ -319,18 +320,9 @@ export default async function AreasPage({ searchParams }) {
     name: "Areas We Serve",
     url: `${baseUrl}/areas`,
     isPartOf: { "@type": "WebSite", url: `${baseUrl}/`, name: brand },
-    about: { "@type": "Service", name: "Managed IT Services & Cybersecurity" },
+    about: { "@id": BUSINESS_ID },
   };
 
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${baseUrl}/#organization`,
-    name: brand,
-    url: baseUrl,
-    telephone: site?.phone || "+1-610-500-9209",
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-  };
 
   return (
     <>
@@ -338,7 +330,8 @@ export default async function AreasPage({ searchParams }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema, orgSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema]),
+
         }}
       />
 

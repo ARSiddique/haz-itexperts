@@ -1,6 +1,7 @@
 // app/services/cybersecurity/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -205,7 +206,7 @@ export default function Page() {
     description:
       "Identity hardening (MFA/Conditional Access), EDR/XDR, email protection, vulnerability management, and backup/DR with restore testing for small and mid-sized businesses.",
     url: canonical,
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+   provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     offers: {
       "@type": "Offer",
@@ -223,7 +224,7 @@ export default function Page() {
     description:
       "Cybersecurity for SMBs: identity hardening, EDR/XDR, email protection, vulnerability management, and backup/DR with restore testing.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+  publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };

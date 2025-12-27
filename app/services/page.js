@@ -8,6 +8,7 @@ import ServicesTabs from "@/components/ServicesTabs";
 import PricingRoi from "@/components/PricingRoi";
 import JsonLd from "@/components/JsonLd";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 import {
   ShieldCheck,
   Server,
@@ -196,7 +197,7 @@ export default async function ServicesPage() {
     description:
       "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
     isPartOf: { "@id": `${baseUrl}/#website` },
-    publisher: { "@id": `${baseUrl}/#localbusiness` },
+ publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#servicelist` },
   };
@@ -218,7 +219,7 @@ export default async function ServicesPage() {
     "@id": `${baseUrl}${s.href}#service`,
     name: s.title,
     description: s.desc,
-    provider: { "@id": `${baseUrl}/#localbusiness` },
+   provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     serviceType: s.title,
     url: `${baseUrl}${s.href}`,

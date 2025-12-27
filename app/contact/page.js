@@ -74,15 +74,13 @@ export default function ContactPage() {
     url: canonical,
     name: `Contact | ${brand}`,
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    about: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
   };
 
   // Organization w/ ContactPoint (same @id as layout org)
   const orgContactSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${baseUrl}/#organization`,
     name: brand,
     url: baseUrl,
     email,

@@ -1,6 +1,7 @@
 // app/services/cloud-workspace/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -238,12 +239,7 @@ export default function Page() {
       "Microsoft 365 and Google Workspace services: migrations, identity/SSO, SharePoint/Drive governance, DLP/retention, collaboration standards, and SaaS backup with restore testing.",
     serviceType: "Cloud Migration & Productivity",
     url: canonical,
-    provider: {
-      "@type": "Organization",
-      "@id": `${baseUrl}/#organization`,
-      name: brand,
-      url: baseUrl,
-    },
+    provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     offers: {
       "@type": "Offer",

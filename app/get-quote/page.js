@@ -3,6 +3,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import QuoteFormClient from "./QuoteFormClient";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
@@ -74,7 +75,7 @@ export default function GetQuotePage() {
   const canonical = `${baseUrl}/get-quote`;
 
   const WEBSITE_ID = `${baseUrl}/#website`;
-  const ORG_ID = `${baseUrl}/#organization`;
+
 
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
@@ -94,14 +95,13 @@ export default function GetQuotePage() {
     url: canonical,
     name: `Get a Quote — ${brand}`,
     isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
-    about: { "@type": "Organization", "@id": ORG_ID },
+   about: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
   };
 
   // ✅ Optional org stub (remove if your layout already outputs Organization JSON-LD)
   const orgSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
     "@id": ORG_ID,
     name: brand,
     url: baseUrl,

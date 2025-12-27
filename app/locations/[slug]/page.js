@@ -7,6 +7,7 @@ import { site } from "@/lib/siteConfig";
 import { LOCATIONS, getLocationBySlug } from "@/lib/locations";
 import { SERVICES } from "@/lib/services";
 import { ArrowRight, CheckCircle2, MapPin } from "lucide-react";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateStaticParams() {
   return LOCATIONS.map((l) => ({ slug: l.slug }));
@@ -21,17 +22,28 @@ export async function generateMetadata({ params }) {
 
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonical = `${baseUrl}/locations/${loc.slug}`;
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
 
   const title = `${loc.title} | ${brand}`;
   const description = loc.lede;
-  const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   return {
     metadataBase: new URL(baseUrl),
     title,
     description,
     alternates: { canonical },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
 
     openGraph: {
       title,
@@ -41,7 +53,7 @@ export async function generateMetadata({ params }) {
       siteName: brand,
       images: [
         {
-          url: `${baseUrl}/og-image.png?v=7`,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: `${brand} — ${loc.city}, ${loc.state}`,
@@ -53,7 +65,7 @@ export async function generateMetadata({ params }) {
       card: "summary_large_image",
       title,
       description,
-      images: [`${baseUrl}/og-image.png?v=7`],
+      images: [ogImage],
     },
   };
 }
@@ -70,32 +82,36 @@ export default async function LocationPage({ params }) {
   const phone = site?.phone || "+1-610-500-9209";
   const canonical = `${baseUrl}/locations/${loc.slug}`;
 
+  // ✅ Stable IDs for clean entity linking
+  const WEBSITE_ID = `${baseUrl}/#website`;
+  const BREADCRUMB_ID = `${canonical}#breadcrumb`;
+  const LOCALBUSINESS_ID = `${canonical}#localbusiness`;
+  const WEBPAGE_ID = `${canonical}#webpage`;
+
   // Breadcrumb schema
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": BREADCRUMB_ID,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
       { "@type": "ListItem", position: 2, name: "Areas we serve", item: `${baseUrl}/areas` },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: `${loc.city}, ${loc.state}`,
-        item: canonical,
-      },
+      { "@type": "ListItem", position: 3, name: `${loc.city}, ${loc.state}`, item: canonical },
     ],
   };
 
-  // LocalBusiness (remote-first coverage page)
+  // LocalBusiness (location landing page)
+  // ✅ No Organization duplicates. We link to your central BUSINESS_ID entity.
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "ITService"],
-    "@id": `${canonical}#localbusiness`,
+    "@id": LOCALBUSINESS_ID,
     name: brand,
     url: canonical,
     telephone: phone,
     areaServed: [`${loc.city}, ${loc.state}`],
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    provider: { "@id": BUSINESS_ID },
+    branchOf: { "@id": BUSINESS_ID },
     serviceType: [
       "Managed IT Services",
       "Cybersecurity",
@@ -109,11 +125,14 @@ export default async function LocationPage({ params }) {
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `${loc.city}, ${loc.state} — IT Support`,
+    "@id": WEBPAGE_ID,
     url: canonical,
+    name: `${loc.city}, ${loc.state} — IT Support | ${brand}`,
     description: loc.lede,
-    isPartOf: { "@type": "WebSite", name: brand, url: baseUrl },
-    about: { "@type": "Thing", name: "Managed IT & Cybersecurity" },
+    isPartOf: { "@id": WEBSITE_ID },
+    breadcrumb: { "@id": BREADCRUMB_ID },
+    about: { "@id": BUSINESS_ID },
+    mainEntity: { "@id": LOCALBUSINESS_ID },
   };
 
   return (
@@ -137,8 +156,8 @@ export default async function LocationPage({ params }) {
                 <MapPin className="h-4 w-4" /> Supporting teams in {loc.city} and nearby areas
               </div>
               <p className="text-slate-300 mt-2 max-w-2xl">
-                We provide security-first IT support with proactive monitoring, patching, and clear communication —
-                delivered remotely across the U.S.
+                We provide security-first IT support with proactive monitoring, patching, and clear communication — delivered
+                remotely across the U.S.
               </p>
             </div>
             <div className="flex gap-3">
@@ -208,7 +227,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ NEW: Services in this area (full internal linking block) */}
+        {/* Services in this area (full internal linking block) */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">

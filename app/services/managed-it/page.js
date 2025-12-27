@@ -1,6 +1,7 @@
 // app/services/managed-it/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -212,7 +213,7 @@ export default function Page() {
     description:
       "Helpdesk with SLAs, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting for small and mid-sized businesses.",
     url: canonical,
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     offers: {
       "@type": "Offer",
@@ -231,7 +232,7 @@ export default function Page() {
     description:
       "Managed IT for SMBs: helpdesk with SLAs, patching, monitoring, endpoint baselines, and leadership reporting.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };

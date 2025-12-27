@@ -3,6 +3,8 @@ import Link from "next/link";
 import Script from "next/script";
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEO (server-side)
@@ -74,7 +76,7 @@ export default function AboutPage() {
         description:
           "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.",
         isPartOf: { "@id": `${baseUrl}/#website` },
-        about: { "@id": `${baseUrl}/#organization` },
+        about: { "@id": BUSINESS_ID },
         breadcrumb: { "@id": `${canonical}#breadcrumb` },
         primaryImageOfPage: {
           "@type": "ImageObject",

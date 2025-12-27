@@ -1,6 +1,7 @@
 // app/services/projects-consulting/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -170,7 +171,7 @@ export default function Page() {
     description:
       "Fixed-scope IT projects including audits, office moves, network refresh, migrations, directory cleanup, decommissions, and automation — delivered with runbooks, rollback plans, acceptance checks, and clean handover documentation.",
     url: canonical,
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+  provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     offers: {
       "@type": "Offer",
@@ -188,7 +189,7 @@ export default function Page() {
     description:
       "Fixed-scope audits, moves, network refresh, directory cleanup, migrations, and decommissions — delivered with runbooks, rollback plans, acceptance checks, and clean handovers.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };

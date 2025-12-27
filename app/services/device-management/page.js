@@ -1,6 +1,7 @@
 // app/services/device-management/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
+import { BUSINESS_ID } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -146,7 +147,7 @@ export default function Page() {
     description:
       "Zero-touch enrollment, security baselines, patch & app management, compliance reporting, and device lifecycle control for Windows, macOS, iOS, and Android.",
     url: canonical,
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+   provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
     offers: {
       "@type": "Offer",
@@ -165,7 +166,7 @@ export default function Page() {
     description:
       "Zero-touch enrollment, security baselines, patch & app management, compliance reporting, and device lifecycle control.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
   };
@@ -203,6 +204,7 @@ export default function Page() {
             "We follow a defined patch cadence with pilot rings and rollback planning. Critical updates are prioritized according to agreed SLAs and business impact.",
         },
       },
+
     ],
   };
 
