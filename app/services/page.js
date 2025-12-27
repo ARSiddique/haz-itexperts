@@ -17,6 +17,7 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
+  // (you can remove unused icons if you want)
   Building2,
   CloudCog,
   Network,
@@ -177,56 +178,6 @@ export default async function ServicesPage() {
     href,
   }));
 
-  // ✅ Schema: Breadcrumb + WebPage + ItemList + Service + FAQ
-  const breadcrumbsSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "@id": `${canonical}#breadcrumb`,
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Services", item: canonical },
-    ],
-  };
-
-  const webPageSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": `${canonical}#webpage`,
-    url: canonical,
-    name: `Services | ${brand}`,
-    description:
-      "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
-    isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-    publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-    breadcrumb: { "@id": `${canonical}#breadcrumb` },
-    mainEntity: { "@id": `${canonical}#servicelist` },
-  };
-
-  const itemListSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "@id": `${canonical}#servicelist`,
-    name: `${brand} Services`,
-    itemListElement: services.map((s, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: s.title,
-      url: `${baseUrl}${s.href}`,
-    })),
-  };
-
-  const serviceSchemas = services.map((s) => ({
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "@id": `${baseUrl}${s.href}#service`,
-    name: s.title,
-    description: s.desc,
-    provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-    serviceType: s.title,
-    url: `${baseUrl}${s.href}`,
-  }));
-
   const faqs = [
     {
       q: "Fully managed vs co-managed?",
@@ -242,15 +193,68 @@ export default async function ServicesPage() {
     },
   ];
 
-  const faqSchema = {
+  // ✅ FIX for “duplicate URL / duplicate item” in Rich Results:
+  // Use ONE @context and ONE @graph for the whole page, instead of multiple JSON-LD roots.
+  // Also normalize Home breadcrumb to baseUrl (no trailing slash).
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${canonical}#faq`,
-    mainEntity: faqs.map(({ q, a }) => ({
-      "@type": "Question",
-      name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
-    })),
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl }, // ✅ normalized
+          { "@type": "ListItem", position: 2, name: "Services", item: canonical },
+        ],
+      },
+
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: `Services | ${brand}`,
+        description:
+          "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
+        isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
+        publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": `${canonical}#servicelist` },
+      },
+
+      {
+        "@type": "ItemList",
+        "@id": `${canonical}#servicelist`,
+        name: `${brand} Services`,
+        itemListElement: services.map((s, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: s.title,
+          url: `${baseUrl}${s.href}`,
+        })),
+      },
+
+      // Services entities
+      ...services.map((s) => ({
+        "@type": "Service",
+        "@id": `${baseUrl}${s.href}#service`,
+        name: s.title,
+        description: s.desc,
+        provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+        areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+        serviceType: s.title,
+        url: `${baseUrl}${s.href}`,
+      })),
+
+      {
+        "@type": "FAQPage",
+        "@id": `${canonical}#faq`,
+        mainEntity: faqs.map(({ q, a }) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a },
+        })),
+      },
+    ],
   };
 
   return (
@@ -258,13 +262,7 @@ export default async function ServicesPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            breadcrumbsSchema,
-            webPageSchema,
-            itemListSchema,
-            ...serviceSchemas,
-            faqSchema,
-          ]),
+          __html: JSON.stringify(jsonLd),
         }}
       />
 
@@ -274,30 +272,45 @@ export default async function ServicesPage() {
         sub="Pick the coverage you need: managed IT, cybersecurity, Microsoft 365, device management, and strategy. Simple onboarding. Clear deliverables."
       />
 
-      {/* ✅ Quick Links / TOC (makes page feel structured, not generic) */}
+      {/* ✅ Quick Links / TOC */}
       <section className="max-w-6xl mx-auto px-4 pt-4 pb-8">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">On this page</div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <Link href="#services-overview" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-overview"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Services overview
             </Link>
-            <Link href="#services-deepdives" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-deepdives"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Compare services
             </Link>
-            <Link href="#services-pricing" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-pricing"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Pricing & ROI
             </Link>
-            <Link href="#services-faq" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-faq"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               FAQs
             </Link>
-            <Link href="/areas" className="text-sm rounded-full px-3 py-1.5 border border-cyan-300/20 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20">
+            <Link
+              href="/areas"
+              className="text-sm rounded-full px-3 py-1.5 border border-cyan-300/20 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+            >
               Areas we serve
             </Link>
           </div>
 
-          {/* Direct service links (SEO-friendly + user-friendly) */}
+          {/* Direct service links */}
           <div className="mt-4 flex flex-wrap gap-2">
             {services.map((s) => (
               <Link
@@ -314,9 +327,7 @@ export default async function ServicesPage() {
 
       {/* Intro */}
       <section className="max-w-6xl mx-auto px-4 pb-10 text-sm text-slate-300 space-y-2">
-        <p>
-          This page gives you a clear overview of what we do. Open any service to see deliverables and what’s included.
-        </p>
+        <p>This page gives you a clear overview of what we do. Open any service to see deliverables and what’s included.</p>
         <p>
           Looking for locations? See{" "}
           <Link href="/areas" className="text-cyan-300 hover:underline">
@@ -436,7 +447,11 @@ export default async function ServicesPage() {
                   <details key={q} className="py-3 group">
                     <summary className="cursor-pointer list-none flex items-center justify-between gap-2">
                       <span className="font-medium">{q}</span>
-                      <svg className="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 24 24" fill="currentColor">
+                      <svg
+                        className="h-4 w-4 transition group-open:rotate-180"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
                         <path d="M12 15.5 6.5 10l1.4-1.4L12 12.7l4.1-4.1L17.5 10z" />
                       </svg>
                     </summary>
