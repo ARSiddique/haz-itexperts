@@ -3,22 +3,21 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import QuoteFormClient from "./QuoteFormClient";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BASE_URL, BUSINESS_ID } from "@/lib/seoIds";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/get-quote`;
+  const canonical = `${BASE_URL}/get-quote`;
 
   const title = `Get a Quote — ${brand}`;
   const description =
     "See how our pricing works and request a tailored quote for your team, tools and risk profile.";
 
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
+  const ogImage = new URL("/og-image.png?v=7", BASE_URL).toString();
 
   return {
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(BASE_URL),
     title,
     description,
     alternates: { canonical },
@@ -71,51 +70,42 @@ const PLANS = [
 
 export default function GetQuotePage() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/get-quote`;
+  const canonical = `${BASE_URL}/get-quote`;
 
-  const WEBSITE_ID = `${baseUrl}/#website`;
-
+  // Must match layout.js IDs
+  const WEBSITE_ID = `${BASE_URL}/#website`;
+  const BREADCRUMB_ID = `${canonical}#breadcrumb`;
+  const PAGE_ID = `${canonical}#webpage`;
 
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "@id": `${canonical}#breadcrumb`,
+    "@id": BREADCRUMB_ID,
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
       { "@type": "ListItem", position: 2, name: "Get a Quote", item: canonical },
     ],
   };
 
-  // ✅ WebPage/CollectionPage understanding
+  // ✅ Page schema only — DO NOT define BUSINESS_ID here (layout.js already does)
   const quotePageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": `${canonical}#webpage`,
+    "@id": PAGE_ID,
     url: canonical,
     name: `Get a Quote — ${brand}`,
-    isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
-   about: { "@id": BUSINESS_ID },
-    breadcrumb: { "@id": `${canonical}#breadcrumb` },
-  };
-
-  // ✅ Optional org stub (remove if your layout already outputs Organization JSON-LD)
-  const orgSchema = {
-    "@context": "https://schema.org",
-"@id": BUSINESS_ID,
-
-    name: brand,
-    url: baseUrl,
-    telephone: site?.phone || "+1-610-500-9209",
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": BUSINESS_ID },
+    breadcrumb: { "@id": BREADCRUMB_ID },
   };
 
   return (
     <>
-      {/* JSON-LD: Breadcrumbs + WebPage (+ optional org) */}
+      {/* JSON-LD: Breadcrumbs + WebPage (no org/business duplicates) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, quotePageSchema, orgSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, quotePageSchema]),
         }}
       />
 
