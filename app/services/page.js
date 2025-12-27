@@ -6,6 +6,7 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import ServicesTabs from "@/components/ServicesTabs";
 import PricingRoi from "@/components/PricingRoi";
+import JsonLd from "@/components/JsonLd";
 import { site } from "@/lib/siteConfig";
 import {
   ShieldCheck,
@@ -17,7 +18,6 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
-  // (you can remove unused icons if you want)
   Building2,
   CloudCog,
   Network,
@@ -178,6 +178,52 @@ export default async function ServicesPage() {
     href,
   }));
 
+  // ✅ Page-only schemas (NO LocalBusiness/Organization here)
+  const breadcrumbsSchema = {
+    "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Services", item: canonical },
+    ],
+  };
+
+  const webPageSchema = {
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `Services | ${brand}`,
+    description:
+      "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
+    isPartOf: { "@id": `${baseUrl}/#website` },
+    publisher: { "@id": `${baseUrl}/#localbusiness` },
+    breadcrumb: { "@id": `${canonical}#breadcrumb` },
+    mainEntity: { "@id": `${canonical}#servicelist` },
+  };
+
+  const itemListSchema = {
+    "@type": "ItemList",
+    "@id": `${canonical}#servicelist`,
+    name: `${brand} Services`,
+    itemListElement: services.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: s.title,
+      url: `${baseUrl}${s.href}`,
+    })),
+  };
+
+  const serviceSchemas = services.map((s) => ({
+    "@type": "Service",
+    "@id": `${baseUrl}${s.href}#service`,
+    name: s.title,
+    description: s.desc,
+    provider: { "@id": `${baseUrl}/#localbusiness` },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    serviceType: s.title,
+    url: `${baseUrl}${s.href}`,
+  }));
+
   const faqs = [
     {
       q: "Fully managed vs co-managed?",
@@ -193,78 +239,25 @@ export default async function ServicesPage() {
     },
   ];
 
-  // ✅ FIX for “duplicate URL / duplicate item” in Rich Results:
-  // Use ONE @context and ONE @graph for the whole page, instead of multiple JSON-LD roots.
-  // Also normalize Home breadcrumb to baseUrl (no trailing slash).
-  const jsonLd = {
+  const faqSchema = {
+    "@type": "FAQPage",
+    "@id": `${canonical}#faq`,
+    mainEntity: faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
+  // ✅ SINGLE graph output (cleaner for Google)
+  const pageSchema = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${canonical}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl }, // ✅ normalized
-          { "@type": "ListItem", position: 2, name: "Services", item: canonical },
-        ],
-      },
-
-      {
-        "@type": "WebPage",
-        "@id": `${canonical}#webpage`,
-        url: canonical,
-        name: `Services | ${brand}`,
-        description:
-          "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
-        isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
-        publisher: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-        breadcrumb: { "@id": `${canonical}#breadcrumb` },
-        mainEntity: { "@id": `${canonical}#servicelist` },
-      },
-
-      {
-        "@type": "ItemList",
-        "@id": `${canonical}#servicelist`,
-        name: `${brand} Services`,
-        itemListElement: services.map((s, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          name: s.title,
-          url: `${baseUrl}${s.href}`,
-        })),
-      },
-
-      // Services entities
-      ...services.map((s) => ({
-        "@type": "Service",
-        "@id": `${baseUrl}${s.href}#service`,
-        name: s.title,
-        description: s.desc,
-        provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
-        areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
-        serviceType: s.title,
-        url: `${baseUrl}${s.href}`,
-      })),
-
-      {
-        "@type": "FAQPage",
-        "@id": `${canonical}#faq`,
-        mainEntity: faqs.map(({ q, a }) => ({
-          "@type": "Question",
-          name: q,
-          acceptedAnswer: { "@type": "Answer", text: a },
-        })),
-      },
-    ],
+    "@graph": [breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas, faqSchema],
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
-      />
+      <JsonLd data={pageSchema} />
 
       <PageHero
         eyebrow="Services"
@@ -310,7 +303,6 @@ export default async function ServicesPage() {
             </Link>
           </div>
 
-          {/* Direct service links */}
           <div className="mt-4 flex flex-wrap gap-2">
             {services.map((s) => (
               <Link
