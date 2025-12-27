@@ -21,7 +21,7 @@ export default function AllentownLP() {
 
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Allentown • Bethlehem • Easton</div>
+            <div className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Allentown • Macungie • Emmaus</div>
             <h1 className="mt-3 text-4xl md:text-6xl font-extrabold leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
               First 20 Customers Get a Free IT Audit
             </h1>
