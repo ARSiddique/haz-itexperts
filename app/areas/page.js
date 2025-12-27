@@ -377,7 +377,7 @@ export default async function AreasPage({ searchParams }) {
                 <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Services hub</div>
                 <h2 className="text-xl md:text-2xl font-semibold">Explore services teams bundle together</h2>
                 <p className="mt-2 text-slate-300 max-w-3xl">
-                  This hub strengthens SEO: <span className="text-slate-200">Areas → Services</span> and your Service pages already do{" "}
+                 
                   <span className="text-slate-200">Services → Areas</span>. Better crawl paths, better topical relevance.
                 </p>
               </div>
