@@ -15,7 +15,7 @@ export async function generateMetadata() {
 
   const title = "About";
   const description =
-    "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.";
+    "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown, Macungie & Emmaus."
 
   const ogImage = `/og-image.png?v=7`;
 
@@ -74,7 +74,7 @@ export default function AboutPage() {
         url: canonical,
         name: `About | ${brand}`,
         description:
-          "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown and the Lehigh Valley.",
+          "Learn who we are, how we work, and how we support SMBs with reliable managed IT and cybersecurity across Allentown, Macungie & Emmaus, PA",
         isPartOf: { "@id": `${baseUrl}/#website` },
         about: { "@id": BUSINESS_ID },
         breadcrumb: { "@id": `${canonical}#breadcrumb` },
@@ -108,7 +108,7 @@ export default function AboutPage() {
           <p className="mt-3 text-slate-300 leading-7">
             {brand} is a small, senior-led team helping small and mid-sized
             businesses keep IT stable, secure and predictable. We serve teams in
-            Allentown and the wider Lehigh Valley with clear processes,
+            Allentown, Macungie & Emmaus with clear processes,
             documentation and reporting—so owners always know what’s happening.
           </p>
         </section>

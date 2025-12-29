@@ -1,24 +1,31 @@
 // app/services/cybersecurity/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/services/cybersecurity`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
 
-  // ✅ Local intent + clean phrasing
-  const title = `Cybersecurity Services in Allentown, PA | EDR/XDR, MFA & Backup/DR | ${brand}`;
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
+
+  const fullTitle =
+    `Cybersecurity Services in Allentown, PA | EDR/XDR, MFA & Backup/DR | ${brand}`;
+
   const description =
-    "Cybersecurity for SMBs in Allentown & the Lehigh Valley: identity hardening (MFA/Conditional Access), EDR/XDR, email protection, vulnerability management, and backup/DR with restore testing.";
+    "Cybersecurity for SMBs in Allentown (Macungie, Emmaus): identity hardening (MFA/Conditional Access), EDR/XDR, email protection, vulnerability management, and backup/DR with restore testing.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+
+    // ✅ prevents: "... | BRAND | BRAND"
+    title: { absolute: fullTitle },
+
     description,
-    alternates: { canonical },
+
+    // ✅ keep canonical relative (metadataBase makes absolute)
+    alternates: { canonical: "/services/cybersecurity" },
+
     robots: {
       index: true,
       follow: true,
@@ -30,29 +37,32 @@ export async function generateMetadata() {
         "max-video-preview": -1,
       },
     },
+
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       type: "website",
-      url: canonical,
+      url: "/services/cybersecurity",
       siteName: brand,
       images: [
         {
-          url: ogImage,
+          url: "/og-image.png?v=7",
           width: 1200,
           height: 630,
           alt: `${brand} — Cybersecurity`,
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
-      images: [ogImage],
+      images: ["/og-image.png?v=7"],
     },
   };
 }
+
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
@@ -171,7 +181,7 @@ export default function Page() {
       {
         quote: "We finally got MFA and access policies consistent across the business—huge peace of mind.",
         author: "Operations Lead",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a3.svg",
         rating: 5,
       },
@@ -207,7 +217,7 @@ export default function Page() {
       "Identity hardening (MFA/Conditional Access), EDR/XDR, email protection, vulnerability management, and backup/DR with restore testing for small and mid-sized businesses.",
     url: canonical,
    provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,

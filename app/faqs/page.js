@@ -11,7 +11,7 @@ export async function generateMetadata() {
 
   const title = "FAQs"; // ✅ brand yahan mat lagao (layout template already adds it)
   const description =
-    "Short answers to common questions about our managed IT and cybersecurity services in Allentown and the Lehigh Valley.";
+    "Short answers to common questions about our managed IT and cybersecurity services in Allentown, Macungie & Emmaus.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -75,8 +75,8 @@ const FAQS = [
     a: "Yes. We help with laptops, desktops, VPNs, cloud tools and baseline security for people working from home or in the office.",
   },
   {
-    q: "Do you offer onsite support in the Lehigh Valley?",
-    a: "Yes. We provide onsite and remote support for businesses in Allentown and nearby areas across the Lehigh Valley when needed.",
+    q: "Do you offer onsite support in Macungie and Emmaus?",
+    a: "Yes. We provide onsite and remote support for businesses in Allentown, Macungie, and Emmaus when needed.",
   },
   {
     q: "How do we get started?",

@@ -9,7 +9,7 @@ import { BASE_URL, BUSINESS_ID, uniq } from "@/lib/seoIds";
 
 const BRAND = site?.name || "Supreme IT Experts";
 const DEFAULT_DESC =
-  "Managed IT for SMBs in Allentown & the Lehigh Valley: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
+  "Managed IT for SMBs in Allentown, Macungie & Emmaus: 24/7 helpdesk, device management, cybersecurity & backups — fixed monthly fee.";
 
 const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
 
@@ -111,7 +111,7 @@ export default function RootLayout({ children }) {
         name: BRAND,
         url: `${BASE_URL}/`,
         description:
-          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley, PA.",
+          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown Macungie, and Emmaus, PA.",
         telephone: phoneE164,
         email,
         priceRange: "$$",
@@ -119,12 +119,8 @@ export default function RootLayout({ children }) {
         logo: new URL("/logo.png", BASE_URL).toString(),
         sameAs,
         address,
-        areaServed: [
-          "Allentown, PA",
-          "Macungie, PA",
-          "Emmaus, PA",
-          "Lehigh Valley, PA",
-        ],
+       areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+
         contactPoint: [
           {
             "@type": "ContactPoint",

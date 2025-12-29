@@ -78,7 +78,8 @@ export default function ContactClient({ source = "contact-page", mode = "full", 
   const telHref = cleanTel(phone);
 
   // ✅ Remote-only
-  const address = "Remote-only IT support across Allentown, Macungie, Emmaus & the Lehigh Valley.";
+ const address = "Remote-only IT support across Allentown, Macungie & Emmaus.";
+
 
   const [copied, setCopied] = useState("");
   const copy = async (txt, key) => {

@@ -30,7 +30,7 @@ export async function generateMetadata() {
   // IMPORTANT: layout already appends brand, so keep title clean
   const title = "Areas We Serve";
   const description =
-    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie, Emmaus, and the Lehigh Valley — clear SLAs, fast response, consistent service.";
+    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie & Emmaus, clear SLAs, fast response, consistent service.";
 
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
@@ -62,7 +62,7 @@ export async function generateMetadata() {
 const REGIONS = [
   {
     key: "lehigh",
-    name: "Lehigh Valley, PA",
+    name: "llentown, Macungie & Emmaus, PA",
     color: "#34d399",
     cities: [
       { name: "Allentown, PA", slug: "allentown-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [60, 34] },
@@ -337,7 +337,7 @@ export default async function AreasPage({ searchParams }) {
 
       <PageHero
         eyebrow="Areas we serve"
-        title="Remote-first IT support across the Lehigh Valley"
+       title="Remote-first IT support in Allentown, Macungie & Emmaus"
         sub="We support SMBs across Allentown, Macungie, and Emmaus with fast remote response, clear SLAs, and consistent service."
       />
 

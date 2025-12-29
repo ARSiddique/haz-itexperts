@@ -9,10 +9,9 @@ export async function generateMetadata() {
   const canonical = `${baseUrl}/services/projects-consulting`;
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
-  // ✅ cleaner + local intent
-  const title = `IT Projects & Consulting in Allentown, PA | ${brand}`;
+  const title = `IT Projects & Consulting in Allentown, PA | Migrations, Audits & Network Refresh | ${brand}`;
   const description =
-    "Fixed-scope IT projects for SMBs in Allentown & the Lehigh Valley: audits, office moves, network refresh, migrations, directory cleanup, decommissions, and automation — with runbooks, rollback plans, and clean handover docs.";
+    "Fixed-scope IT projects for SMBs in Allentown, Macungie & Emmaus: IT audits, office moves, network refresh, cloud migrations, directory cleanup, decommissions, and automation — with runbooks, rollback plans, and clean handover documentation.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -36,14 +35,16 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Projects & Consulting` }],
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Projects & Consulting`,
+        },
+      ],
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
 }
 
@@ -134,7 +135,7 @@ export default function Page() {
       {
         quote: "The project plan was clear and the cutover went smoothly with minimal disruption.",
         author: "Operations Lead",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a3.svg",
         rating: 5,
       },
@@ -172,7 +173,7 @@ export default function Page() {
       "Fixed-scope IT projects including audits, office moves, network refresh, migrations, directory cleanup, decommissions, and automation — delivered with runbooks, rollback plans, acceptance checks, and clean handover documentation.",
     url: canonical,
   provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,

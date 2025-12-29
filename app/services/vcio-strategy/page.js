@@ -7,12 +7,11 @@ export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/vcio-strategy`;
-
-  const title = `vCIO & IT Strategy (Roadmaps, Budgets, KPI Reporting) | ${brand}`;
-  const description =
-    "vCIO / IT strategy for SMBs in Allentown & the Lehigh Valley: practical roadmaps, budget planning, vendor reviews, executive reporting, and measurable KPIs.";
-
   const ogImage = `${baseUrl}/og-image.png?v=7`;
+
+  const title = `vCIO & IT Strategy in Allentown, PA | Roadmaps, Budgets & KPI Reporting | ${brand}`;
+  const description =
+    "vCIO / IT strategy for SMBs in Allentown, Macungie & Emmaus: quarterly roadmaps, budget planning, vendor reviews, risk register, executive reporting, and measurable KPIs for leadership.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -30,24 +29,25 @@ export async function generateMetadata() {
         "max-video-preview": -1,
       },
     },
-
     openGraph: {
       title,
       description,
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — vCIO / Strategy` }],
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} — vCIO / Strategy`,
+        },
+      ],
     },
-
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
 }
+
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
@@ -112,7 +112,7 @@ export default function Page() {
       {
         quote: "The roadmap made priorities clear and helped leadership make faster decisions.",
         author: "Business Owner",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a4.svg",
         rating: 5,
       },
@@ -147,7 +147,7 @@ export default function Page() {
       "Roadmaps, budget planning, vendor reviews, governance, and executive reporting with measurable KPIs for small and mid-sized businesses.",
     url: canonical,
     publisher: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,

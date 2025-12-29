@@ -1,7 +1,7 @@
 // app/services/cloud-workspace/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -9,10 +9,9 @@ export async function generateMetadata() {
   const canonical = `${baseUrl}/services/cloud-workspace`;
   const ogImage = `${baseUrl}/og-image.png?v=7`;
 
-  // ✅ cleaner intent + local
-  const title = `Microsoft 365 & Google Workspace Services in Allentown, PA | ${brand}`;
+  const title = `Cloud & Microsoft 365 Support in Allentown, PA | Migrations, Security & Automation | ${brand}`;
   const description =
-    "Microsoft 365 & Google Workspace for SMBs in Allentown & the Lehigh Valley: migrations, identity/SSO, SharePoint/Drive governance, DLP/retention, Teams/Meet setup, and SaaS backup with restore testing.";
+    "Microsoft 365, Google Workspace and cloud support for SMBs in Allentown, Macungie & Emmaus: migrations, identity/SSO, SharePoint/Drive governance, DLP/retention, Teams/Meet setup, and SaaS backup with restore testing.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -41,7 +40,7 @@ export async function generateMetadata() {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: `${brand} — Cloud & 365/Workspace`,
+          alt: `${brand} — Cloud & Microsoft 365`,
         },
       ],
     },
@@ -53,6 +52,7 @@ export async function generateMetadata() {
     },
   };
 }
+
 
 export default function Page() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
@@ -202,7 +202,7 @@ export default function Page() {
       {
         quote: "The migration was structured and calm—users stayed productive during the move.",
         author: "Office Manager",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a2.svg",
         rating: 5,
       },
@@ -240,7 +240,7 @@ export default function Page() {
     serviceType: "Cloud Migration & Productivity",
     url: canonical,
     provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
@@ -256,7 +256,7 @@ export default function Page() {
     url: canonical,
     name: `Cloud & Microsoft 365 / Google Workspace | ${brand}`,
     description:
-      "Migrations, identity, governance, collaboration tuning, and SaaS backup for SMBs in Allentown & the Lehigh Valley.",
+      "Migrations, identity, governance, collaboration tuning, and SaaS backup for SMBs in Allentown & tMacungie & Emmaus.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },

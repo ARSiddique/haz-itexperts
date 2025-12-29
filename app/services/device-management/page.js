@@ -1,18 +1,17 @@
 // app/services/device-management/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/device-management`;
-
-  const title = `Device Management (MDM, Autopilot, Jamf) in Allentown, PA | ${brand}`;
-  const description =
-    "Windows, macOS, iOS & Android device management for SMBs in Allentown & the Lehigh Valley: zero-touch enrollment, security baselines, patch & app management, compliance reporting, and device lifecycle control.";
-
   const ogImage = `${baseUrl}/og-image.png?v=7`;
+
+  const title = `Device Management (MDM) in Allentown, PA | Windows, Mac, iOS & Android | ${brand}`;
+  const description =
+    "Windows, macOS, iOS & Android device management for SMBs in Allentown, Macungie & Emmaus: zero-touch enrollment, security baselines, patch & app management, compliance reporting, and device lifecycle control.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -36,14 +35,11 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Device Management` }],
+      images: [
+        { url: ogImage, width: 1200, height: 630, alt: `${brand} — Device Management` },
+      ],
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
 }
 
@@ -111,7 +107,7 @@ export default function Page() {
       {
         quote: "New device setup became consistent and predictable across the team.",
         author: "IT Manager",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a1.svg",
         rating: 5,
       },
@@ -148,7 +144,7 @@ export default function Page() {
       "Zero-touch enrollment, security baselines, patch & app management, compliance reporting, and device lifecycle control for Windows, macOS, iOS, and Android.",
     url: canonical,
    provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,

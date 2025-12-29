@@ -1,24 +1,31 @@
 // app/services/managed-it/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/services/managed-it`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
 
-  // ✅ more local intent + clearer
-  const title = `Managed IT Services in Allentown, PA | Helpdesk, Monitoring & Patching | ${brand}`;
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
+
+  const fullTitle =
+    `Managed IT Services in Allentown, PA | Helpdesk, Monitoring & Patching | ${brand}`;
+
   const description =
-    "Managed IT for small businesses in Allentown & the Lehigh Valley: responsive helpdesk, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting (fully managed or co-managed).";
+    "Managed IT for small businesses in Allentown (Macungie, Emmaus): responsive helpdesk, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting (fully managed or co-managed).";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+
+    // ✅ prevents: "Managed IT ... | BRAND | BRAND"
+    title: { absolute: fullTitle },
+
     description,
-    alternates: { canonical },
+
+    // ✅ keep canonical relative (metadataBase makes absolute)
+    alternates: { canonical: "/services/managed-it" },
+
     robots: {
       index: true,
       follow: true,
@@ -30,29 +37,32 @@ export async function generateMetadata() {
         "max-video-preview": -1,
       },
     },
+
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       type: "website",
-      url: canonical,
+      url: "/services/managed-it",
       siteName: brand,
       images: [
         {
-          url: ogImage,
+          url: "/og-image.png?v=7",
           width: 1200,
           height: 630,
           alt: `${brand} — Managed IT Services`,
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
-      images: [ogImage],
+      images: ["/og-image.png?v=7"],
     },
   };
 }
+
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
@@ -177,7 +187,7 @@ export default function Page() {
       {
         quote: "Onboarding went from days to hours, and tickets finally have ownership.",
         author: "Operations Lead",
-        role: "SMB (Lehigh Valley)",
+        role: "SMB (Allentown area)",
         avatar: "/images/avatars/a1.svg",
         rating: 5,
       },
@@ -214,7 +224,7 @@ export default function Page() {
       "Helpdesk with SLAs, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting for small and mid-sized businesses.",
     url: canonical,
     provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+   areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,

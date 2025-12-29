@@ -8,7 +8,7 @@ import ServicesTabs from "@/components/ServicesTabs";
 import PricingRoi from "@/components/PricingRoi";
 import JsonLd from "@/components/JsonLd";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 import {
   ShieldCheck,
   Server,
@@ -28,34 +28,55 @@ import {
 // ---- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
 
-  const title = `Managed IT Services & Cybersecurity in Allentown | ${brand}`;
+  // ✅ single source of truth (same style as homepage)
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
+
+  const baseTitle = "Managed IT Services & Cybersecurity in Allentown";
+  const fullTitle = `${baseTitle} | ${brand}`;
+
   const description =
-    "Managed IT, cybersecurity, cloud, and device management for SMBs in Allentown & the Lehigh Valley — helpdesk, monitoring, patching, backup/DR, and Microsoft 365 support.";
-
-  const canonical = `${baseUrl}/services`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
+    "Managed IT, cybersecurity, cloud, and device management for SMBs in Allentown (Macungie, Emmaus). Helpdesk, monitoring, patching, backup/DR, and Microsoft 365 support.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+
+    // ✅ prevent: "Services | BRAND | BRAND"
+    title: { absolute: fullTitle },
+
     description,
-    alternates: { canonical },
+
+    // ✅ keep canonical relative
+    alternates: { canonical: "/services" },
+
     robots: { index: true, follow: true },
 
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       type: "website",
-      url: canonical,
+      url: "/services",
       siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Services` }],
+      images: [
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Services`,
+        },
+      ],
     },
 
-    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
   };
 }
+
 
 // --- server-safe helpers
 function cx(...a) {
@@ -220,7 +241,8 @@ export default async function ServicesPage() {
     name: s.title,
     description: s.desc,
    provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"],
+   areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+
     serviceType: s.title,
     url: `${baseUrl}${s.href}`,
   }));

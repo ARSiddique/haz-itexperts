@@ -77,7 +77,7 @@ export default async function Page({ searchParams }) {
 
       {/* INTRO */}
       <section style={sec} id="intro">
-        <h2 style={h2}>Built for SMBs in the Lehigh Valley</h2>
+        <h2 style={h2}>Built for SMBs in Allentown, Macungie & Emmaus</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
           We keep teams productive and protected in Allentown, Macungie and Emmaus.
           You get rapid response, clear communication, and an IT environment that just works.
@@ -142,7 +142,7 @@ export default async function Page({ searchParams }) {
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
-          Allentown • Macungie • Emmaus • Greater Lehigh Valley
+          Allentown • Macungie • Emmaus
         </p>
       </section>
 

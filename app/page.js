@@ -31,30 +31,43 @@ export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
   // ✅ single source of truth
-  const baseUrl = String(
-    BASE_URL || site?.url || "https://supremeitexperts.com"
-  ).replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
 
   const baseTitle =
-    "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA";
-  const title = `${baseTitle} | ${brand}`;
+   "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
+
+  // ✅ IMPORTANT:
+  // layout.js already has a title template: `%s | BRAND`
+  // so we force the final title as ABSOLUTE to avoid:
+  // "X | Supreme IT Experts | Supreme IT Experts"
+  const fullTitle = `${baseTitle} | ${brand}`;
+
   const description =
-    "Managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown and the Lehigh Valley (Macungie, Emmaus). Fixed-fee helpdesk, monitoring, cloud, backup and disaster recovery.";
+    "Managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown, Macungie & Emmaus. Fixed-fee helpdesk, monitoring, cloud, backup and disaster recovery.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+
+    // ✅ Force exact title (no template duplication)
+    title: { absolute: fullTitle },
+
     description,
+
     keywords: [
-      "managed IT services Allentown",
-      "IT support Allentown PA",
-      "managed service provider Lehigh Valley",
-      "small business IT support",
-      "cybersecurity services Allentown",
+     "managed IT services Allentown",
+  "IT support Allentown PA",
+  "managed IT services Macungie",
+  "IT support Emmaus PA",
+  "small business IT support",
+  "cybersecurity services Allentown",
+  "managed service provider Allentown",
     ],
+
     alternates: { canonical: "/" }, // ✅ relative canonical (metadataBase makes absolute)
+
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       url: "/", // ✅ relative
       type: "website",
@@ -68,15 +81,18 @@ export async function generateMetadata() {
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
       images: ["/og-image.png?v=7"],
     },
+
     robots: { index: true, follow: true },
   };
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Small presentational helpers
@@ -211,7 +227,7 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
 export default function HomePage() {
   const areas = site?.areas?.length
     ? site.areas
-    : ["Allentown, PA", "Macungie, PA", "Emmaus, PA", "Lehigh Valley, PA"];
+   : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
 
   const brand = site?.name || "Supreme IT Experts";
 
@@ -278,8 +294,7 @@ export default function HomePage() {
   const areaLinks = {
     "Allentown, PA": "/locations/allentown-pa",
     "Macungie, PA": "/locations/macungie-pa",
-    "Emmaus, PA": "/locations/emmaus-pa",
-    "Lehigh Valley, PA": "/areas",
+    "Emmaus, PA": "/locations/emmaus-pa"
   };
 
   // FAQ (Home) — on-page + FAQPage schema
@@ -290,7 +305,7 @@ export default function HomePage() {
     },
     {
       q: "Do you provide 24/7 IT support?",
-      a: "Yes — we offer 24/7 helpdesk and monitoring for businesses in Allentown and the Lehigh Valley, with clear SLAs and escalation paths for urgent issues.",
+      a: "Yes — we offer 24/7 helpdesk and monitoring for businesses in Allentown, Macungie and Emmaus, with clear SLAs and escalation paths for urgent issues.",
     },
     {
       q: "Do you support both Windows and Mac environments?",
@@ -315,7 +330,7 @@ export default function HomePage() {
         "@type": "WebPage",
         "@id": WEBPAGE_ID,
         url: canonical,
-        name: "Managed IT Services & Cybersecurity in Allentown & Lehigh Valley, PA",
+        name: "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA",
         isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
         breadcrumb: { "@id": BREADCRUMB_ID },
         about: { "@id": BUSINESS_ID },
@@ -387,12 +402,12 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 items-center">
           <div className="max-w-[62ch]">
             <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
-              Managed IT & cybersecurity for Allentown & the Lehigh Valley
+              Managed IT & cybersecurity for Allentown, Macungie & Emmaus
             </div>
 
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
-              Managed IT Services in Allentown &amp; Lehigh Valley, PA — Fast,
-              Friendly, Fixed-Fee
+              Managed IT Services in Allentown, Macungie &amp; Emmaus, PA — Fast,
+Friendly, Fixed-Fee
             </h1>
 
             <p className="mt-4 text-base md:text-lg text-slate-200">
@@ -835,7 +850,8 @@ export default function HomePage() {
       <Section id="areas" className="py-16">
         <Title
           k="Areas we serve"
-          sub="Onsite & remote IT support in Allentown & the Lehigh Valley"
+          sub="Onsite & remote IT support in Allentown, Macungie & Emmaus"
+
         />
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
