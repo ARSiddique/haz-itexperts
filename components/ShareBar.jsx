@@ -6,7 +6,7 @@ import { track as gaTrack } from "@/lib/track";
 
 export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
   const [mounted, setMounted] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(`/blog/${slug}`); // SSR-safe relative
+  const [currentUrl, setCurrentUrl] = useState(`/blog/${slug}`);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
     try {
       setCurrentUrl(window.location.href);
     } catch {
-      // keep SSR-safe relative
+      // keep relative
     }
   }, [slug]);
 
@@ -39,9 +39,8 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
     };
   };
 
-  const open = (url, platform) => {
+  const onShareClick = (platform, url) => {
     if (!mounted) return;
-
     gaTrack("share_click", {
       ...pageCtx(),
       platform,
@@ -49,15 +48,6 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
       target_url: currentUrl,
       title: title || "",
     });
-
-    // Open in new tab safely
-    try {
-      const w = window.open(url, "_blank", "noopener,noreferrer");
-      // If popup blocked, degrade gracefully (same tab)
-      if (!w) window.location.assign(url);
-    } catch {
-      // ignore
-    }
   };
 
   const copy = async () => {
@@ -69,7 +59,7 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
       title: title || "",
     });
 
-    const setToast = () => {
+    const toast = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     };
@@ -77,14 +67,12 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
     try {
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(currentUrl);
-        setToast();
+        toast();
         return;
       }
-    } catch {
-      // fallthrough
-    }
+    } catch {}
 
-    // Last-resort fallback (older browsers)
+    // last fallback
     try {
       const ta = document.createElement("textarea");
       ta.value = currentUrl;
@@ -96,11 +84,21 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
-      setToast();
-    } catch {
-      // ignore
-    }
+      toast();
+    } catch {}
   };
+
+  const ABtn = ({ href, onClick, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick}
+      className="text-sm rounded-md border border-white/10 px-3 py-1.5 hover:bg-white/10 inline-flex items-center gap-2"
+    >
+      {children}
+    </a>
+  );
 
   const Btn = ({ onClick, children }) => (
     <button
@@ -118,13 +116,19 @@ export default function ShareBar({ slug, title, source = "blog_sharebar" }) {
         <Share2 className="h-4 w-4" /> Share
       </span>
 
-      <Btn onClick={() => open(tweetUrl, "x")}>
+      <ABtn
+        href={tweetUrl}
+        onClick={() => onShareClick("x", tweetUrl)}
+      >
         <Twitter className="h-4 w-4" /> X/Twitter
-      </Btn>
+      </ABtn>
 
-      <Btn onClick={() => open(linkedinUrl, "linkedin")}>
+      <ABtn
+        href={linkedinUrl}
+        onClick={() => onShareClick("linkedin", linkedinUrl)}
+      >
         <Linkedin className="h-4 w-4" /> LinkedIn
-      </Btn>
+      </ABtn>
 
       <Btn onClick={copy}>
         {copied ? <Check className="h-4 w-4" /> : <LinkIcon className="h-4 w-4" />}
