@@ -24,12 +24,23 @@ function SocialLink({ href, label, children }) {
   );
 }
 
+function digitsOnly(p) {
+  return String(p || "").replace(/[^\d]/g, "");
+}
+
 export default function Footer({ className = "" }) {
   const year = new Date().getFullYear();
   const s = site?.socials || {};
 
-  // (optional) tel link safety
-  const telHref = `tel:${String(site.phone || "").replace(/[^\d+]/g, "")}`;
+  const email = site?.email || "supremeitexperts@gmail.com";
+  const phoneRaw = site?.phone || "+1 610-500-9209";
+  const telHref = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
+
+  const waRaw = site?.whatsapp || phoneRaw;
+  const waDigits = digitsOnly(waRaw);
+  const waHref = waDigits
+    ? `https://wa.me/${waDigits}?text=${encodeURIComponent("Hi! I need help with Managed IT / Cybersecurity.")}`
+    : "";
 
   return (
     <footer className={`site-footer mt-12 bg-[#0b1220] border-t border-white/10 ${className}`}>
@@ -53,21 +64,32 @@ export default function Footer({ className = "" }) {
             </p>
 
             <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:gap-4">
-              <a className="text-slate-200 hover:text-cyan-300 transition" href={`mailto:${site.email}`}>
-                {site.email}
+              <a className="text-slate-200 hover:text-cyan-300 transition" href={`mailto:${email}`}>
+                {email}
               </a>
 
               <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-slate-500/70" />
 
               <a className="text-slate-200 hover:text-cyan-300 transition whitespace-nowrap" href={telHref}>
-                {site.phone}
+                {phoneRaw}
               </a>
+
+              {waHref ? (
+                <>
+                  <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-slate-500/70" />
+                  <a
+                    className="text-slate-200 hover:text-emerald-300 transition whitespace-nowrap"
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    WhatsApp
+                  </a>
+                </>
+              ) : null}
             </div>
 
-            {/* ✅ Contrast fixed here */}
-            <div className="text-xs text-slate-200">
-              Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support
-            </div>
+            <div className="text-xs text-slate-200">Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support</div>
           </div>
 
           {/* Right */}
@@ -117,7 +139,6 @@ export default function Footer({ className = "" }) {
           </div>
         </div>
 
-        {/* Bottom row (✅ contrast fixed) */}
         <div className="mt-8 pt-5 border-t border-white/10 text-center text-xs text-slate-200">
           © {year} {site.name}. All rights reserved.
         </div>

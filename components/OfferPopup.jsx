@@ -6,11 +6,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, Phone, Sparkles } from "lucide-react";
 import { site } from "@/lib/siteConfig";
+import TrackedPhoneLink from "@/components/TrackedPhoneLink";
 
-const LOTTIE_SIDE =
-  "https://assets9.lottiefiles.com/packages/lf20_w51pcehl.json";
-const LOTTIE_CEO =
-  "https://assets1.lottiefiles.com/packages/lf20_xlkxtmul.json";
+const LOTTIE_SIDE = "https://assets9.lottiefiles.com/packages/lf20_w51pcehl.json";
+const LOTTIE_CEO = "https://assets1.lottiefiles.com/packages/lf20_xlkxtmul.json";
 
 const SEEN_KEY = "sie_lp_seen_v3";
 
@@ -23,14 +22,15 @@ export default function OfferPopup() {
   const lockedRef = useRef(false);
   const scrollYRef = useRef(0);
 
-  // ✅ OPEN ONLY AFTER USER INTERACTION (prevents CLS in Lighthouse/PSI)
+  const source = "offer_popup";
+  const phone = site?.phone || "+1 610-500-9209";
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const isProd = process.env.NODE_ENV === "production";
     const seen = localStorage.getItem(SEEN_KEY);
 
-    // dev me quick open (optional)
     if (!isProd) {
       const t = setTimeout(() => setOpen(true), 500);
       return () => clearTimeout(t);
@@ -57,7 +57,6 @@ export default function OfferPopup() {
       window.removeEventListener("touchstart", onInteract);
     };
 
-    // first interaction triggers open
     window.addEventListener("scroll", onInteract, { passive: true });
     window.addEventListener("pointerdown", onInteract, { passive: true });
     window.addEventListener("touchstart", onInteract, { passive: true });
@@ -66,13 +65,11 @@ export default function OfferPopup() {
     return cleanup;
   }, []);
 
-  // close on route change
   useEffect(() => {
     if (open) setOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // inject lottie script once (only when popup opens)
   useEffect(() => {
     if (!open || scrInjected.current) return;
     if (typeof window === "undefined") return;
@@ -84,8 +81,7 @@ export default function OfferPopup() {
     }
 
     const s = document.createElement("script");
-    s.src =
-      "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+    s.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
     s.async = true;
     s.onload = () => setLottieReady(true);
     s.onerror = () => setLottieReady(false);
@@ -93,7 +89,6 @@ export default function OfferPopup() {
     scrInjected.current = true;
   }, [open]);
 
-  // BODY SCROLL LOCK (keep as is, but safe)
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
@@ -132,7 +127,6 @@ export default function OfferPopup() {
     return () => unlock();
   }, [open]);
 
-  // Esc to close
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -151,12 +145,7 @@ export default function OfferPopup() {
       aria-modal="true"
       aria-label="Allentown Launch Offer"
     >
-      {/* Backdrop */}
-      <button
-        aria-label="Close offer"
-        onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-black/70"
-      />
+      <button aria-label="Close offer" onClick={() => setOpen(false)} className="absolute inset-0 bg-black/70" />
 
       <div className="absolute inset-0 z-[1000] flex items-center justify-center p-3 md:p-6 h-[100dvh]">
         <div className="relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220] shadow-2xl max-h-[100dvh]">
@@ -171,7 +160,6 @@ export default function OfferPopup() {
             </button>
 
             <div className="grid md:grid-cols-2">
-              {/* Left */}
               <div className="relative bg-gradient-to-br from-white/[0.03] to-white/[0.01]">
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.22),transparent_60%)]" />
                 <div className="relative px-5 pt-6 pb-6 sm:px-6 sm:pt-10 sm:pb-8 md:p-10">
@@ -184,10 +172,8 @@ export default function OfferPopup() {
                   </h3>
 
                   <p className="mt-3 text-[13px] sm:text-sm md:text-base text-slate-300">
-                    Full environment checkup for SMBs in Allentown, Macungie,
-                    and Emmaus. Endpoint health, identity &amp; MFA review,
-                    Microsoft 365 hardening, email security, and backup/DR
-                    readiness.
+                    Full environment checkup for SMBs in Allentown, Macungie, and Emmaus. Endpoint health, identity &amp;
+                    MFA review, Microsoft 365 hardening, email security, and backup/DR readiness.
                   </p>
 
                   <ul className="mt-4 space-y-2 text-[13px] sm:text-sm text-slate-200">
@@ -205,43 +191,33 @@ export default function OfferPopup() {
                       Claim Free Audit
                     </Link>
 
-                    <a
-                      href={`tel:${site.phone?.replace(/[^+\d]/g, "") || ""}`}
+                    {/* ✅ Tracked Call */}
+                    <TrackedPhoneLink
+                      phone={phone}
+                      source={source}
                       className="rounded-lg px-5 py-3 text-sm font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center justify-center gap-2"
                     >
                       <Phone className="h-4 w-4" />
-                      Call {site.phone}
-                    </a>
+                      Call {phone}
+                    </TrackedPhoneLink>
                   </div>
 
-                  {/* CEO note */}
                   <div className="mt-6 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full border border-white/10 bg-white/10 grid place-items-center">
                       {lottieReady ? (
-                        <lottie-player
-                          src={LOTTIE_CEO}
-                          autoplay
-                          loop
-                          mode="normal"
-                          style={{ width: 36, height: 36 }}
-                        />
+                        <lottie-player src={LOTTIE_CEO} autoplay loop mode="normal" style={{ width: 36, height: 36 }} />
                       ) : (
                         <div className="size-9 rounded-full bg-cyan-400/20" />
                       )}
                     </div>
                     <div className="text-xs">
-                      <div className="font-semibold text-slate-100">
-                        Muhammad Barkat Saifee, CEO
-                      </div>
-                      <div className="text-slate-300">
-                        “Let us stabilize your IT fast — then help you grow.”
-                      </div>
+                      <div className="font-semibold text-slate-100">Muhammad Barkat Saifee, CEO</div>
+                      <div className="text-slate-300">“Let us stabilize your IT fast — then help you grow.”</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right (reserve space to avoid internal shifts) */}
               <div className="relative flex items-center justify-center bg-[#0e1628] p-5 sm:p-6 md:p-8">
                 <div className="w-full max-w-[560px]">
                   <div className="relative w-full aspect-[16/12] rounded-2xl overflow-hidden border border-white/10">
@@ -251,12 +227,7 @@ export default function OfferPopup() {
                         autoplay
                         loop
                         mode="normal"
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                        }}
+                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-fuchsia-400/10" />

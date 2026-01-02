@@ -1,28 +1,33 @@
-// components/TrackedEmailLink.jsx
 "use client";
 
-import { Mail } from "lucide-react";
+import { track } from "@/lib/track";
 
-export default function TrackedEmailLink({ email, className }) {
-  const handleClick = () => {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "email_click", {
-        event_category: "engagement",
-        event_label: email,
-        value: 1,
-      });
-      console.log("email_click fired");
-    }
-  };
+export default function TrackedEmailLink({
+  email,
+  href,
+  source = "unknown",
+  eventName = "email_click",
+  className = "",
+  children,
+  ...props
+}) {
+  const finalHref = href || (email ? `mailto:${email}` : "#");
 
   return (
     <a
-      href={`mailto:${email}`}
-      onClick={handleClick}
+      {...props}
+      href={finalHref}
       className={className}
+      onClick={(e) => {
+        track(eventName, {
+          source,
+          page_path: typeof window !== "undefined" ? window.location.pathname : "",
+          page_url: typeof window !== "undefined" ? window.location.href : "",
+        });
+        props?.onClick?.(e);
+      }}
     >
-      <Mail className="h-4 w-4" />
-      <span>{email}</span>
+      {children}
     </a>
   );
 }

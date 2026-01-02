@@ -4,6 +4,9 @@ import { site } from "@/lib/siteConfig";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import FABs from "@/components/FABs";
+import BackToTop from "@/components/BackToTop";
+
 import Script from "next/script";
 import { BASE_URL, BUSINESS_ID, uniq } from "@/lib/seoIds";
 
@@ -147,6 +150,8 @@ export default function RootLayout({ children }) {
 
         <Header className="site-header" />
         <main>{children}</main>
+        <FABs />
+<BackToTop fabLift={50} />
         <Footer className="site-footer" />
       </body>
     </html>

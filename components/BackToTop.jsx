@@ -1,4 +1,4 @@
-// app/components/BackToTop.jsx
+// components/BackToTop.jsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ChevronUp } from "lucide-react";
@@ -7,19 +7,20 @@ import { ChevronUp } from "lucide-react";
  * BackToTop (conic ring) — AutoBot-aware
  * - Appears after ~320px scroll
  * - Sits above chat FAB (chatSize + gap)
+ * - Also lifted above WhatsApp/Call FAB stack using fabLift
  * - When AutoBot opens:
  *    mode="shift" (default) -> lifts up by panelLift
  *    mode="hide"            -> fades & disables pointer events
- * - z prop lets you place it below the AutoBot panel.
  */
 export default function BackToTop({
   showAfter = 320, // px scrolled before showing
-  chatSize = 56,   // chatbot FAB size (px)
-  gap = 12,        // gap from chatbot (px)
-  size = 48,       // this button size (px)
-  mode = "shift",  // "shift" | "hide"
+  chatSize = 56, // chatbot FAB size (px)
+  gap = 12, // gap from chatbot (px)
+  size = 48, // this button size (px)
+  mode = "shift", // "shift" | "hide"
   panelLift = 304, // ≈ 19rem panel height
-  z = 86,          // z-index (set < 85 if you want it below the chat panel)
+  z = 86, // z-index
+  fabLift = 116, // lift above WA+Call (2 buttons + gap + breathing room)
 }) {
   const [show, setShow] = useState(false);
   const [pct, setPct] = useState(0);
@@ -55,6 +56,7 @@ export default function BackToTop({
         .getPropertyValue("--autobot-open")
         .trim() === "1";
     setAutobotOpen(readVar());
+
     const obs = new MutationObserver(() => setAutobotOpen(readVar()));
     obs.observe(document.documentElement, {
       attributes: true,
@@ -68,10 +70,11 @@ export default function BackToTop({
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   };
 
-  // Base: exactly above chat FAB
-  const baseBottom = `calc(1rem + env(safe-area-inset-bottom,0px) + ${chatSize + gap}px)`;
+  // Base: above chat FAB + lifted above WhatsApp/Call stack
+  const baseBottom = `calc(1rem + env(safe-area-inset-bottom,0px) + ${
+    chatSize + gap + fabLift
+  }px)`;
 
-  // Shift/hide logic
   const bottom =
     mode === "shift" && autobotOpen
       ? `calc(${baseBottom} + ${panelLift}px)`
@@ -112,7 +115,12 @@ export default function BackToTop({
           }}
         />
         {/* inner disc */}
-        <span aria-hidden className="absolute rounded-full bg-[#0f1a2e]" style={{ inset: 2 }} />
+        <span
+          aria-hidden
+          className="absolute rounded-full bg-[#0f1a2e]"
+          style={{ inset: 2 }}
+        />
+
         <ChevronUp className="relative z-[1] h-5 w-5 text-cyan-300" />
 
         {/* hover label */}

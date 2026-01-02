@@ -2,6 +2,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import BodyClass from "@/components/BodyClass";
+import TrackedPhoneLink from "@/components/TrackedPhoneLink";
+import TrackedEmailLink from "@/components/TrackedEmailLink";
 
 export const metadata = {
   title: "Allentown Managed IT Support for SMBs | Supreme IT Experts",
@@ -10,13 +12,17 @@ export const metadata = {
   robots: { index: false, follow: true },
 };
 
-// ⬇️ Next 15: searchParams is a Promise in RSC; we must await it
 export default async function Page({ searchParams }) {
   const sp = await searchParams;
   const get = (k) => (typeof sp?.get === "function" ? sp.get(k) : sp?.[k]);
 
   const sent = get("sent") === "1";
   const error = get("error") || "";
+
+  const source = "ads-allentown-it-support";
+  const phone = "+1 610-500-9209";
+  const email = "supremeitexperts@gmail.com";
+  const emailHref = `mailto:${email}?subject=${encodeURIComponent("IT Support Inquiry")}`;
 
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
@@ -44,7 +50,6 @@ export default async function Page({ searchParams }) {
     <main style={wrap}>
       <BodyClass name="hide-chrome" />
 
-      {/* Brand strip (global header hidden on LP) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <Link href="/" aria-label="Supreme IT Experts – Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
           <Image
@@ -61,7 +66,6 @@ export default async function Page({ searchParams }) {
       {sent && <div style={banner}>✅ Thanks! Your message was sent. We’ll contact you shortly.</div>}
       {error && <div style={errBanner}>⚠️ Something went wrong. Please try again.</div>}
 
-      {/* HERO */}
       <div style={sec} role="banner">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
@@ -69,13 +73,29 @@ export default async function Page({ searchParams }) {
           24/7 helpdesk, proactive device management, cybersecurity &amp; backups, and
           network monitoring — delivered by a local MSP on a predictable monthly plan.
         </p>
+
         <div style={{ marginTop: 12 }}>
-          <a href="tel:+16105009209" style={btn}>Call +1 610-500-9209</a>
-          <a href="mailto:supremeitexperts@gmail.com?subject=IT%20Support%20Inquiry" style={btnOutline}>Email Us</a>
+          {/* ✅ Tracked Call */}
+          <TrackedPhoneLink
+            phone={phone}
+            source={source}
+            style={btn}
+          >
+            Call {phone}
+          </TrackedPhoneLink>
+
+          {/* ✅ Tracked Email */}
+          <TrackedEmailLink
+            href={emailHref}
+            email={email}
+            source={source}
+            style={btnOutline}
+          >
+            Email Us
+          </TrackedEmailLink>
         </div>
       </div>
 
-      {/* INTRO */}
       <section style={sec} id="intro">
         <h2 style={h2}>Built for SMBs in Allentown, Macungie & Emmaus</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -84,7 +104,6 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
-      {/* CORE SERVICES */}
       <section style={sec} id="services">
         <h2 style={h2}>Core Services</h2>
         <ul style={list}>
@@ -95,7 +114,6 @@ export default async function Page({ searchParams }) {
         </ul>
       </section>
 
-      {/* VALUE */}
       <section style={sec} id="why">
         <h2 style={h2}>Why Choose Supreme IT Experts</h2>
         <ul style={list}>
@@ -106,7 +124,6 @@ export default async function Page({ searchParams }) {
         </ul>
       </section>
 
-      {/* PRICING */}
       <section style={sec} id="pricing">
         <h2 style={h2}>Simple, Predictable Pricing</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
@@ -115,7 +132,6 @@ export default async function Page({ searchParams }) {
         </p>
       </section>
 
-      {/* FORM */}
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
@@ -133,12 +149,15 @@ export default async function Page({ searchParams }) {
           <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
           <button type="submit" style={btn}>Request Assessment</button>
         </form>
+
         <p style={subnote}>
-          Prefer email? Write to <a href="mailto:supremeitexperts@gmail.com">supremeitexperts@gmail.com</a>
+          Prefer email? Write to{" "}
+          <TrackedEmailLink href={`mailto:${email}`} email={email} source={source}>
+            {email}
+          </TrackedEmailLink>
         </p>
       </section>
 
-      {/* SERVICE AREA + Trust footer link */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>

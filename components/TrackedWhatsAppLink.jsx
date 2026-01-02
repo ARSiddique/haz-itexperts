@@ -2,33 +2,33 @@
 
 import { track } from "@/lib/track";
 
-export default function TrackedPhoneLink({
-  phone,
+/**
+ * Tracked WhatsApp link
+ * - Fires whatsapp_click
+ * - Works with any href you pass (wa.me)
+ */
+export default function TrackedWhatsAppLink({
   href,
   source = "unknown",
-  eventName = "call_click",
   className = "",
   children,
+  "aria-label": ariaLabel,
   ...props
 }) {
-  const phoneHref = (href || phone || "")
-    .toString()
-    .replace("tel:", "")
-    .replace(/[^\d+]/g, "");
-
-  const finalHref = phoneHref ? `tel:${phoneHref}` : "#";
-
   return (
     <a
       {...props}
-      href={finalHref}
+      href={href}
       className={className}
+      aria-label={ariaLabel || "WhatsApp us"}
       onClick={(e) => {
-        track(eventName, {
+        // track only for real user clicks
+        track("whatsapp_click", {
           source,
           page_path: typeof window !== "undefined" ? window.location.pathname : "",
           page_url: typeof window !== "undefined" ? window.location.href : "",
         });
+
         props?.onClick?.(e);
       }}
     >
