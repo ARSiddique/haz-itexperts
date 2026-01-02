@@ -19,9 +19,7 @@ import {
   Copy,
   Check,
   Clock,
-  Laptop2,
   ShieldCheck,
-  Server,
   Paperclip,
   ChevronRight,
   MessageSquareText,
@@ -62,6 +60,12 @@ const WA_MSG =
   "Issue / Request: __\n" +
   "Best time to reach: __";
 
+const buildMailtoHref = (toEmail, subject, bodyText) => {
+  const s = encodeURIComponent(subject || "");
+  const b = encodeURIComponent(bodyText || "");
+  return `mailto:${toEmail}?subject=${s}&body=${b}`;
+};
+
 export default function ContactClient({
   source = "contact-page",
   mode = "full",
@@ -97,6 +101,10 @@ export default function ContactClient({
   const [step, setStep] = useState(1);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+
+  // ✅ If API fails, we show a mailto fallback UI (NO redirect)
+  const [fallbackMailto, setFallbackMailto] = useState(null);
+  // shape: { href, subject, bodyText }
 
   const [form, setForm] = useState({
     name: "",
@@ -189,6 +197,7 @@ export default function ContactClient({
     }
 
     setSending(true);
+    setFallbackMailto(null);
 
     const payload = {
       name: form.name,
@@ -219,6 +228,7 @@ export default function ContactClient({
           priority: form.priority,
           users: form.users,
         });
+
         setDone(true);
         setSending(false);
         return;
@@ -226,9 +236,10 @@ export default function ContactClient({
 
       throw new Error("api failed");
     } catch {
-      // fallback to mailto
+      // ✅ fallback (NO window.location.href)
       gaTrack("contact_submit", { source, fallback: "mailto" });
 
+      const subject = `Website Contact — ${form.company}`;
       const lines = [
         `Name: ${form.name}`,
         `Company: ${form.company}`,
@@ -242,11 +253,10 @@ export default function ContactClient({
         "Message:",
         form.message,
       ];
-      const body = encodeURIComponent(lines.join("\n"));
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-        "Website Contact — " + form.company
-      )}&body=${body}`;
+      const bodyText = lines.join("\n");
+      const href = buildMailtoHref(email, subject, bodyText);
 
+      setFallbackMailto({ href, subject, bodyText });
       setSending(false);
       setDone(true);
     }
@@ -490,13 +500,58 @@ export default function ContactClient({
               />
 
               {done ? (
-                <div
-                  className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm"
-                  aria-live="polite"
-                >
-                  Thanks! We’ve received your request.{" "}
-                  <span className="text-emerald-300">Target response {sla.eta}</span>.
-                </div>
+                fallbackMailto ? (
+                  <div
+                    className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-4 text-sm"
+                    aria-live="polite"
+                  >
+                    <div className="text-slate-200 font-medium">We couldn’t submit automatically.</div>
+                    <div className="mt-1 text-slate-300">
+                      No worries — click below to email us. Target response <span className="text-amber-200">{sla.eta}</span>.
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2 items-center">
+                      <TrackedEmailLink
+                        href={fallbackMailto.href}
+                        email={email}
+                        source={source}
+                        placement="contact_form_fallback"
+                        className="rounded-lg px-3 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
+                      >
+                        <Mail className="h-4 w-4" />
+                        Email us
+                      </TrackedEmailLink>
+
+                      <button
+                        type="button"
+                        onClick={() => copy(`${fallbackMailto.subject}\n\n${fallbackMailto.bodyText}`, "fallback_mailto")}
+                        className="rounded-lg px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10 inline-flex items-center gap-2"
+                      >
+                        {copied === "fallback_mailto" ? (
+                          <>
+                            <Check className="h-4 w-4" /> Copied details
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" /> Copy details
+                          </>
+                        )}
+                      </button>
+
+                      <span className="text-xs text-slate-400">
+                        (If your email app doesn’t open, copy the details and email {email}.)
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4 text-sm"
+                    aria-live="polite"
+                  >
+                    Thanks! We’ve received your request.{" "}
+                    <span className="text-emerald-300">Target response {sla.eta}</span>.
+                  </div>
+                )
               ) : (
                 <>
                   {step === 1 && (
