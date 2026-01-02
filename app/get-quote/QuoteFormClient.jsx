@@ -1,3 +1,4 @@
+// app/get-quote/QuoteFormClient.jsx
 "use client";
 
 import { useState } from "react";
@@ -5,27 +6,21 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 import { site } from "@/lib/siteConfig";
 import ContactActionsRow from "@/components/ContactActionsRow";
 import TrackedPhoneLink from "@/components/TrackedPhoneLink";
+import TrackedEmailLink from "@/components/TrackedEmailLink";
 import { track as gaTrack } from "@/lib/track";
 
 function cx(...a) {
   return a.filter(Boolean).join(" ");
 }
 
-// ✅ small helper: sanitize phone for tel:
-const cleanTel = (p) => {
-  const s = String(p || "").trim();
-  if (!s) return "";
-  const keep = s.replace(/[^+\d]/g, "").replace(/\++/g, "+");
-  if (!keep) return "";
-  return keep.startsWith("+") ? keep : `+${keep}`;
-};
-
 const Input = ({ error, className, ...props }) => (
   <input
     {...props}
     className={cx(
       "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
+      error
+        ? "border-red-500/70 focus:border-red-400"
+        : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
@@ -36,7 +31,9 @@ const TextArea = ({ error, className, ...props }) => (
     {...props}
     className={cx(
       "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-      error ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50",
+      error
+        ? "border-red-500/70 focus:border-red-400"
+        : "border-white/20 focus:border-cyan-300/50",
       className
     )}
   />
@@ -45,7 +42,6 @@ const TextArea = ({ error, className, ...props }) => (
 export default function QuoteFormClient({ source = "get-quote-page" }) {
   const email = site?.email ?? "supremeitexperts@gmail.com";
   const phone = site?.phone ?? "+1 610-500-9209";
-  const telHref = cleanTel(phone);
 
   const pageCtx = () => {
     if (typeof window === "undefined") return { source };
@@ -72,10 +68,12 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const updateField = (field, value) => {
     setForm((f) => ({ ...f, [field]: value }));
     setErrors((err) => ({ ...err, [field]: "" }));
+    if (submitError) setSubmitError("");
   };
 
   const validate = () => {
@@ -83,7 +81,8 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
     if (!form.name.trim()) next.name = "Please enter your name.";
     if (!form.company.trim()) next.company = "Please enter your company.";
     if (!form.workEmail.trim()) next.workEmail = "Please enter your work email.";
-    else if (!/\S+@\S+\.\S+/.test(form.workEmail.trim())) next.workEmail = "Please enter a valid email.";
+    else if (!/\S+@\S+\.\S+/.test(form.workEmail.trim()))
+      next.workEmail = "Please enter a valid email.";
     if (!form.teamSize) next.teamSize = "Select your team size.";
     if (!form.message.trim()) next.message = "Tell us what you’d like a quote for.";
     setErrors(next);
@@ -101,6 +100,7 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
     }
 
     setSending(true);
+    setSubmitError("");
 
     try {
       const composedMessage = [
@@ -119,7 +119,10 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
 
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
           name: form.name,
           company: form.company,
@@ -138,7 +141,11 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
       });
 
       if (res.ok || res.status === 303) {
-        gaTrack("contact_submit", { ...pageCtx(), form: "quote", teamSize: form.teamSize });
+        gaTrack("contact_submit", {
+          ...pageCtx(),
+          form: "quote",
+          teamSize: form.teamSize,
+        });
         setDone(true);
         setSending(false);
         return;
@@ -146,30 +153,17 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
 
       throw new Error("api failed");
     } catch (err) {
-      console.error("Quote form submit failed, falling back to mailto:", err);
-
-      gaTrack("contact_submit", { ...pageCtx(), form: "quote", fallback: "mailto" });
-
-      const lines = [
-        "QUOTE REQUEST (fallback mailto)",
-        "-------------------------------",
-        `Name: ${form.name}`,
-        `Company: ${form.company}`,
-        `Email: ${form.workEmail}`,
-        `Phone: ${form.phone || "-"}`,
-        `Team size: ${form.teamSize}`,
-        form.tools ? `Current tools: ${form.tools}` : "",
-        form.budget ? `Rough budget: ${form.budget}` : "",
-        "",
-        "Message:",
-        form.message,
-      ].filter(Boolean);
-
-      const body = encodeURIComponent(lines.join("\n"));
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent("Quote request — " + form.company)}&body=${body}`;
+      gaTrack("contact_submit_failed", {
+        ...pageCtx(),
+        form: "quote",
+        reason: "api_failed",
+      });
 
       setSending(false);
-      setDone(true);
+      setDone(false);
+      setSubmitError(
+        "We couldn’t send your request right now. Please call or email us — we’ll respond quickly."
+      );
     }
   };
 
@@ -177,22 +171,22 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
     <>
       <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-7 space-y-6">
         <div>
-          <h2 className="text-base md:text-lg font-semibold text-slate-50">Tell us what you’d like a quote for</h2>
+          <h2 className="text-base md:text-lg font-semibold text-slate-50">
+            Tell us what you’d like a quote for
+          </h2>
           <p className="mt-1 text-sm text-slate-300">
-            A short, concrete description is enough. We’ll reply with options and a simple, transparent breakdown.
+            A short, concrete description is enough. We’ll reply with options and a
+            simple, transparent breakdown.
           </p>
 
           {/* ✅ tiny trust/CTA line (tracked) */}
           <div className="mt-3 text-xs text-slate-400">
             Or call us:{" "}
             <TrackedPhoneLink
-              phone={telHref || phone}
+              phone={phone}
               source={source}
               placement="quote_trust_line"
-              className={cx(
-                "text-cyan-300 hover:underline",
-                !telHref && "pointer-events-none opacity-60 no-underline"
-              )}
+              className="text-cyan-300 hover:underline"
             >
               {phone}
             </TrackedPhoneLink>
@@ -229,7 +223,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
                 onChange={(e) => updateField("company", e.target.value)}
                 error={!!errors.company}
               />
-              {errors.company && <p className="mt-1 text-xs text-red-400">{errors.company}</p>}
+              {errors.company && (
+                <p className="mt-1 text-xs text-red-400">{errors.company}</p>
+              )}
             </div>
 
             <div>
@@ -241,7 +237,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
                 onChange={(e) => updateField("workEmail", e.target.value)}
                 error={!!errors.workEmail}
               />
-              {errors.workEmail && <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>}
+              {errors.workEmail && (
+                <p className="mt-1 text-xs text-red-400">{errors.workEmail}</p>
+              )}
             </div>
 
             <div>
@@ -262,7 +260,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
                 onChange={(e) => updateField("teamSize", e.target.value)}
                 className={cx(
                   "w-full rounded-lg bg-transparent border px-3 py-2 text-sm outline-none",
-                  errors.teamSize ? "border-red-500/70 focus:border-red-400" : "border-white/20 focus:border-cyan-300/50"
+                  errors.teamSize
+                    ? "border-red-500/70 focus:border-red-400"
+                    : "border-white/20 focus:border-cyan-300/50"
                 )}
               >
                 {["10–24", "25–50", "51–100", "101–200", "200+"].map((opt) => (
@@ -271,7 +271,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
                   </option>
                 ))}
               </select>
-              {errors.teamSize && <p className="mt-1 text-xs text-red-400">{errors.teamSize}</p>}
+              {errors.teamSize && (
+                <p className="mt-1 text-xs text-red-400">{errors.teamSize}</p>
+              )}
             </div>
 
             <div>
@@ -294,7 +296,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">What would you like us to cover in the quote?</label>
+            <label className="text-xs text-slate-400">
+              What would you like us to cover in the quote?
+            </label>
             <TextArea
               rows={5}
               placeholder="Example: Fully managed IT + security for ~40 staff across 2 offices. Include options for 24/7 support and backup/DR."
@@ -302,7 +306,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               onChange={(e) => updateField("message", e.target.value)}
               error={!!errors.message}
             />
-            {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
+            {errors.message && (
+              <p className="mt-1 text-xs text-red-400">{errors.message}</p>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-3">
@@ -316,7 +322,9 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
               disabled={sending}
               className={cx(
                 "rounded-lg px-5 py-2.5 text-sm font-semibold border transition inline-flex items-center gap-2",
-                sending ? "border-white/10 text-slate-400" : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                sending
+                  ? "border-white/10 text-slate-400"
+                  : "border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
               )}
             >
               {sending ? "Sending…" : "Request quote"}
@@ -327,6 +335,33 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
           {done && (
             <div className="mt-3 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm">
               Thanks! We’ve received your quote request. We’ll reply with a clear proposal soon.
+            </div>
+          )}
+
+          {submitError && (
+            <div className="mt-3 rounded-lg border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-slate-100">
+              <div className="font-semibold">⚠️ Couldn’t send</div>
+              <div className="mt-1 text-slate-200">{submitError}</div>
+
+              <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                <TrackedPhoneLink
+                  phone={phone}
+                  source={source}
+                  placement="quote_submit_error_call"
+                  className="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
+                >
+                  Call {phone}
+                </TrackedPhoneLink>
+
+                <TrackedEmailLink
+                  email={email}
+                  source={source}
+                  placement="quote_submit_error_email"
+                  className="inline-flex items-center justify-center rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  Email Us
+                </TrackedEmailLink>
+              </div>
             </div>
           )}
         </form>
