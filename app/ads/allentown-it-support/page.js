@@ -12,6 +12,7 @@ export const metadata = {
   robots: { index: false, follow: true },
 };
 
+// ⬇️ Next 15: searchParams is a Promise in RSC; we must await it
 export default async function Page({ searchParams }) {
   const sp = await searchParams;
   const get = (k) => (typeof sp?.get === "function" ? sp.get(k) : sp?.[k]);
@@ -20,9 +21,8 @@ export default async function Page({ searchParams }) {
   const error = get("error") || "";
 
   const source = "ads-allentown-it-support";
-  const phone = "+1 610-500-9209";
+  const phone = "+16105009209";
   const email = "supremeitexperts@gmail.com";
-  const emailHref = `mailto:${email}?subject=${encodeURIComponent("IT Support Inquiry")}`;
 
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
@@ -39,8 +39,20 @@ export default async function Page({ searchParams }) {
   const hero = { marginTop: 4, marginBottom: 0, opacity: 0.9, fontSize: 16 };
   const h2 = { marginTop: 0, marginBottom: 10, fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em" };
   const list = { paddingLeft: 18, marginTop: 0, marginBottom: 0 };
-  const btn = { display: "inline-block", padding: "10px 14px", borderRadius: 10, background: "#111827", color: "#fff", textDecoration: "none", border: "1px solid #111827", marginRight: 12 };
+
+  const btn = {
+    display: "inline-block",
+    padding: "10px 14px",
+    borderRadius: 10,
+    background: "#111827",
+    color: "#fff",
+    textDecoration: "none",
+    border: "1px solid #111827",
+    marginRight: 12,
+  };
+
   const btnOutline = { ...btn, background: "#fff", color: "#111827" };
+
   const input = { padding: "10px 12px", borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 14, width: "100%" };
   const subnote = { fontSize: 12, marginTop: 6, opacity: 0.8 };
   const banner = { marginBottom: 16, padding: "10px 12px", borderRadius: 8, background: "rgba(34,197,94,.15)", border: "1px solid rgba(34,197,94,.35)", fontSize: 14 };
@@ -50,45 +62,40 @@ export default async function Page({ searchParams }) {
     <main style={wrap}>
       <BodyClass name="hide-chrome" />
 
+      {/* Brand strip (global header hidden on LP) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <Link href="/" aria-label="Supreme IT Experts – Home" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
-          <Image
-            src="/logo.png"
-            alt="Supreme IT Experts"
-            width={140}
-            height={28}
-            priority
-            style={{ height: "28px", width: "auto" }}
-          />
+          <Image src="/logo.png" alt="Supreme IT Experts" width={140} height={28} priority style={{ height: "28px", width: "auto" }} />
         </Link>
       </div>
 
       {sent && <div style={banner}>✅ Thanks! Your message was sent. We’ll contact you shortly.</div>}
       {error && <div style={errBanner}>⚠️ Something went wrong. Please try again.</div>}
 
+      {/* HERO */}
       <div style={sec} role="banner">
         <div style={kicker}>Managed IT Support • Allentown, PA</div>
         <h1 style={h1}>Keep Your Business Secure, Fast & Supported</h1>
         <p style={hero}>
-          24/7 helpdesk, proactive device management, cybersecurity &amp; backups, and
-          network monitoring — delivered by a local MSP on a predictable monthly plan.
+          24/7 helpdesk, proactive device management, cybersecurity &amp; backups, and network monitoring — delivered by a local MSP on a predictable monthly plan.
         </p>
 
         <div style={{ marginTop: 12 }}>
-          {/* ✅ Tracked Call */}
           <TrackedPhoneLink
             phone={phone}
             source={source}
+            placement="hero_cta"
+            className=""
             style={btn}
           >
-            Call {phone}
+            Call +1 610-500-9209
           </TrackedPhoneLink>
 
-          {/* ✅ Tracked Email */}
           <TrackedEmailLink
-            href={emailHref}
             email={email}
             source={source}
+            placement="hero_cta"
+            className=""
             style={btnOutline}
           >
             Email Us
@@ -96,24 +103,34 @@ export default async function Page({ searchParams }) {
         </div>
       </div>
 
+      {/* INTRO */}
       <section style={sec} id="intro">
         <h2 style={h2}>Built for SMBs in Allentown, Macungie & Emmaus</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
-          We keep teams productive and protected in Allentown, Macungie and Emmaus.
-          You get rapid response, clear communication, and an IT environment that just works.
+          We keep teams productive and protected in Allentown, Macungie and Emmaus. You get rapid response, clear communication, and an IT environment that just works.
         </p>
       </section>
 
+      {/* CORE SERVICES */}
       <section style={sec} id="services">
         <h2 style={h2}>Core Services</h2>
         <ul style={list}>
-          <li><strong>24/7 Helpdesk &amp; Device Management</strong> — provisioning, updates, troubleshooting.</li>
-          <li><strong>Cybersecurity</strong> — EDR/AV, patching, MFA, encrypted backups &amp; recovery.</li>
-          <li><strong>Network</strong> — secure setup, Wi-Fi coverage, monitoring &amp; performance tuning.</li>
-          <li><strong>Email &amp; Cloud Migrations</strong> — smooth moves with minimal downtime.</li>
+          <li>
+            <strong>24/7 Helpdesk &amp; Device Management</strong> — provisioning, updates, troubleshooting.
+          </li>
+          <li>
+            <strong>Cybersecurity</strong> — EDR/AV, patching, MFA, encrypted backups &amp; recovery.
+          </li>
+          <li>
+            <strong>Network</strong> — secure setup, Wi-Fi coverage, monitoring &amp; performance tuning.
+          </li>
+          <li>
+            <strong>Email &amp; Cloud Migrations</strong> — smooth moves with minimal downtime.
+          </li>
         </ul>
       </section>
 
+      {/* VALUE */}
       <section style={sec} id="why">
         <h2 style={h2}>Why Choose Supreme IT Experts</h2>
         <ul style={list}>
@@ -124,14 +141,15 @@ export default async function Page({ searchParams }) {
         </ul>
       </section>
 
+      {/* PRICING */}
       <section style={sec} id="pricing">
         <h2 style={h2}>Simple, Predictable Pricing</h2>
         <p style={{ marginTop: 0, marginBottom: 0 }}>
-          Per-user monthly plans tailored to your size and needs. Start with a free assessment —
-          we’ll map your environment and give you a fixed quote.
+          Per-user monthly plans tailored to your size and needs. Start with a free assessment — we’ll map your environment and give you a fixed quote.
         </p>
       </section>
 
+      {/* FORM */}
       <section style={sec} id="contact">
         <h2 style={h2}>Request a Free IT Assessment</h2>
         <form method="post" action="/api/contact" style={{ display: "grid", gap: 12, maxWidth: 520 }}>
@@ -147,27 +165,27 @@ export default async function Page({ searchParams }) {
           <input name="email" required type="email" placeholder="Your email" style={input} />
           <input name="phone" placeholder="Phone (optional)" style={input} />
           <textarea name="message" rows={4} placeholder="Company size & needs" style={input} />
-          <button type="submit" style={btn}>Request Assessment</button>
+          <button type="submit" style={btn}>
+            Request Assessment
+          </button>
         </form>
 
         <p style={subnote}>
-          Prefer email? Write to{" "}
-          <TrackedEmailLink href={`mailto:${email}`} email={email} source={source}>
-            {email}
+          Prefer email?{" "}
+          <TrackedEmailLink email={email} source={source} placement="footer_note">
+            Write to {email}
           </TrackedEmailLink>
         </p>
       </section>
 
+      {/* SERVICE AREA + Trust footer link */}
       <section style={{ ...sec, marginBottom: 8 }} id="area">
         <h2 style={h2}>Service Area</h2>
-        <p style={{ marginTop: 0, marginBottom: 0 }}>
-          Allentown • Macungie • Emmaus
-        </p>
+        <p style={{ marginTop: 0, marginBottom: 0 }}>Allentown • Macungie • Emmaus</p>
       </section>
 
       <div style={{ fontSize: 12, opacity: 0.75, marginTop: 20 }}>
-        Supreme IT Experts · Allentown, PA · Local MSP ·{" "}
-        <Link href="/" aria-label="Visit full website">Visit full website</Link>
+        Supreme IT Experts · Allentown, PA · Local MSP · <Link href="/" aria-label="Visit full website">Visit full website</Link>
       </div>
     </main>
   );
