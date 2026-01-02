@@ -1,6 +1,10 @@
 // components/Footer.js
+"use client";
+
 import Link from "next/link";
 import { site } from "@/lib/siteConfig";
+import TrackedPhoneLink from "@/components/TrackedPhoneLink";
+import TrackedEmailLink from "@/components/TrackedEmailLink";
 
 function SocialLink({ href, label, children }) {
   const disabled = !href || href === "#";
@@ -24,8 +28,12 @@ function SocialLink({ href, label, children }) {
   );
 }
 
-function digitsOnly(p) {
-  return String(p || "").replace(/[^\d]/g, "");
+function cleanTel(p) {
+  const s = String(p || "").trim();
+  if (!s) return "";
+  const cleaned = s.replace(/[^\d+]/g, "").replace(/\++/g, "+");
+  if (!cleaned) return "";
+  return cleaned.startsWith("+") ? cleaned : `+${cleaned}`;
 }
 
 export default function Footer({ className = "" }) {
@@ -34,13 +42,7 @@ export default function Footer({ className = "" }) {
 
   const email = site?.email || "supremeitexperts@gmail.com";
   const phoneRaw = site?.phone || "+1 610-500-9209";
-  const telHref = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
-
-  const waRaw = site?.whatsapp || phoneRaw;
-  const waDigits = digitsOnly(waRaw);
-  const waHref = waDigits
-    ? `https://wa.me/${waDigits}?text=${encodeURIComponent("Hi! I need help with Managed IT / Cybersecurity.")}`
-    : "";
+  const phoneE164 = cleanTel(phoneRaw); // +1610...
 
   return (
     <footer className={`site-footer mt-12 bg-[#0b1220] border-t border-white/10 ${className}`}>
@@ -64,32 +66,30 @@ export default function Footer({ className = "" }) {
             </p>
 
             <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:gap-4">
-              <a className="text-slate-200 hover:text-cyan-300 transition" href={`mailto:${email}`}>
+              <TrackedEmailLink
+                email={email}
+                source="footer"
+                placement="footer_email"
+                className="text-slate-200 hover:text-cyan-300 transition"
+              >
                 {email}
-              </a>
+              </TrackedEmailLink>
 
               <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-slate-500/70" />
 
-              <a className="text-slate-200 hover:text-cyan-300 transition whitespace-nowrap" href={telHref}>
+              <TrackedPhoneLink
+                phone={phoneE164 || phoneRaw}
+                source="footer"
+                placement="footer_phone"
+                className="text-slate-200 hover:text-cyan-300 transition whitespace-nowrap"
+              >
                 {phoneRaw}
-              </a>
-
-              {waHref ? (
-                <>
-                  <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-slate-500/70" />
-                  <a
-                    className="text-slate-200 hover:text-emerald-300 transition whitespace-nowrap"
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    WhatsApp
-                  </a>
-                </>
-              ) : null}
+              </TrackedPhoneLink>
             </div>
 
-            <div className="text-xs text-slate-200">Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support</div>
+            <div className="text-xs text-slate-200">
+              Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support
+            </div>
           </div>
 
           {/* Right */}

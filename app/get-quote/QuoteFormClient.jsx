@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { site } from "@/lib/siteConfig";
 import ContactActionsRow from "@/components/ContactActionsRow";
+import TrackedPhoneLink from "@/components/TrackedPhoneLink";
 import { track as gaTrack } from "@/lib/track";
 
 function cx(...a) {
@@ -12,8 +13,9 @@ function cx(...a) {
 
 // ✅ small helper: sanitize phone for tel:
 const cleanTel = (p) => {
-  const s = String(p || "");
-  const keep = s.replace(/[^+\d]/g, "");
+  const s = String(p || "").trim();
+  if (!s) return "";
+  const keep = s.replace(/[^+\d]/g, "").replace(/\++/g, "+");
   if (!keep) return "";
   return keep.startsWith("+") ? keep : `+${keep}`;
 };
@@ -183,13 +185,17 @@ export default function QuoteFormClient({ source = "get-quote-page" }) {
           {/* ✅ tiny trust/CTA line (tracked) */}
           <div className="mt-3 text-xs text-slate-400">
             Or call us:{" "}
-            <a
-              className="text-cyan-300 hover:underline"
-              href={telHref ? `tel:${telHref}` : "#"}
-              onClick={() => gaTrack("call_click", { ...pageCtx(), placement: "quote_trust_line" })}
+            <TrackedPhoneLink
+              phone={telHref || phone}
+              source={source}
+              placement="quote_trust_line"
+              className={cx(
+                "text-cyan-300 hover:underline",
+                !telHref && "pointer-events-none opacity-60 no-underline"
+              )}
             >
               {phone}
-            </a>
+            </TrackedPhoneLink>
           </div>
         </div>
 
