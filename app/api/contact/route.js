@@ -14,8 +14,9 @@ const MAIL_CC = process.env.MAIL_CC || "";
 const MAIL_FROM =
   process.env.MAIL_FROM || "Supreme IT Experts <onboarding@resend.dev>";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const LP = new URL("/ads/allentown-it-support", SITE).toString();
+// Prefer server-only SITE_URL, fallback to NEXT_PUBLIC_SITE_URL (works on Vercel)
+const SITE_URL = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "";
+const LP_PATH = "/ads/allentown-it-support";
 
 // --- utils ---
 function esc(s = "") {
@@ -50,14 +51,40 @@ async function readBody(req) {
   }
 }
 
+// Canonical origin resolver
+function getOrigin(req) {
+  // If env is set (Vercel), prefer it
+  if (SITE_URL) return SITE_URL.replace(/\/$/, "");
+  // Otherwise use request origin (works in preview)
+  const o = req.nextUrl?.origin;
+  if (o) return o.replace(/\/$/, "");
+  // Last resort (dev)
+  return "http://localhost:3000";
+}
+
+// Allow only same-origin redirects (prevents open-redirect)
+function safeRedirectTarget(req, inputUrl) {
+  const origin = getOrigin(req);
+  try {
+    const u = new URL(inputUrl || LP_PATH, origin);
+    const originUrl = new URL(origin);
+
+    // If someone passes an external domain, force back to LP_PATH on our origin
+    if (u.origin !== originUrl.origin) {
+      return new URL(LP_PATH, origin).toString();
+    }
+
+    return u.toString();
+  } catch {
+    return new URL(LP_PATH, origin).toString();
+  }
+}
+
 // Build an absolute URL even if a relative path is provided
 function makeRedirect(req, url, params) {
- const base =
-    req.nextUrl?.origin ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000";
-
-  const u = new URL(url, base); // supports relative or absolute
+  const origin = getOrigin(req);
+  const target = safeRedirectTarget(req, url);
+  const u = new URL(target, origin); // supports relative or absolute (already safe)
   Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
   return Response.redirect(u.toString(), 303);
 }
@@ -66,15 +93,21 @@ function makeRedirect(req, url, params) {
 // POST handler
 // ----------------------------------
 export async function POST(req) {
-  // JSON chahiye ya redirect?  → Accept header check
   const accept = (req.headers.get("accept") || "").toLowerCase();
   const wantsJson =
     accept.includes("application/json") || accept.includes("text/json");
 
+  // Landing page absolute URL (for default redirect)
+  const lp = new URL(LP_PATH, getOrigin(req)).toString();
+
   try {
     const body = await readBody(req);
 
-    const redirectTo = body.redirectTo ? String(body.redirectTo) : LP;
+    // ✅ safe redirect (same-origin only)
+    const redirectTo = safeRedirectTarget(
+      req,
+      body.redirectTo ? String(body.redirectTo) : lp
+    );
 
     // honeypot
     if (body.website || body.hp) {
@@ -91,10 +124,7 @@ export async function POST(req) {
 
     if (!name || !email) {
       if (wantsJson) {
-        return Response.json(
-          { ok: false, error: "missing" },
-          { status: 400 }
-        );
+        return Response.json({ ok: false, error: "missing" }, { status: 400 });
       }
       return makeRedirect(req, redirectTo, { error: "missing" });
     }
@@ -111,10 +141,7 @@ export async function POST(req) {
 
     if (!resend) {
       if (wantsJson) {
-        return Response.json(
-          { ok: false, error: "mailConfig" },
-          { status: 500 }
-        );
+        return Response.json({ ok: false, error: "mailConfig" }, { status: 500 });
       }
       return makeRedirect(req, redirectTo, { error: "mailConfig" });
     }
@@ -161,7 +188,7 @@ export async function POST(req) {
       subject,
       text,
       html,
-      reply_to: email, // Resend supports snake_case
+      reply_to: email,
     });
 
     // --- Auto-reply to the lead (best-effort; doesn't block success) ---
@@ -189,21 +216,17 @@ Phone: +1 610-500-9209`,
     }
 
     // ✅ SUCCESS
-    if (wantsJson) {
-      return Response.json({ ok: true }, { status: 200 });
-    }
+    if (wantsJson) return Response.json({ ok: true }, { status: 200 });
     return makeRedirect(req, redirectTo, { sent: "1" });
   } catch (e) {
     console.error("Contact form error:", e);
 
     if (wantsJson) {
-      return Response.json(
-        { ok: false, error: "server" },
-        { status: 500 }
-      );
+      return Response.json({ ok: false, error: "server" }, { status: 500 });
     }
 
-    return makeRedirect(req, LP, { error: "server" });
+    // fallback to LP on our origin (safe)
+    return makeRedirect(req, lp, { error: "server" });
   }
 }
 
