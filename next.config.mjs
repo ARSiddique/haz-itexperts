@@ -1,30 +1,36 @@
+// next.config.mjs
 const nextConfig = {
   trailingSlash: false,
 
   async redirects() {
     return [
-      // Existing location redirects
+      // --- Old location routes -> /areas (both with & without trailing slash)
       { source: "/locations/philadelphia-pa", destination: "/areas", permanent: true },
+      { source: "/locations/philadelphia-pa/", destination: "/areas", permanent: true },
+
       { source: "/locations/wilmington-de", destination: "/areas", permanent: true },
+      { source: "/locations/wilmington-de/", destination: "/areas", permanent: true },
 
-      // Area redirects
+      // --- Old area slugs -> /areas (both with & without trailing slash)
       { source: "/areas/philadelphia", destination: "/areas", permanent: true },
-      { source: "/areas/wilmington", destination: "/areas", permanent: true },
+      { source: "/areas/philadelphia/", destination: "/areas", permanent: true },
 
-      // Catch nested variants too
+      { source: "/areas/wilmington", destination: "/areas", permanent: true },
+      { source: "/areas/wilmington/", destination: "/areas", permanent: true },
+
+      // --- Catch nested variants too (and nested trailing slash)
       { source: "/areas/philadelphia/:path*", destination: "/areas", permanent: true },
+      { source: "/areas/philadelphia/:path*/", destination: "/areas", permanent: true },
+
       { source: "/areas/wilmington/:path*", destination: "/areas", permanent: true },
+      { source: "/areas/wilmington/:path*/", destination: "/areas", permanent: true },
     ];
   },
 
   async headers() {
     return [
       {
-        source: "/sitemap.xml",
-        headers: [{ key: "Cache-Control", value: "public, max-age=300, must-revalidate" }],
-      },
-      {
-        source: "/robots.txt",
+        source: "/(sitemap.xml|robots.txt)",
         headers: [{ key: "Cache-Control", value: "public, max-age=300, must-revalidate" }],
       },
     ];
