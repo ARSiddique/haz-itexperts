@@ -2,7 +2,7 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 import { site } from "@/lib/siteConfig";
 import {
   MapPin,
@@ -24,37 +24,46 @@ import {
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/areas`;
 
-  // IMPORTANT: layout already appends brand, so keep title clean
+  // ✅ single source of truth (BASE_URL -> site.url -> fallback)
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
+
   const title = "Areas We Serve";
   const description =
     "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie & Emmaus, clear SLAs, fast response, consistent service.";
 
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
-
   return {
     metadataBase: new URL(baseUrl),
-    title,
+    title, // layout title template appends brand
     description,
-    alternates: { canonical },
+
+    // ✅ canonical relative (metadataBase makes absolute)
+    alternates: { canonical: "/areas" },
+
     robots: { index: true, follow: true },
 
     openGraph: {
       title: `${title} | ${brand}`,
       description,
       type: "website",
-      url: canonical,
+      url: "/areas",
       siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Areas We Serve` }],
+      images: [
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Areas We Serve`,
+        },
+      ],
     },
 
     twitter: {
       card: "summary_large_image",
       title: `${title} | ${brand}`,
       description,
-      images: [ogImage],
+      images: ["/og-image.png?v=7"],
     },
   };
 }
@@ -62,20 +71,54 @@ export async function generateMetadata() {
 const REGIONS = [
   {
     key: "lehigh",
-    name: "llentown, Macungie & Emmaus, PA",
+    // ✅ typo fix
+    name: "Allentown, Macungie & Emmaus, PA",
     color: "#34d399",
     cities: [
-      { name: "Allentown, PA", slug: "allentown-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [60, 34] },
-      { name: "Macungie, PA", slug: "macungie-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [62, 36] },
-      { name: "Emmaus, PA", slug: "emmaus-pa", tier: "A", sla: "P1 ≤ 15 min", pin: [61, 35] },
+      {
+        name: "Allentown, PA",
+        slug: "allentown-pa",
+        tier: "A",
+        sla: "P1 ≤ 15 min",
+        pin: [60, 34],
+      },
+      {
+        name: "Macungie, PA",
+        slug: "macungie-pa",
+        tier: "A",
+        sla: "P1 ≤ 15 min",
+        pin: [62, 36],
+      },
+      {
+        name: "Emmaus, PA",
+        slug: "emmaus-pa",
+        tier: "A",
+        sla: "P1 ≤ 15 min",
+        pin: [61, 35],
+      },
     ],
   },
 ];
 
 const TIER = {
-  A: { label: "Tier A", note: "Fastest remote response", bg: "bg-emerald-500/15", ring: "ring-emerald-400/30" },
-  B: { label: "Tier B", note: "Fast remote response", bg: "bg-cyan-500/15", ring: "ring-cyan-400/30" },
-  C: { label: "Tier C", note: "Standard remote response", bg: "bg-fuchsia-500/15", ring: "ring-fuchsia-400/30" },
+  A: {
+    label: "Tier A",
+    note: "Fastest remote response",
+    bg: "bg-emerald-500/15",
+    ring: "ring-emerald-400/30",
+  },
+  B: {
+    label: "Tier B",
+    note: "Fast remote response",
+    bg: "bg-cyan-500/15",
+    ring: "ring-cyan-400/30",
+  },
+  C: {
+    label: "Tier C",
+    note: "Standard remote response",
+    bg: "bg-fuchsia-500/15",
+    ring: "ring-fuchsia-400/30",
+  },
 };
 
 // ✅ Stronger “Services Hub” (internal linking boost)
@@ -84,7 +127,11 @@ const SERVICE_HUB = [
     key: "managed",
     title: "Managed IT (SupremeCare™)",
     desc: "Helpdesk + monitoring + patching with SLA-backed response times.",
-    bullets: ["Helpdesk (P1 ≤ 15 min)", "Monitoring & patching", "Asset & license tracking"],
+    bullets: [
+      "Helpdesk (P1 ≤ 15 min)",
+      "Monitoring & patching",
+      "Asset & license tracking",
+    ],
     href: "/services/managed-it",
     icon: ShieldCheck,
     tags: ["Helpdesk", "Monitoring", "Patching"],
@@ -136,7 +183,11 @@ const SERVICE_HUB = [
   },
 ];
 
-const normalize = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+const normalize = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 
 const Pill = ({ children }) => (
   <span className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[12px] border border-white/10 bg-white/5">
@@ -167,16 +218,38 @@ function RegionMap({ regions, active }) {
     <div className="relative rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.18),transparent_60%)]" />
 
-      <svg viewBox="0 0 100 100" className="w-full h-[360px] md:h-[500px]" aria-label="Service area map">
+      <svg
+        viewBox="0 0 100 100"
+        className="w-full h-[360px] md:h-[500px]"
+        aria-label="Service area map"
+      >
         <g className="fill-white/6 stroke-white/10">
           <path d="M28,20 C34,16 46,14 58,18 C68,21 76,28 82,36 C88,44 92,54 88,64 C84,72 76,78 66,82 C58,84 48,85 40,82 C28,78 22,70 18,60 C14,50 16,40 20,32 C22,26 24,22 28,20 Z" />
         </g>
 
         {regions.map((r) =>
           r.cities.map((c) => (
-            <a key={r.key + c.name} href={buildHref(r.key)} aria-label={`View ${r.name} cities`}>
-              <circle cx={c.pin[0]} cy={c.pin[1]} r="1.15" fill={r.color} className="opacity-90" />
-              <circle cx={c.pin[0]} cy={c.pin[1]} r="2.3" fill="none" stroke={r.color} strokeWidth="0.2" className="opacity-40" />
+            <a
+              key={r.key + c.name}
+              href={buildHref(r.key)}
+              aria-label={`View ${r.name} cities`}
+            >
+              <circle
+                cx={c.pin[0]}
+                cy={c.pin[1]}
+                r="1.15"
+                fill={r.color}
+                className="opacity-90"
+              />
+              <circle
+                cx={c.pin[0]}
+                cy={c.pin[1]}
+                r="2.3"
+                fill="none"
+                stroke={r.color}
+                strokeWidth="0.2"
+                className="opacity-40"
+              />
             </a>
           ))
         )}
@@ -260,7 +333,8 @@ function ServiceCard({ s }) {
 }
 
 export default async function AreasPage({ searchParams }) {
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
+    .replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
 
   // Works whether searchParams is object or Promise
@@ -281,7 +355,10 @@ export default async function AreasPage({ searchParams }) {
 
   const filtered = region.cities
     .filter((c) => !nq || normalize(c.name).includes(nq))
-    .sort((a, b) => order[a.tier] - order[b.tier] || a.name.localeCompare(b.name));
+    .sort(
+      (a, b) =>
+        order[a.tier] - order[b.tier] || a.name.localeCompare(b.name)
+    );
 
   const popularLocations = [
     { name: "Allentown, PA", slug: "allentown-pa" },
@@ -289,14 +366,30 @@ export default async function AreasPage({ searchParams }) {
     { name: "Emmaus, PA", slug: "emmaus-pa" },
   ];
 
-  // ---- JSON-LD (SEO)
+  // ✅ JSON-LD (SEO)
+  const WEBSITE_ID = `${baseUrl}/#website`;
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": WEBSITE_ID,
+    url: `${baseUrl}/`,
+    name: brand,
+    publisher: { "@id": BUSINESS_ID },
+  };
+
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "@id": `${baseUrl}/areas#breadcrumb`,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: `${baseUrl}/areas` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Areas We Serve",
+        item: `${baseUrl}/areas`,
+      },
     ],
   };
 
@@ -319,25 +412,28 @@ export default async function AreasPage({ searchParams }) {
     "@id": `${baseUrl}/areas#collection`,
     name: "Areas We Serve",
     url: `${baseUrl}/areas`,
-    isPartOf: { "@type": "WebSite", url: `${baseUrl}/`, name: brand },
+    isPartOf: { "@id": WEBSITE_ID },
     about: { "@id": BUSINESS_ID },
   };
 
-
   return (
     <>
-      {/* Breadcrumbs + CollectionPage + ItemList + Organization JSON-LD */}
+      {/* Breadcrumbs + CollectionPage + ItemList + WebSite JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, collectionPageSchema, itemListSchema]),
-
+          __html: JSON.stringify([
+            websiteSchema,
+            breadcrumbsSchema,
+            collectionPageSchema,
+            itemListSchema,
+          ]),
         }}
       />
 
       <PageHero
         eyebrow="Areas we serve"
-       title="Remote-first IT support in Allentown, Macungie & Emmaus"
+        title="Remote-first IT support in Allentown, Macungie & Emmaus"
         sub="We support SMBs across Allentown, Macungie, and Emmaus with fast remote response, clear SLAs, and consistent service."
       />
 
@@ -345,7 +441,9 @@ export default async function AreasPage({ searchParams }) {
         {/* Quick internal links to dedicated location pages */}
         <Reveal className="mt-2">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
-            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Popular locations</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
+              Popular locations
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {popularLocations.map((x) => (
                 <Link
@@ -362,16 +460,20 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
-        {/* ✅ NEW: Services Hub Links (strong internal linking block) */}
+        {/* ✅ Services Hub Links (strong internal linking block) */}
         <Reveal className="mt-6">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">
               <div>
-                <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Services hub</div>
-                <h2 className="text-xl md:text-2xl font-semibold">Explore services teams bundle together</h2>
+                <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
+                  Services hub
+                </div>
+                <h2 className="text-xl md:text-2xl font-semibold">
+                  Explore services teams bundle together
+                </h2>
                 <p className="mt-2 text-slate-300 max-w-3xl">
-                 
-                  <span className="text-slate-200">Services → Areas</span>. Better crawl paths, better topical relevance.
+                  <span className="text-slate-200">Services → Areas</span>. Better
+                  crawl paths, better topical relevance.
                 </p>
               </div>
 
@@ -414,7 +516,9 @@ export default async function AreasPage({ searchParams }) {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Region</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
+                    Region
+                  </div>
                   <h2 className="text-xl font-semibold">{region.name}</h2>
                 </div>
                 <Pill>
@@ -469,7 +573,8 @@ export default async function AreasPage({ searchParams }) {
                                 className="inline-flex items-center gap-2 text-xs rounded-lg px-3 py-1.5 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                                 aria-label={`Open ${c.name} location page`}
                               >
-                                View location page <ExternalLink className="h-3.5 w-3.5" />
+                                View location page{" "}
+                                <ExternalLink className="h-3.5 w-3.5" />
                               </Link>
                             </div>
                           )}
@@ -511,8 +616,12 @@ export default async function AreasPage({ searchParams }) {
         {/* Same stack everywhere */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">How we deliver</div>
-            <h3 className="text-lg font-semibold">Consistent, security-first stack (remote)</h3>
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
+              How we deliver
+            </div>
+            <h3 className="text-lg font-semibold">
+              Consistent, security-first stack (remote)
+            </h3>
 
             <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
               <div className="rounded-xl border border-white/10 bg-white/5 p-4">
@@ -555,7 +664,9 @@ export default async function AreasPage({ searchParams }) {
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5">
             {REGIONS.map((r) => {
-              const href = `/areas?region=${r.key}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+              const href = `/areas?region=${r.key}${
+                q ? `&q=${encodeURIComponent(q)}` : ""
+              }`;
 
               return (
                 <details
@@ -565,9 +676,14 @@ export default async function AreasPage({ searchParams }) {
                 >
                   <summary className="cursor-pointer list-none px-4 md:px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="inline-block size-3 rounded-full" style={{ background: r.color }} />
+                      <span
+                        className="inline-block size-3 rounded-full"
+                        style={{ background: r.color }}
+                      />
                       <div className="font-medium">{r.name}</div>
-                      <span className="text-xs text-slate-400">{r.cities.length} cities</span>
+                      <span className="text-xs text-slate-400">
+                        {r.cities.length} cities
+                      </span>
                     </div>
                     <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                   </summary>
@@ -577,7 +693,8 @@ export default async function AreasPage({ searchParams }) {
                       {r.cities.map((c) => (
                         <div key={c.name} className="flex flex-wrap gap-2">
                           <span className="text-sm rounded-lg px-3 py-1.5 border border-white/10 bg-white/5">
-                            {c.name} • <span className="text-slate-400">{c.sla}</span>
+                            {c.name} •{" "}
+                            <span className="text-slate-400">{c.sla}</span>
                           </span>
 
                           {c.slug && (
