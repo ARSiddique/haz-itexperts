@@ -7,11 +7,11 @@ const nextConfig = {
       { source: "/locations/philadelphia-pa", destination: "/areas", permanent: true },
       { source: "/locations/wilmington-de", destination: "/areas", permanent: true },
 
-      // ✅ NEW: area redirects (fix the 404 you saw in curl)
+      // Area redirects
       { source: "/areas/philadelphia", destination: "/areas", permanent: true },
       { source: "/areas/wilmington", destination: "/areas", permanent: true },
 
-      // ✅ Optional: if any old nested variants exist, catch them too
+      // Catch nested variants too
       { source: "/areas/philadelphia/:path*", destination: "/areas", permanent: true },
       { source: "/areas/wilmington/:path*", destination: "/areas", permanent: true },
     ];
@@ -20,7 +20,11 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(sitemap.xml|robots.txt)",
+        source: "/sitemap.xml",
+        headers: [{ key: "Cache-Control", value: "public, max-age=300, must-revalidate" }],
+      },
+      {
+        source: "/robots.txt",
         headers: [{ key: "Cache-Control", value: "public, max-age=300, must-revalidate" }],
       },
     ];
