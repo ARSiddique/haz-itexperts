@@ -1,28 +1,27 @@
-// next.config.mjs
 const nextConfig = {
   trailingSlash: false,
 
+  // ✅ Stop Next.js from doing /foo/ -> /foo automatically
+  skipTrailingSlashRedirect: true,
+
   async redirects() {
     return [
-      // --- Old location routes -> /areas (both with & without trailing slash)
+      // ---- 1-step redirects (no trailing slash) ----
       { source: "/locations/philadelphia-pa", destination: "/areas", permanent: true },
-      { source: "/locations/philadelphia-pa/", destination: "/areas", permanent: true },
-
       { source: "/locations/wilmington-de", destination: "/areas", permanent: true },
-      { source: "/locations/wilmington-de/", destination: "/areas", permanent: true },
-
-      // --- Old area slugs -> /areas (both with & without trailing slash)
       { source: "/areas/philadelphia", destination: "/areas", permanent: true },
-      { source: "/areas/philadelphia/", destination: "/areas", permanent: true },
-
       { source: "/areas/wilmington", destination: "/areas", permanent: true },
+
+      // ---- 1-step redirects (WITH trailing slash) ----
+      { source: "/locations/philadelphia-pa/", destination: "/areas", permanent: true },
+      { source: "/locations/wilmington-de/", destination: "/areas", permanent: true },
+      { source: "/areas/philadelphia/", destination: "/areas", permanent: true },
       { source: "/areas/wilmington/", destination: "/areas", permanent: true },
 
-      // --- Catch nested variants too (and nested trailing slash)
+      // ---- catch nested variants (both with/without slash at end) ----
       { source: "/areas/philadelphia/:path*", destination: "/areas", permanent: true },
-      { source: "/areas/philadelphia/:path*/", destination: "/areas", permanent: true },
-
       { source: "/areas/wilmington/:path*", destination: "/areas", permanent: true },
+      { source: "/areas/philadelphia/:path*/", destination: "/areas", permanent: true },
       { source: "/areas/wilmington/:path*/", destination: "/areas", permanent: true },
     ];
   },
