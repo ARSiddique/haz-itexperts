@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const p = params;
+  const p = await params;
   const slug = Array.isArray(p?.slug) ? p.slug[0] : p?.slug;
 
   const loc = getLocationBySlug(slug);
@@ -44,7 +44,6 @@ export async function generateMetadata({ params }) {
         "max-video-preview": -1,
       },
     },
-
     openGraph: {
       title,
       description,
@@ -60,7 +59,6 @@ export async function generateMetadata({ params }) {
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
@@ -71,7 +69,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function LocationPage({ params }) {
-  const p = params;
+  const p = await params;
   const slug = Array.isArray(p?.slug) ? p.slug[0] : p?.slug;
 
   const loc = getLocationBySlug(slug);
@@ -80,19 +78,14 @@ export default async function LocationPage({ params }) {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/locations/${loc.slug}`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
 
-  // ✅ phone normalize to E.164 (same style as layout)
-  const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
-  const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
-
-  // ✅ Stable IDs for clean entity linking
+  // ✅ Stable IDs
   const WEBSITE_ID = `${baseUrl}/#website`;
   const BREADCRUMB_ID = `${canonical}#breadcrumb`;
-  const LOCALBUSINESS_ID = `${canonical}#localbusiness`;
+  const SERVICE_ID = `${canonical}#service`;
   const WEBPAGE_ID = `${canonical}#webpage`;
 
-  // Breadcrumb schema
+  // ✅ Breadcrumb schema
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -104,75 +97,55 @@ export default async function LocationPage({ params }) {
     ],
   };
 
-  // LocalBusiness (location landing page)
-  // ✅ Keep a location-specific LocalBusiness, and link it to your central BUSINESS_ID entity.
-  // ✅ Add priceRange + image to remove the “optional missing field” warnings.
-  const localBusinessSchema = {
+  /**
+   * ✅ IMPORTANT FIX:
+   * Location pages pe LocalBusiness dobara mat add karo,
+   * warna layout wala BUSINESS_ID + page wala LOCALBUSINESS duplicate ho jata hai.
+   *
+   * Instead: Service schema (provider = BUSINESS_ID)
+   */
+  const serviceSchema = {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "ITService"],
-    "@id": LOCALBUSINESS_ID,
-    name: brand,
+    "@type": "Service",
+    "@id": SERVICE_ID,
+    name: `Managed IT Services in ${loc.city}, ${loc.state}`,
+    serviceType: "Managed IT Services",
+    description: loc.lede,
     url: canonical,
-    telephone: phoneE164,
-
-    // ✅ optional warnings fix
-    priceRange: "$$",
-    image: ogImage,
-
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: loc.city,
-      addressRegion: loc.state,
-      addressCountry: "US",
-      // postalCode: "18101",       // optional (agar tumhare paas ho)
-      // streetAddress: "..."       // optional (agar physical address ho)
-    },
-
-    areaServed: [
-      `${loc.city}, ${loc.state}`,
-      ...(loc.nearby?.length ? loc.nearby.map((x) => `${x}, ${loc.state}`) : []),
-    ],
-
     provider: { "@id": BUSINESS_ID },
-    branchOf: { "@id": BUSINESS_ID },
-
-    serviceType: [
-      "Managed IT Services",
-      "Cybersecurity",
-      "Cloud Services",
-      "Device Management",
-      "IT Consulting",
-    ],
+    areaServed: {
+      "@type": "AdministrativeArea",
+      name: `${loc.city}, ${loc.state}`,
+    },
   };
 
-  // WebPage schema for the location landing page
+  // ✅ WebPage schema
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": WEBPAGE_ID,
     url: canonical,
-    name: `${loc.city}, ${loc.state} — IT Support | ${brand}`,
+    name: `${loc.city}, ${loc.state} — Managed IT Services | ${brand}`,
     description: loc.lede,
     isPartOf: { "@id": WEBSITE_ID },
     breadcrumb: { "@id": BREADCRUMB_ID },
     about: { "@id": BUSINESS_ID },
-    mainEntity: { "@id": LOCALBUSINESS_ID },
+    mainEntity: { "@id": SERVICE_ID },
   };
 
   return (
     <>
-      {/* Breadcrumbs + LocalBusiness + WebPage JSON-LD */}
+      {/* ✅ Breadcrumbs + Service + WebPage JSON-LD (NO LocalBusiness here) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, localBusinessSchema, webPageSchema]),
+          __html: JSON.stringify([breadcrumbsSchema, serviceSchema, webPageSchema]),
         }}
       />
 
       <PageHero eyebrow="Areas we serve" title={`${loc.city}, ${loc.state}`} sub={loc.lede} />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
-        {/* quick CTA */}
         <Reveal className="mt-4">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -201,7 +174,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* what we do + services */}
         <Reveal className="mt-10">
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -250,7 +222,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Services in this area (full internal linking block) */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -287,7 +258,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* internal links block */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h3 className="text-xl font-semibold">Next steps</h3>
