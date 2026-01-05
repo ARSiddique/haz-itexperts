@@ -23,14 +23,18 @@ const email = site?.email || "supremeitexperts@gmail.com";
 // socials (if site.socials is an object)
 const sameAs = uniq(Object.values(site?.socials || {}).filter(Boolean));
 
-// (optional) if you later add real street/zip in siteConfig, it will auto-fill
+// ✅ Clean address: DO NOT include undefined keys in JSON-LD
 const address = {
   "@type": "PostalAddress",
-  streetAddress: site?.address?.streetAddress || site?.address?.street || undefined,
-  postalCode: site?.address?.postalCode || undefined,
   addressLocality: site?.address?.addressLocality || "Allentown",
   addressRegion: site?.address?.addressRegion || "PA",
   addressCountry: site?.address?.addressCountry || "US",
+
+  ...(site?.address?.streetAddress || site?.address?.street
+    ? { streetAddress: site?.address?.streetAddress || site?.address?.street }
+    : {}),
+
+  ...(site?.address?.postalCode ? { postalCode: site.address.postalCode } : {}),
 };
 
 export const metadata = {
@@ -114,7 +118,7 @@ export default function RootLayout({ children }) {
         name: BRAND,
         url: `${BASE_URL}/`,
         description:
-          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown Macungie, and Emmaus, PA.",
+          "Managed IT services and cybersecurity for small and mid-sized businesses in Allentown, Macungie, and Emmaus, PA.",
         telephone: phoneE164,
         email,
         priceRange: "$$",
@@ -122,7 +126,7 @@ export default function RootLayout({ children }) {
         logo: new URL("/logo.png", BASE_URL).toString(),
         sameAs,
         address,
-       areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+        areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
 
         contactPoint: [
           {
@@ -151,7 +155,7 @@ export default function RootLayout({ children }) {
         <Header className="site-header" />
         <main>{children}</main>
         <FABs />
-<BackToTop fabLift={50} />
+        <BackToTop fabLift={50} />
         <Footer className="site-footer" />
       </body>
     </html>

@@ -44,7 +44,6 @@ export async function generateMetadata({ params }) {
         "max-video-preview": -1,
       },
     },
-
     openGraph: {
       title,
       description,
@@ -60,7 +59,6 @@ export async function generateMetadata({ params }) {
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
@@ -88,6 +86,16 @@ export default async function LocationPage({ params }) {
   const LOCALBUSINESS_ID = `${canonical}#localbusiness`;
   const WEBPAGE_ID = `${canonical}#webpage`;
 
+  // ✅ Address (dynamic) — fixes Allentown hardcode issue
+  const address = {
+    "@type": "PostalAddress",
+    addressLocality: loc.city,
+    addressRegion: loc.state,
+    addressCountry: "US",
+    ...(loc.postalCode ? { postalCode: loc.postalCode } : {}),
+    ...(loc.streetAddress ? { streetAddress: loc.streetAddress } : {}),
+  };
+
   // Breadcrumb schema
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
@@ -109,7 +117,13 @@ export default async function LocationPage({ params }) {
     name: brand,
     url: canonical,
     telephone: phone,
-    areaServed: [`${loc.city}, ${loc.state}`],
+    address,
+    areaServed: Array.from(
+      new Set([
+        `${loc.city}, ${loc.state}`,
+        ...(loc.nearby?.map((x) => String(x)) || []),
+      ])
+    ),
     provider: { "@id": BUSINESS_ID },
     branchOf: { "@id": BUSINESS_ID },
     serviceType: [
