@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const p = await params;
+  const p = params;
   const slug = Array.isArray(p?.slug) ? p.slug[0] : p?.slug;
 
   const loc = getLocationBySlug(slug);
@@ -44,6 +44,7 @@ export async function generateMetadata({ params }) {
         "max-video-preview": -1,
       },
     },
+
     openGraph: {
       title,
       description,
@@ -59,6 +60,7 @@ export async function generateMetadata({ params }) {
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
@@ -69,7 +71,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function LocationPage({ params }) {
-  const p = await params;
+  const p = params;
   const slug = Array.isArray(p?.slug) ? p.slug[0] : p?.slug;
 
   const loc = getLocationBySlug(slug);
@@ -77,24 +79,18 @@ export default async function LocationPage({ params }) {
 
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const phone = site?.phone || "+1-610-500-9209";
   const canonical = `${baseUrl}/locations/${loc.slug}`;
+  const ogImage = `${baseUrl}/og-image.png?v=7`;
+
+  // ✅ phone normalize to E.164 (same style as layout)
+  const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
+  const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
 
   // ✅ Stable IDs for clean entity linking
   const WEBSITE_ID = `${baseUrl}/#website`;
   const BREADCRUMB_ID = `${canonical}#breadcrumb`;
   const LOCALBUSINESS_ID = `${canonical}#localbusiness`;
   const WEBPAGE_ID = `${canonical}#webpage`;
-
-  // ✅ Address (dynamic) — fixes Allentown hardcode issue
-  const address = {
-    "@type": "PostalAddress",
-    addressLocality: loc.city,
-    addressRegion: loc.state,
-    addressCountry: "US",
-    ...(loc.postalCode ? { postalCode: loc.postalCode } : {}),
-    ...(loc.streetAddress ? { streetAddress: loc.streetAddress } : {}),
-  };
 
   // Breadcrumb schema
   const breadcrumbsSchema = {
@@ -109,23 +105,37 @@ export default async function LocationPage({ params }) {
   };
 
   // LocalBusiness (location landing page)
-  // ✅ No Organization duplicates. We link to your central BUSINESS_ID entity.
+  // ✅ Keep a location-specific LocalBusiness, and link it to your central BUSINESS_ID entity.
+  // ✅ Add priceRange + image to remove the “optional missing field” warnings.
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "ITService"],
     "@id": LOCALBUSINESS_ID,
     name: brand,
     url: canonical,
-    telephone: phone,
-    address,
-    areaServed: Array.from(
-      new Set([
-        `${loc.city}, ${loc.state}`,
-        ...(loc.nearby?.map((x) => String(x)) || []),
-      ])
-    ),
+    telephone: phoneE164,
+
+    // ✅ optional warnings fix
+    priceRange: "$$",
+    image: ogImage,
+
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: loc.city,
+      addressRegion: loc.state,
+      addressCountry: "US",
+      // postalCode: "18101",       // optional (agar tumhare paas ho)
+      // streetAddress: "..."       // optional (agar physical address ho)
+    },
+
+    areaServed: [
+      `${loc.city}, ${loc.state}`,
+      ...(loc.nearby?.length ? loc.nearby.map((x) => `${x}, ${loc.state}`) : []),
+    ],
+
     provider: { "@id": BUSINESS_ID },
     branchOf: { "@id": BUSINESS_ID },
+
     serviceType: [
       "Managed IT Services",
       "Cybersecurity",
@@ -219,7 +229,6 @@ export default async function LocationPage({ params }) {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h3 className="text-xl font-semibold">Popular services</h3>
 
-              {/* ✅ Uses central service map */}
               <div className="mt-4 grid sm:grid-cols-2 gap-3">
                 {SERVICES.map((s) => (
                   <Link
