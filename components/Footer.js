@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { site } from "@/lib/siteConfig";
 import TrackedPhoneLink from "@/components/TrackedPhoneLink";
 import TrackedEmailLink from "@/components/TrackedEmailLink";
@@ -37,12 +38,31 @@ function cleanTel(p) {
 }
 
 export default function Footer({ className = "" }) {
+  const pathname = usePathname();
+  const isUk = pathname === "/uk" || pathname.startsWith("/uk/");
+
   const year = new Date().getFullYear();
   const s = site?.socials || {};
 
+  // ✅ Email same for US + UK (as you requested)
   const email = site?.email || "supremeitexperts@gmail.com";
-  const phoneRaw = site?.phone || "+1 610-500-9209";
-  const phoneE164 = cleanTel(phoneRaw); // +1610...
+
+  // ✅ Phones: US default, UK override
+  const usPhoneRaw = site?.phone || "+1 610-500-9209";
+  const ukPhoneRaw = "+92 305 5249093";
+
+  const phoneRaw = isUk ? ukPhoneRaw : usPhoneRaw;
+  const phoneE164 = cleanTel(phoneRaw);
+
+  // ✅ CTA changes per region
+  const ctaHref = isUk ? "/uk/contact" : "/get-quote";
+  const ctaText = isUk ? "Book a Call" : "Get a Free IT Assessment";
+
+  const tagline = isUk
+    ? "UK-focused IT support & cybersecurity — clear deliverables, friendly support, and security-first coverage."
+    : "Managed IT & Cybersecurity for businesses in Allentown, Macungie & Emmaus — fast, friendly, fixed-fee.";
+
+  const hoursText = isUk ? "Mon–Fri 9:00 AM – 6:00 PM (UK) • Support available" : "Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support";
 
   return (
     <footer className={`site-footer mt-12 bg-[#0b1220] border-t border-white/10 ${className}`}>
@@ -60,16 +80,13 @@ export default function Footer({ className = "" }) {
               <span className="text-slate-100">Experts</span>
             </div>
 
-            <p className="text-slate-300 max-w-xl">
-              Managed IT &amp; Cybersecurity for businesses in Allentown, Macungie &amp; Emmaus — fast, friendly,
-              fixed-fee.
-            </p>
+            <p className="text-slate-300 max-w-xl">{tagline}</p>
 
             <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:gap-4">
               <TrackedEmailLink
                 email={email}
                 source="footer"
-                placement="footer_email"
+                placement={isUk ? "footer_email_uk" : "footer_email_us"}
                 className="text-slate-200 hover:text-cyan-300 transition"
               >
                 {email}
@@ -80,27 +97,38 @@ export default function Footer({ className = "" }) {
               <TrackedPhoneLink
                 phone={phoneE164 || phoneRaw}
                 source="footer"
-                placement="footer_phone"
+                placement={isUk ? "footer_phone_uk" : "footer_phone_us"}
                 className="text-slate-200 hover:text-cyan-300 transition whitespace-nowrap"
               >
                 {phoneRaw}
               </TrackedPhoneLink>
             </div>
 
-            <div className="text-xs text-slate-200">
-              Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support
+            <div className="text-xs text-slate-200">{hoursText}</div>
+
+            {/* ✅ Footer region switch (simple) */}
+            <div className="pt-2 text-xs text-slate-300">
+              {isUk ? (
+                <Link href="/" className="hover:text-cyan-300 transition">
+                  Switch to US site →
+                </Link>
+              ) : (
+                <Link href="/uk" className="hover:text-cyan-300 transition">
+                  Switch to UK site →
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Right */}
           <div className="space-y-4 lg:text-right">
             <Link
-              href="/get-quote"
+              href={ctaHref}
               className="inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold
                          bg-gradient-to-r from-cyan-400/20 via-fuchsia-400/20 to-cyan-400/20
                          border border-white/10 text-slate-100 hover:bg-white/[0.06] transition"
             >
-              Get a Free IT Assessment
+              {ctaText}
             </Link>
 
             <div className="flex flex-wrap gap-2 lg:justify-end">

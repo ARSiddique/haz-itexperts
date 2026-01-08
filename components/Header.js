@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+const US_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
@@ -14,6 +14,15 @@ const LINKS = [
   { href: "/areas", label: "Areas we serve" },
   { href: "/contact", label: "Contact" },
   { href: "/gallery", label: "Gallery" },
+];
+
+const UK_LINKS = [
+  { href: "/uk", label: "Home" },
+  { href: "/uk/about", label: "About" },
+  { href: "/uk/services", label: "Services" },
+  { href: "/uk/faqs", label: "FAQs" },
+  { href: "/uk/areas", label: "Areas" },
+  { href: "/uk/contact", label: "Contact" },
 ];
 
 // Brand logo component (can show word-mark text beside the icon)
@@ -44,8 +53,26 @@ function BrandLogo({ size = 28, className = "", withText = false }) {
 
 export default function Header({ className = "" }) {
   const pathname = usePathname();
-  const isActive = (href) =>
-    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+
+  const isUk = pathname === "/uk" || pathname.startsWith("/uk/");
+  const LINKS = isUk ? UK_LINKS : US_LINKS;
+
+  const isActive = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  // ✅ When user is on UK pages, logo should go to /uk
+  const brandHref = isUk ? "/uk" : "/";
+
+  // ✅ CTA changes per region
+  // NOTE: If your US site doesn't have /get-quote, change it to /contact.
+  const ctaHref = isUk ? "/uk/contact" : "/get-quote";
+  const ctaText = isUk ? "Book a Call" : "Get a Free IT Assessment";
+
+  const regionSwitchHref = isUk ? "/" : "/uk";
+  const regionSwitchText = isUk ? "US" : "UK";
+  const regionSwitchTitle = isUk ? "Switch to United States" : "Switch to United Kingdom";
 
   return (
     <header
@@ -57,7 +84,7 @@ export default function Header({ className = "" }) {
       {/* content-driven height */}
       <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between leading-none">
         {/* Brand */}
-        <Link href="/" className="shrink-0" aria-label="Go to homepage">
+        <Link href={brandHref} className="shrink-0" aria-label={isUk ? "Go to UK homepage" : "Go to US homepage"}>
           <BrandLogo size={40} withText />
         </Link>
 
@@ -83,11 +110,22 @@ export default function Header({ className = "" }) {
               </Link>
             );
           })}
+
+          {/* ✅ Region switch (always visible) */}
           <Link
-            href="/get-quote"
+            href={regionSwitchHref}
+            className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
+            title={regionSwitchTitle}
+            aria-label={regionSwitchTitle}
+          >
+            {regionSwitchText}
+          </Link>
+
+          <Link
+            href={ctaHref}
             className="rounded-lg px-3.5 py-2 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
           >
-            Get a Free IT Assessment
+            {ctaText}
           </Link>
         </nav>
 
@@ -114,10 +152,10 @@ export default function Header({ className = "" }) {
           <div className="fixed right-0 top-0 z-50 h-full w-[78%] max-w-xs bg-[#0e1628] border-l border-white/10 translate-x-full peer-checked:translate-x-0 transition xl:hidden">
             <div className="p-6">
               <div className="flex items-center justify-between">
-                {/* Keep only icon on small drawer header to save space */}
-                <span className="font-semibold text-slate-100">
+                <Link href={brandHref} className="font-semibold text-slate-100" aria-label="Go to homepage">
                   <BrandLogo size={26} className="translate-y-[1px]" />
-                </span>
+                </Link>
+
                 <label htmlFor="nav-toggle" aria-label="Close menu" className="text-slate-200 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                     <path
@@ -127,6 +165,17 @@ export default function Header({ className = "" }) {
                     />
                   </svg>
                 </label>
+              </div>
+
+              {/* Region switch buttons (mobile) */}
+              <div className="mt-4 flex gap-2">
+                <Link
+                  href={regionSwitchHref}
+                  className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
+                  aria-label={regionSwitchTitle}
+                >
+                  {isUk ? "Switch to US" : "Switch to UK"}
+                </Link>
               </div>
 
               <div className="mt-6 grid gap-3">
@@ -144,11 +193,12 @@ export default function Header({ className = "" }) {
                     </Link>
                   );
                 })}
+
                 <Link
-                  href="/get-quote"
+                  href={ctaHref}
                   className="mt-2 rounded-lg px-4 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
                 >
-                  Get a Free IT Assessment
+                  {ctaText}
                 </Link>
               </div>
             </div>
