@@ -16,6 +16,7 @@ const US_LINKS = [
   { href: "/gallery", label: "Gallery" },
 ];
 
+// ✅ Keep UK links in code, but we will hide them when rollout is OFF
 const UK_LINKS = [
   { href: "/uk", label: "Home" },
   { href: "/uk/about", label: "About" },
@@ -51,10 +52,21 @@ function BrandLogo({ size = 28, className = "", withText = false }) {
   );
 }
 
+function isUkRolloutOn() {
+  const v = String(process.env.NEXT_PUBLIC_UK_ROLLOUT || "").toLowerCase().trim();
+  return v === "on" || v === "true" || v === "1";
+}
+
 export default function Header({ className = "" }) {
   const pathname = usePathname();
 
-  const isUk = pathname === "/uk" || pathname.startsWith("/uk/");
+  // ✅ Master switch
+  const UK_ENABLED = isUkRolloutOn();
+
+  // ✅ Only treat routes as UK when UK rollout is ON
+  const routeIsUk = pathname === "/uk" || pathname.startsWith("/uk/");
+  const isUk = UK_ENABLED && routeIsUk;
+
   const LINKS = isUk ? UK_LINKS : US_LINKS;
 
   const isActive = (href) => {
@@ -62,14 +74,14 @@ export default function Header({ className = "" }) {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
-  // ✅ When user is on UK pages, logo should go to /uk
+  // ✅ When user is on UK pages, logo should go to /uk (only when UK enabled)
   const brandHref = isUk ? "/uk" : "/";
 
   // ✅ CTA changes per region
-  // NOTE: If your US site doesn't have /get-quote, change it to /contact.
   const ctaHref = isUk ? "/uk/contact" : "/get-quote";
   const ctaText = isUk ? "Book a Call" : "Get a Free IT Assessment";
 
+  // ✅ Region switch (ONLY show if UK rollout is enabled)
   const regionSwitchHref = isUk ? "/" : "/uk";
   const regionSwitchText = isUk ? "US" : "UK";
   const regionSwitchTitle = isUk ? "Switch to United States" : "Switch to United Kingdom";
@@ -111,15 +123,17 @@ export default function Header({ className = "" }) {
             );
           })}
 
-          {/* ✅ Region switch (always visible) */}
-          <Link
-            href={regionSwitchHref}
-            className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
-            title={regionSwitchTitle}
-            aria-label={regionSwitchTitle}
-          >
-            {regionSwitchText}
-          </Link>
+          {/* ✅ UK Switch (commented-out behaviour via UK_ENABLED) */}
+          {UK_ENABLED && (
+            <Link
+              href={regionSwitchHref}
+              className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
+              title={regionSwitchTitle}
+              aria-label={regionSwitchTitle}
+            >
+              {regionSwitchText}
+            </Link>
+          )}
 
           <Link
             href={ctaHref}
@@ -167,16 +181,18 @@ export default function Header({ className = "" }) {
                 </label>
               </div>
 
-              {/* Region switch buttons (mobile) */}
-              <div className="mt-4 flex gap-2">
-                <Link
-                  href={regionSwitchHref}
-                  className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
-                  aria-label={regionSwitchTitle}
-                >
-                  {isUk ? "Switch to US" : "Switch to UK"}
-                </Link>
-              </div>
+              {/* ✅ Region switch buttons (mobile) — only if UK enabled */}
+              {UK_ENABLED && (
+                <div className="mt-4 flex gap-2">
+                  <Link
+                    href={regionSwitchHref}
+                    className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
+                    aria-label={regionSwitchTitle}
+                  >
+                    {isUk ? "Switch to US" : "Switch to UK"}
+                  </Link>
+                </div>
+              )}
 
               <div className="mt-6 grid gap-3">
                 {LINKS.map((l) => {

@@ -18,9 +18,15 @@ import {
   Wrench,
   Laptop,
   LineChart,
+  FileText,
+  Layers,
+  Users,
 } from "lucide-react";
 import { BASE_URL, BUSINESS_ID } from "@/lib/seoIds";
-import { SERVICES } from "@/lib/services";
+
+// ✅ Keep UK pages in "draft" until you finalize (internal links + content + QA)
+// Flip to true when ready to index UK.
+const UK_INDEX_READY = false;
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
@@ -30,7 +36,7 @@ export async function generateMetadata() {
 
   const title = `Managed IT Support & Cybersecurity for UK Businesses | ${brand}`;
   const description =
-    "Remote-first managed IT support and cybersecurity for UK businesses — clear scope, fast response, and a simple onboarding process.";
+    "Remote-first managed IT support and cybersecurity for UK SMEs — clear scope, fast response, security baselines, Microsoft 365 governance, and simple onboarding.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -44,10 +50,11 @@ export async function generateMetadata() {
       },
     },
     robots: {
-      index: true,
+      // ✅ Draft mode
+      index: UK_INDEX_READY,
       follow: true,
       googleBot: {
-        index: true,
+        index: UK_INDEX_READY,
         follow: true,
         "max-image-preview": "large",
         "max-snippet": -1,
@@ -96,6 +103,64 @@ function ServiceIcon({ name }) {
   return <Ico className="h-5 w-5 text-cyan-300" />;
 }
 
+// ✅ Make UK services explicit (avoid accidental US copy)
+const UK_SERVICES = [
+  {
+    key: "managed-it",
+    title: "Managed IT Services",
+    href: "/services/managed-it",
+    icon: "Shield",
+    blurb:
+      "Monitoring, patching, helpdesk, and monthly reporting — designed for UK SMEs that want calm IT and predictable support.",
+    tags: ["Helpdesk", "Patching", "Monitoring"],
+  },
+  {
+    key: "cybersecurity",
+    title: "Cybersecurity",
+    href: "/services/cybersecurity",
+    icon: "Lock",
+    blurb:
+      "Identity hardening, email security, endpoint protection, and backup/DR readiness — security-first habits that reduce risk.",
+    tags: ["MFA", "EDR/XDR", "Backup/DR"],
+  },
+  {
+    key: "cloud-workspace",
+    title: "Cloud & Microsoft 365",
+    href: "/services/cloud-workspace",
+    icon: "Cloud",
+    blurb:
+      "Microsoft 365 governance, tenant baselines, migrations, and cost hygiene — built for Teams, SharePoint, and hybrid work.",
+    tags: ["M365", "Migrations", "Governance"],
+  },
+  {
+    key: "projects-consulting",
+    title: "IT Projects & Consulting",
+    href: "/services/projects-consulting",
+    icon: "Wrench",
+    blurb:
+      "Planned upgrades, refresh projects, migrations, and documentation — delivered cleanly with clear milestones and handover.",
+    tags: ["Audits", "Migrations", "Modernisation"],
+  },
+  {
+    key: "device-management",
+    title: "Device Management (MDM)",
+    href: "/services/device-management",
+    icon: "Laptop",
+    blurb:
+      "Zero-touch enrollment, hardening, patch/app management — a consistent baseline for Windows/macOS endpoints.",
+    tags: ["Autopilot", "Jamf", "Compliance"],
+  },
+  {
+    key: "vcio-strategy",
+    title: "vCIO / IT Strategy",
+    href: "/services/vcio-strategy",
+    icon: "LineChart",
+    blurb:
+      "Roadmaps, budgets, standards, vendor coordination, and leadership reporting — strategy without enterprise fluff.",
+    tags: ["Roadmaps", "Budgets", "KPIs"],
+  },
+];
+
 export default function UKLandingPage() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = (site?.url || BASE_URL || "https://supremeitexperts.com").replace(/\/$/, "");
@@ -135,7 +200,7 @@ export default function UKLandingPage() {
     "@type": "ItemList",
     "@id": SERVICES_LIST_ID,
     name: "UK Services",
-    itemListElement: SERVICES.map((s, idx) => ({
+    itemListElement: UK_SERVICES.map((s, idx) => ({
       "@type": "ListItem",
       position: idx + 1,
       name: s.title,
@@ -151,6 +216,11 @@ export default function UKLandingPage() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, servicesItemListSchema]),
         }}
       />
+
+      {/* marker to confirm correct route rendering */}
+      <span data-page="uk-home" className="sr-only">
+        uk-home
+      </span>
 
       <PageHero
         eyebrow="United Kingdom"
@@ -186,8 +256,8 @@ export default function UKLandingPage() {
                 </h2>
 
                 <p className="mt-3 text-slate-300 leading-7 max-w-2xl">
-                  If your team is based in the UK (or expanding into the UK), we’ll keep your IT reliable and secure — with clear scope,
-                  fast response, and simple monthly support you can trust.
+                  If your team is based in the UK (or expanding into the UK), we keep your IT reliable and secure — with
+                  clear scope, fast response, and simple monthly support you can trust.
                 </p>
 
                 {/* Trust chips */}
@@ -196,6 +266,7 @@ export default function UKLandingPage() {
                     { icon: <MapPin className="h-4 w-4" />, text: "UK coverage (remote-first)" },
                     { icon: <ShieldCheck className="h-4 w-4" />, text: "Security-first delivery" },
                     { icon: <BadgeCheck className="h-4 w-4" />, text: "Clear deliverables" },
+                    { icon: <Clock3 className="h-4 w-4" />, text: "UK-friendly support hours" },
                   ].map((c) => (
                     <span
                       key={c.text}
@@ -225,7 +296,7 @@ export default function UKLandingPage() {
                 </div>
 
                 <p className="mt-4 text-xs text-slate-400">
-                  Book a quick call to confirm your setup — we’ll share a clear plan for support, security, and next steps.
+                  Quick call → we confirm your setup (Microsoft 365, endpoints, backups, security) and share a clear support plan.
                 </p>
               </div>
 
@@ -270,7 +341,7 @@ export default function UKLandingPage() {
                         {[
                           "Security-first onboarding and baseline hardening",
                           "Clear support scope, response times, and reporting",
-                          "Microsoft 365 and endpoint best-practice setup",
+                          "Microsoft 365 governance and endpoint best-practice setup",
                         ].map((x) => (
                           <li key={x} className="flex gap-2">
                             <CheckCircle2 className="h-4 w-4 text-cyan-300 mt-0.5" />
@@ -302,14 +373,25 @@ export default function UKLandingPage() {
           </div>
         </Reveal>
 
-        {/* 4 feature cards */}
+        {/* Why UK teams choose us (NEW - longer content + UK-specific) */}
         <Reveal className="mt-10">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid lg:grid-cols-3 gap-4">
             {[
-              { title: "Security-first", sub: "Baselines + hardening", ico: <ShieldCheck className="h-5 w-5" /> },
-              { title: "Clear scope", sub: "Deliverables & outcomes", ico: <BadgeCheck className="h-5 w-5" /> },
-              { title: "Fast onboarding", sub: "Simple rollout process", ico: <Clock3 className="h-5 w-5" /> },
-              { title: "Support-ready", sub: "Helpdesk workflows", ico: <Sparkles className="h-5 w-5" /> },
+              {
+                title: "Clarity over chaos",
+                sub: "Clear scope, owners, and outcomes — so you know what’s included (and what’s not).",
+                ico: <Layers className="h-5 w-5" />,
+              },
+              {
+                title: "Security-first by default",
+                sub: "Identity + device baselines, MFA-first guidance, and safer configurations wherever practical.",
+                ico: <ShieldCheck className="h-5 w-5" />,
+              },
+              {
+                title: "UK-friendly delivery",
+                sub: "Remote-first support for UK SMEs — built around simple onboarding, documentation, and cadence.",
+                ico: <Users className="h-5 w-5" />,
+              },
             ].map((f) => (
               <div
                 key={f.title}
@@ -319,9 +401,82 @@ export default function UKLandingPage() {
                   {f.ico}
                 </div>
                 <div className="mt-3 font-extrabold text-slate-100">{f.title}</div>
-                <div className="mt-1 text-sm text-slate-400">{f.sub}</div>
+                <div className="mt-1 text-sm text-slate-300 leading-6">{f.sub}</div>
               </div>
             ))}
+          </div>
+        </Reveal>
+
+        {/* What we manage (NEW - internal linking hooks) */}
+        <Reveal className="mt-10">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">What we manage</div>
+                <h3 className="mt-2 text-2xl font-extrabold">The UK SME stack — covered</h3>
+                <p className="text-slate-300 mt-2 max-w-3xl leading-7">
+                  Most UK businesses run Microsoft 365, a mix of Windows/macOS endpoints, cloud storage, and remote workers.
+                  We help you standardise the basics, reduce risk, and keep support predictable.
+                </p>
+              </div>
+
+              <Link
+                href="/uk/contact"
+                className="inline-flex items-center gap-2 text-sm rounded-xl px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+              >
+                Get recommendations <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {[
+                {
+                  t: "Microsoft 365 governance",
+                  d: "Tenant baselines, identity hygiene, mailbox security, Teams/SharePoint governance.",
+                  link: "/uk/services/cloud-workspace",
+                },
+                {
+                  t: "Endpoints & device standards",
+                  d: "Enrollment, hardening, patching, and consistent device policy across users.",
+                  link: "/uk/services/device-management",
+                },
+                {
+                  t: "Security baseline & risk reducers",
+                  d: "MFA-first guidance, safer defaults, practical controls (no enterprise fluff).",
+                  link: "/uk/services/cybersecurity",
+                },
+                {
+                  t: "Ongoing support & reporting",
+                  d: "Helpdesk workflows, monitoring, response expectations, and reporting you can use.",
+                  link: "/uk/services/managed-it",
+                },
+              ].map((x) => (
+                <div key={x.t} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-extrabold text-slate-100">{x.t}</div>
+                      <p className="mt-1 text-sm text-slate-300 leading-6">{x.d}</p>
+                    </div>
+                    <Link
+                      href={x.link}
+                      className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                    >
+                      View <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="flex items-start gap-3">
+                <FileText className="h-5 w-5 text-cyan-300 mt-0.5" />
+                <p className="text-sm text-slate-300 leading-6">
+                  UK note: we keep documentation + ownership clear, and apply a “security-first, practical” approach that
+                  supports common UK expectations (e.g., GDPR/UK DPA awareness and Cyber Essentials readiness where relevant).
+                </p>
+              </div>
+            </div>
           </div>
         </Reveal>
 
@@ -332,8 +487,9 @@ export default function UKLandingPage() {
               <div>
                 <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">UK Services</div>
                 <h3 className="mt-2 text-2xl font-extrabold">Six core services for UK businesses</h3>
-                <p className="text-slate-300 mt-2 max-w-3xl">
-                  Choose what you need — from fully managed support to security hardening and Microsoft 365. Clear outcomes, no confusion.
+                <p className="text-slate-300 mt-2 max-w-3xl leading-7">
+                  Choose what you need — from fully managed support to security hardening and Microsoft 365 governance.
+                  Clear outcomes, predictable delivery, and simple onboarding.
                 </p>
               </div>
 
@@ -346,7 +502,7 @@ export default function UKLandingPage() {
             </div>
 
             <div className="mt-6 grid md:grid-cols-2 gap-4">
-              {SERVICES.map((s) => {
+              {UK_SERVICES.map((s) => {
                 const href = toUkServiceHref(s.href);
                 return (
                   <Link
@@ -361,9 +517,7 @@ export default function UKLandingPage() {
                         </span>
                         <div>
                           <div className="font-extrabold text-slate-100">{s.title}</div>
-                          <p className="mt-1 text-sm text-slate-300 leading-6">
-                            {s.blurb || "A clear UK-focused overview with scope, outcomes, and what’s included."}
-                          </p>
+                          <p className="mt-1 text-sm text-slate-300 leading-6">{s.blurb}</p>
                         </div>
                       </div>
 
@@ -397,7 +551,7 @@ export default function UKLandingPage() {
             <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
               <h3 className="text-xl font-extrabold">What you get in the first 30 days</h3>
               <p className="mt-2 text-slate-300 leading-7">
-                A simple rollout that gives you stability, visibility, and a clear improvement plan.
+                A simple rollout that gives you stability, visibility, and a clear improvement plan — not a never-ending audit.
               </p>
 
               <ol className="mt-5 space-y-3">
@@ -405,7 +559,7 @@ export default function UKLandingPage() {
                   { t: "Day 1–3", d: "Access + baseline checks (accounts, endpoints, backups)." },
                   { t: "Week 1", d: "Monitoring + alerting + ticket workflow setup." },
                   { t: "Week 2", d: "Security hardening (MFA, email security, device policy)." },
-                  { t: "Week 3–4", d: "Reporting + improvements roadmap (quick wins + next steps)." },
+                  { t: "Week 3–4", d: "Reporting + roadmap (quick wins + next steps)." },
                 ].map((x) => (
                   <li key={x.t} className="flex gap-3">
                     <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xs font-bold text-cyan-300">
@@ -443,7 +597,7 @@ export default function UKLandingPage() {
                   "Security-first setup (MFA, device policies, email protection)",
                   "Backup and recovery planning to reduce downtime risk",
                   "Microsoft 365 governance and cost optimisation",
-                  "A simple onboarding process with clear next steps",
+                  "Documentation + handover notes that reduce dependency",
                 ].map((x) => (
                   <li key={x} className="flex gap-2 text-sm leading-6">
                     <CheckCircle2 className="h-4 w-4 text-cyan-300 mt-0.5" />
@@ -455,7 +609,8 @@ export default function UKLandingPage() {
               <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                 <div className="text-xs uppercase tracking-[0.18em] text-slate-300">UK coverage note</div>
                 <p className="mt-2 text-sm text-slate-300 leading-6">
-                  We support UK businesses remotely (UK-wide). Once the base pages are ranking, we can expand with targeted UK location pages.
+                  We support UK businesses remotely (UK-wide). Once the base pages are final and ranking, we can expand with targeted UK
+                  location pages — without duplicating thin content.
                 </p>
               </div>
 
@@ -483,7 +638,7 @@ export default function UKLandingPage() {
           </div>
         </Reveal>
 
-        {/* Next steps (visitor-friendly) */}
+        {/* Next steps */}
         <Reveal className="mt-10">
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
             <h3 className="text-xl font-extrabold">Ready to get started?</h3>
@@ -505,6 +660,12 @@ export default function UKLandingPage() {
                 View services <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+
+            {!UK_INDEX_READY && (
+              <p className="mt-4 text-xs text-slate-400">
+                SEO note: UK pages are currently set to <span className="text-slate-200">noindex</span> until final QA (content + internal links + canonical checks).
+              </p>
+            )}
           </div>
         </Reveal>
       </section>

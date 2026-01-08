@@ -37,17 +37,25 @@ function cleanTel(p) {
   return cleaned.startsWith("+") ? cleaned : `+${cleaned}`;
 }
 
+function isUkRolloutOn() {
+  const v = String(process.env.NEXT_PUBLIC_UK_ROLLOUT || "").toLowerCase().trim();
+  return v === "on" || v === "true" || v === "1";
+}
+
 export default function Footer({ className = "" }) {
   const pathname = usePathname();
-  const isUk = pathname === "/uk" || pathname.startsWith("/uk/");
+  const routeIsUk = pathname === "/uk" || pathname.startsWith("/uk/");
+
+  const UK_ENABLED = isUkRolloutOn();
+  const isUk = UK_ENABLED && routeIsUk;
 
   const year = new Date().getFullYear();
   const s = site?.socials || {};
 
-  // ✅ Email same for US + UK (as you requested)
+  // ✅ Email same for US + UK
   const email = site?.email || "supremeitexperts@gmail.com";
 
-  // ✅ Phones: US default, UK override
+  // ✅ Phones: US default, UK override (only if UK enabled + on UK route)
   const usPhoneRaw = site?.phone || "+1 610-500-9209";
   const ukPhoneRaw = "+92 305 5249093";
 
@@ -62,7 +70,9 @@ export default function Footer({ className = "" }) {
     ? "UK-focused IT support & cybersecurity — clear deliverables, friendly support, and security-first coverage."
     : "Managed IT & Cybersecurity for businesses in Allentown, Macungie & Emmaus — fast, friendly, fixed-fee.";
 
-  const hoursText = isUk ? "Mon–Fri 9:00 AM – 6:00 PM (UK) • Support available" : "Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support";
+  const hoursText = isUk
+    ? "Mon–Fri 9:00 AM – 6:00 PM (UK) • Support available"
+    : "Mon–Fri 9:00 AM – 6:00 PM ET • 24/7 Emergency Support";
 
   return (
     <footer className={`site-footer mt-12 bg-[#0b1220] border-t border-white/10 ${className}`}>
@@ -106,18 +116,20 @@ export default function Footer({ className = "" }) {
 
             <div className="text-xs text-slate-200">{hoursText}</div>
 
-            {/* ✅ Footer region switch (simple) */}
-            <div className="pt-2 text-xs text-slate-300">
-              {isUk ? (
-                <Link href="/" className="hover:text-cyan-300 transition">
-                  Switch to US site →
-                </Link>
-              ) : (
-                <Link href="/uk" className="hover:text-cyan-300 transition">
-                  Switch to UK site →
-                </Link>
-              )}
-            </div>
+            {/* ✅ Footer region switch — only if UK enabled (commented-out behaviour) */}
+            {UK_ENABLED && (
+              <div className="pt-2 text-xs text-slate-300">
+                {isUk ? (
+                  <Link href="/" className="hover:text-cyan-300 transition">
+                    Switch to US site →
+                  </Link>
+                ) : (
+                  <Link href="/uk" className="hover:text-cyan-300 transition">
+                    Switch to UK site →
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right */}
