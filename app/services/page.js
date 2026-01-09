@@ -366,10 +366,14 @@ export default async function ServicesPage() {
           <div className="flex items-end justify-between gap-3 flex-wrap">
             <div>
               <h2 id="services-overview" className="text-2xl md:text-3xl font-semibold">
-                Services
+                Managed IT & Core Services
               </h2>
               <p className="mt-2 text-sm text-slate-300 max-w-3xl">
-                Straightforward coverage for SMBs — stability, security, fast support, and reporting.
+                Straightforward coverage for SMBs — led by our{" "}
+  <Link href="/services/managed-it" className="text-cyan-300 hover:underline">
+    managed IT services
+  </Link>
+  , with security, fast support, and reporting.
               </p>
             </div>
 

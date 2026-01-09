@@ -440,6 +440,34 @@ Friendly, Fixed-Fee
                 Managed IT service plans
               </Link>
             </div>
+            {/* 🔗 Primary services emphasis (SEO + clean UI) */}
+<div className="mt-4 text-sm text-slate-300">
+  <span className="font-medium text-slate-200">
+    Core IT services:
+  </span>{" "}
+  <Link
+    href="/services/managed-it"
+    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+  >
+    Managed IT Services
+  </Link>
+  ,{" "}
+  <Link
+    href="/services/cybersecurity"
+    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+  >
+    Cybersecurity
+  </Link>{" "}
+  &{" "}
+  <Link
+    href="/services/cloud-workspace"
+    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+  >
+    Cloud & Microsoft 365
+  </Link>
+  .
+</div>
+
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
