@@ -19,19 +19,16 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
-  Building2,
-  CloudCog,
-  Network,
-  LineChart,
 } from "lucide-react";
 
 // ---- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  // ✅ single source of truth (same style as homepage)
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
-    .replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
   const baseTitle = "Managed IT Services & Cybersecurity in Allentown";
   const fullTitle = `${baseTitle} | ${brand}`;
@@ -41,15 +38,9 @@ export async function generateMetadata() {
 
   return {
     metadataBase: new URL(baseUrl),
-
-    // ✅ prevent: "Services | BRAND | BRAND"
     title: { absolute: fullTitle },
-
     description,
-
-    // ✅ keep canonical relative
     alternates: { canonical: "/services" },
-
     robots: { index: true, follow: true },
 
     openGraph: {
@@ -59,12 +50,7 @@ export async function generateMetadata() {
       url: "/services",
       siteName: brand,
       images: [
-        {
-          url: "/og-image.png?v=7",
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Services`,
-        },
+        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Services` },
       ],
     },
 
@@ -76,7 +62,6 @@ export async function generateMetadata() {
     },
   };
 }
-
 
 // --- server-safe helpers
 function cx(...a) {
@@ -100,10 +85,11 @@ const Badge = ({ children, tone = "cyan" }) => (
 
 export default async function ServicesPage() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+
+  // ✅ FIX: use BASE_URL as primary source (consistent with metadata + other pages)
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services`;
 
-  // ── Services (source of truth) ─────────────────────────────
   const services = [
     {
       key: "managed",
@@ -200,7 +186,7 @@ export default async function ServicesPage() {
     href,
   }));
 
-  // ✅ Page-only schemas (NO LocalBusiness/Organization here)
+  // ✅ Page-only schemas (clean graph)
   const breadcrumbsSchema = {
     "@type": "BreadcrumbList",
     "@id": `${canonical}#breadcrumb`,
@@ -218,7 +204,7 @@ export default async function ServicesPage() {
     description:
       "Managed IT services and cybersecurity for SMBs — helpdesk, monitoring, patching, cloud, device management, and strategy.",
     isPartOf: { "@id": `${baseUrl}/#website` },
- publisher: { "@id": BUSINESS_ID },
+    publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#servicelist` },
   };
@@ -240,9 +226,8 @@ export default async function ServicesPage() {
     "@id": `${baseUrl}${s.href}#service`,
     name: s.title,
     description: s.desc,
-   provider: { "@id": BUSINESS_ID },
-   areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
-
+    provider: { "@id": BUSINESS_ID },
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     serviceType: s.title,
     url: `${baseUrl}${s.href}`,
   }));
@@ -272,7 +257,6 @@ export default async function ServicesPage() {
     })),
   };
 
-  // ✅ SINGLE graph output (cleaner for Google)
   const pageSchema = {
     "@context": "https://schema.org",
     "@graph": [breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas, faqSchema],
@@ -288,34 +272,21 @@ export default async function ServicesPage() {
         sub="Pick the coverage you need: managed IT, cybersecurity, Microsoft 365, device management, and strategy. Simple onboarding. Clear deliverables."
       />
 
-      {/* ✅ Quick Links / TOC */}
       <section className="max-w-6xl mx-auto px-4 pt-4 pb-8">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">On this page</div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <Link
-              href="#services-overview"
-              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-            >
+            <Link href="#services-overview" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
               Services overview
             </Link>
-            <Link
-              href="#services-deepdives"
-              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-            >
+            <Link href="#services-deepdives" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
               Compare services
             </Link>
-            <Link
-              href="#services-pricing"
-              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-            >
+            <Link href="#services-pricing" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
               Pricing & ROI
             </Link>
-            <Link
-              href="#services-faq"
-              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-            >
+            <Link href="#services-faq" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
               FAQs
             </Link>
             <Link
@@ -328,11 +299,7 @@ export default async function ServicesPage() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {services.map((s) => (
-              <Link
-                key={s.key}
-                href={s.href}
-                className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
-              >
+              <Link key={s.key} href={s.href} className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
                 {s.title}
               </Link>
             ))}
@@ -340,7 +307,6 @@ export default async function ServicesPage() {
         </div>
       </section>
 
-      {/* Intro */}
       <section className="max-w-6xl mx-auto px-4 pb-10 text-sm text-slate-300 space-y-2">
         <p>This page gives you a clear overview of what we do. Open any service to see deliverables and what’s included.</p>
         <p>
@@ -361,7 +327,6 @@ export default async function ServicesPage() {
       </section>
 
       <main className="max-w-6xl mx-auto px-4 pb-24">
-        {/* Services Grid */}
         <section aria-labelledby="services-overview">
           <div className="flex items-end justify-between gap-3 flex-wrap">
             <div>
@@ -370,10 +335,10 @@ export default async function ServicesPage() {
               </h2>
               <p className="mt-2 text-sm text-slate-300 max-w-3xl">
                 Straightforward coverage for SMBs — led by our{" "}
-  <Link href="/services/managed-it" className="text-cyan-300 hover:underline">
-    managed IT services
-  </Link>
-  , with security, fast support, and reporting.
+                <Link href="/services/managed-it" className="text-cyan-300 hover:underline">
+                  managed IT services
+                </Link>
+                , with security, fast support, and reporting.
               </p>
             </div>
 
@@ -425,7 +390,6 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-        {/* Deep Dives */}
         <section aria-labelledby="services-deepdives" className="mt-14">
           <h2 id="services-deepdives" className="text-2xl md:text-3xl font-semibold">
             Compare services
@@ -439,7 +403,6 @@ export default async function ServicesPage() {
           </Reveal>
         </section>
 
-        {/* Pricing */}
         <section aria-labelledby="services-pricing" className="mt-14">
           <h2 id="services-pricing" className="text-2xl md:text-3xl font-semibold">
             Pricing & ROI
@@ -453,7 +416,6 @@ export default async function ServicesPage() {
           </Reveal>
         </section>
 
-        {/* FAQs */}
         <section aria-labelledby="services-faq" className="mt-14">
           <h2 id="services-faq" className="text-2xl md:text-3xl font-semibold">
             FAQs
@@ -466,11 +428,7 @@ export default async function ServicesPage() {
                   <details key={q} className="py-3 group">
                     <summary className="cursor-pointer list-none flex items-center justify-between gap-2">
                       <span className="font-medium">{q}</span>
-                      <svg
-                        className="h-4 w-4 transition group-open:rotate-180"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
+                      <svg className="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 15.5 6.5 10l1.4-1.4L12 12.7l4.1-4.1L17.5 10z" />
                       </svg>
                     </summary>
