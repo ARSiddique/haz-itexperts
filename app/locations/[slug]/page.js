@@ -13,6 +13,7 @@ import {
   MapPin,
   Mail,
   Database,
+  ShieldCheck,
 } from "lucide-react";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
@@ -29,12 +30,14 @@ export async function generateMetadata({ params }) {
   const brand = site?.name || "Supreme IT Experts";
 
   // ✅ unified baseUrl (same pattern as Home/Services)
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
-    .replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
   const path = `/locations/${loc.slug}`;
 
-  // ✅ CTR-focused title/desc (and avoid layout title template duplication)
+  // ✅ CTR-focused title/desc (avoid layout title template duplication)
   const titleBase = `Managed IT Services in ${loc.city}, ${loc.state}`;
   const fullTitle = `${titleBase} | Cybersecurity-First IT Support | ${brand}`;
 
@@ -108,13 +111,16 @@ export default async function LocationPage({ params }) {
   const brand = site?.name || "Supreme IT Experts";
 
   // ✅ unified baseUrl
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
-    .replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
   const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   // ✅ Stable IDs
   const WEBSITE_ID = `${baseUrl}/#website`;
+  const WEBSITE_NODE_ID = `${baseUrl}/#website-node`;
   const BREADCRUMB_ID = `${canonical}#breadcrumb`;
   const SERVICE_ID = `${canonical}#service`;
   const WEBPAGE_ID = `${canonical}#webpage`;
@@ -122,6 +128,12 @@ export default async function LocationPage({ params }) {
 
   // FAQs (safe)
   const faqs = Array.isArray(loc.faqs) ? loc.faqs : [];
+
+  // Local copy (optional)
+  const localParas =
+    Array.isArray(loc?.copy?.paragraphs) && loc.copy.paragraphs.length
+      ? loc.copy.paragraphs
+      : [];
 
   /**
    * ✅ IMPORTANT:
@@ -131,6 +143,15 @@ export default async function LocationPage({ params }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
+      // WebSite (safe + helps resolve WEBSITE_ID reference)
+      {
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        url: `${baseUrl}/`,
+        name: brand,
+        inLanguage: "en-US",
+      },
+
       // Breadcrumbs
       {
         "@type": "BreadcrumbList",
@@ -140,6 +161,21 @@ export default async function LocationPage({ params }) {
           { "@type": "ListItem", position: 2, name: "Areas we serve", item: `${baseUrl}/areas` },
           { "@type": "ListItem", position: 3, name: `${loc.city}, ${loc.state}`, item: canonical },
         ],
+      },
+
+      // Service
+      {
+        "@type": "Service",
+        "@id": SERVICE_ID,
+        name: `Managed IT Services in ${loc.city}, ${loc.state}`,
+        serviceType: "Managed IT Services",
+        description: loc.lede,
+        url: canonical,
+        provider: { "@id": BUSINESS_ID },
+        areaServed: {
+          "@type": "City",
+          name: `${loc.city}, ${loc.state}`,
+        },
       },
 
       // WebPage
@@ -159,21 +195,6 @@ export default async function LocationPage({ params }) {
         mainEntity: { "@id": SERVICE_ID },
       },
 
-      // Service
-      {
-        "@type": "Service",
-        "@id": SERVICE_ID,
-        name: `Managed IT Services in ${loc.city}, ${loc.state}`,
-        serviceType: "Managed IT Services",
-        description: loc.lede,
-        url: canonical,
-        provider: { "@id": BUSINESS_ID },
-        areaServed: {
-          "@type": "City",
-          name: `${loc.city}, ${loc.state}`,
-        },
-      },
-
       // FAQPage (only if exists)
       ...(faqs.length
         ? [
@@ -185,39 +206,41 @@ export default async function LocationPage({ params }) {
                 name: f.q,
                 acceptedAnswer: { "@type": "Answer", text: f.a },
               })),
+              isPartOf: { "@id": WEBPAGE_ID },
             },
           ]
         : []),
     ],
   };
 
+  // ✅ Intent blocks (safe links)
   const focusCards = [
     {
-      icon: CheckCircle2,
+      icon: ShieldCheck,
       title: "Cybersecurity-first IT support",
       desc: "MFA/identity hardening, endpoint protection, patching, and monitoring to reduce risk and downtime.",
-      link: "/services/cybersecurity",
+      link: "/services",
       cta: "View cybersecurity services",
     },
     {
       icon: Database,
       title: "Backups & disaster recovery",
       desc: "Backup + recovery planning with test restores so you can bounce back fast.",
-      link: "/services/cybersecurity",
+      link: "/services",
       cta: "Explore backup/DR",
     },
     {
       icon: Mail,
       title: "Microsoft 365 & email support",
       desc: "Setup, troubleshooting, and security best practices for Microsoft 365 and email.",
-      link: "/services/cloud-workspace",
+      link: "/services",
       cta: "Microsoft 365 help",
     },
     {
       icon: CheckCircle2,
       title: "Managed IT & helpdesk",
       desc: "Clear ownership, predictable response times, and proactive IT management for your team.",
-      link: "/services/managed-it",
+      link: "/services",
       cta: "Managed IT options",
     },
   ];
@@ -272,12 +295,49 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
+        {/* Local copy (Allentown skeleton etc.) */}
+        {localParas.length > 0 && (
+          <Reveal className="mt-10">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h2 className="text-xl font-semibold">
+                Local IT support for {loc.city}, {loc.state}
+              </h2>
+              <div className="mt-3 space-y-3 text-slate-300 leading-7">
+                {localParas.map((p, idx) => (
+                  <p key={idx}>{p}</p>
+                ))}
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href={`/contact?type=assessment&source=location-${loc.slug}`}
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  {loc?.copy?.primaryCtaText || "Free 20-min IT assessment"}{" "}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  {loc?.copy?.secondaryCtaText || "Contact us"} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              {!!loc?.copy?.microTrust && (
+                <p className="mt-3 text-xs text-slate-400">{loc.copy.microTrust}</p>
+              )}
+            </div>
+          </Reveal>
+        )}
+
         {/* Intent-based focus blocks */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-xl font-semibold">Core IT services for {loc.city} businesses</h2>
             <p className="text-slate-300 mt-2 max-w-3xl">
-              Based on what businesses typically search for in {loc.city}, these are the most requested support areas.
+              Based on what businesses typically search for in {loc.city}, these are the most requested
+              support areas.
             </p>
 
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
@@ -366,9 +426,7 @@ export default async function LocationPage({ params }) {
               <div className="mt-4 space-y-3">
                 {faqs.map((f) => (
                   <details key={f.q} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <summary className="cursor-pointer font-semibold text-slate-200">
-                      {f.q}
-                    </summary>
+                    <summary className="cursor-pointer font-semibold text-slate-200">{f.q}</summary>
                     <p className="mt-2 text-sm text-slate-300 leading-6">{f.a}</p>
                   </details>
                 ))}

@@ -185,11 +185,11 @@ export default function OfferPopup() {
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
                     <Link
-                      href="/lp/allentown"
-                      className="rounded-lg px-5 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 text-center"
-                    >
-                      Claim Free Audit
-                    </Link>
+  href="/lp/allentown#claim"
+  className="rounded-lg px-5 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 text-center"
+>
+  Claim Free Audit
+</Link>
 
                     {/* ✅ Tracked Call */}
                     <TrackedPhoneLink

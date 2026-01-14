@@ -4,6 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { site } from "@/lib/siteConfig";
 
 const US_LINKS = [
   { href: "/", label: "Home" },
@@ -57,6 +58,15 @@ function isUkRolloutOn() {
   return v === "on" || v === "true" || v === "1";
 }
 
+// E.164-ish for tel links
+const cleanTel = (p) => {
+  const s = String(p || "").trim();
+  if (!s) return "";
+  const cleaned = s.replace(/[^\d+]/g, "").replace(/\++/g, "+");
+  if (!cleaned) return "";
+  return cleaned.startsWith("+") ? cleaned : `+${cleaned}`;
+};
+
 export default function Header({ className = "" }) {
   const pathname = usePathname();
 
@@ -86,6 +96,11 @@ export default function Header({ className = "" }) {
   const regionSwitchText = isUk ? "US" : "UK";
   const regionSwitchTitle = isUk ? "Switch to United States" : "Switch to United Kingdom";
 
+  // ✅ Phone CTA (always visible in header)
+  const phoneDisplay = site?.phone || "+1 610-500-9209";
+  const phoneE164 = cleanTel(site?.phoneTel?.replace("tel:", "") || phoneDisplay);
+  const phoneHref = phoneE164 ? `tel:${phoneE164}` : "tel:+16105009209";
+
   return (
     <header
       className={`site-header sticky top-0 z-[100] border-b border-white/10 bg-[#0b1220] md:bg-[#0b1220]/70 md:backdrop-blur ${className}`}
@@ -96,7 +111,11 @@ export default function Header({ className = "" }) {
       {/* content-driven height */}
       <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between leading-none">
         {/* Brand */}
-        <Link href={brandHref} className="shrink-0" aria-label={isUk ? "Go to UK homepage" : "Go to US homepage"}>
+        <Link
+          href={brandHref}
+          className="shrink-0"
+          aria-label={isUk ? "Go to UK homepage" : "Go to US homepage"}
+        >
           <BrandLogo size={40} withText />
         </Link>
 
@@ -123,7 +142,7 @@ export default function Header({ className = "" }) {
             );
           })}
 
-          {/* ✅ UK Switch (commented-out behaviour via UK_ENABLED) */}
+          {/* ✅ UK Switch (only if UK_ENABLED) */}
           {UK_ENABLED && (
             <Link
               href={regionSwitchHref}
@@ -135,6 +154,17 @@ export default function Header({ className = "" }) {
             </Link>
           )}
 
+          {/* ✅ Phone CTA (conversion) */}
+          <a
+            href={phoneHref}
+            className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
+            aria-label={`Call ${phoneDisplay}`}
+            title={`Call ${phoneDisplay}`}
+          >
+            Call {phoneDisplay}
+          </a>
+
+          {/* Primary CTA */}
           <Link
             href={ctaHref}
             className="rounded-lg px-3.5 py-2 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
@@ -181,6 +211,24 @@ export default function Header({ className = "" }) {
                 </label>
               </div>
 
+              {/* ✅ Primary conversion actions (mobile) */}
+              <div className="mt-4 grid gap-2">
+                <a
+                  href={phoneHref}
+                  className="rounded-lg px-4 py-3 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition text-center"
+                  aria-label={`Call ${phoneDisplay}`}
+                >
+                  Call {phoneDisplay}
+                </a>
+
+                <Link
+                  href={ctaHref}
+                  className="rounded-lg px-4 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition text-center"
+                >
+                  {ctaText}
+                </Link>
+              </div>
+
               {/* ✅ Region switch buttons (mobile) — only if UK enabled */}
               {UK_ENABLED && (
                 <div className="mt-4 flex gap-2">
@@ -209,13 +257,6 @@ export default function Header({ className = "" }) {
                     </Link>
                   );
                 })}
-
-                <Link
-                  href={ctaHref}
-                  className="mt-2 rounded-lg px-4 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
-                >
-                  {ctaText}
-                </Link>
               </div>
             </div>
           </div>
