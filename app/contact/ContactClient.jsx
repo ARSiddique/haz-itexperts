@@ -36,7 +36,8 @@ export default function ContactClient({ source = "contact-page", mode = "full" }
     "Company:\nUsers:\nMain issue:\nLocation (Allentown/Macungie/Emmaus):";
   const waHref = `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(WA_MSG)}`;
 
-  const primaryAssessmentHref = "/assessment"; // ✅ unify everywhere
+  const primaryAssessmentHref = site?.assessmentHref || "/lp/allentown#claim";
+
 
   return (
     <main
