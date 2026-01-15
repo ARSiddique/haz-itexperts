@@ -30,17 +30,12 @@ import {
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  // ✅ single source of truth
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
     .replace(/\/$/, "");
 
   const baseTitle =
-   "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
+    "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
 
-  // ✅ IMPORTANT:
-  // layout.js already has a title template: `%s | BRAND`
-  // so we force the final title as ABSOLUTE to avoid:
-  // "X | Supreme IT Experts | Supreme IT Experts"
   const fullTitle = `${baseTitle} | ${brand}`;
 
   const description =
@@ -48,28 +43,22 @@ export async function generateMetadata() {
 
   return {
     metadataBase: new URL(baseUrl),
-
-    // ✅ Force exact title (no template duplication)
     title: { absolute: fullTitle },
-
     description,
-
     keywords: [
-     "managed IT services Allentown",
-  "IT support Allentown PA",
-  "managed IT services Macungie",
-  "IT support Emmaus PA",
-  "small business IT support",
-  "cybersecurity services Allentown",
-  "managed service provider Allentown",
+      "managed IT services Allentown",
+      "IT support Allentown PA",
+      "managed IT services Macungie",
+      "IT support Emmaus PA",
+      "small business IT support",
+      "cybersecurity services Allentown",
+      "managed service provider Allentown",
     ],
-
-    alternates: { canonical: "/" }, // ✅ relative canonical (metadataBase makes absolute)
-
+    alternates: { canonical: "/" },
     openGraph: {
       title: fullTitle,
       description,
-      url: "/", // ✅ relative
+      url: "/",
       type: "website",
       siteName: brand,
       images: [
@@ -81,18 +70,15 @@ export async function generateMetadata() {
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
       images: ["/og-image.png?v=7"],
     },
-
     robots: { index: true, follow: true },
   };
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Small presentational helpers
@@ -225,16 +211,10 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const areas = site?.areas?.length
-    ? site.areas
-   : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
-
+  const areas = site?.areas?.length ? site.areas : ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
   const brand = site?.name || "Supreme IT Experts";
 
-  // ✅ unify with layout.js base + ids
-  const baseUrl = String(
-    BASE_URL || site?.url || "https://supremeitexperts.com"
-  ).replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/`;
 
   const WEBSITE_ID = `${baseUrl}/#website`;
@@ -242,7 +222,7 @@ export default function HomePage() {
   const WEBPAGE_ID = `${baseUrl}/#webpage`;
   const FAQ_ID = `${baseUrl}/#faq`;
 
-  const phoneRaw = site?.phone || "+1-610-500-9209";
+  const phoneRaw = site?.phone || "+1 610-500-9209";
   const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
 
   const SERVICES = [
@@ -290,14 +270,12 @@ export default function HomePage() {
     },
   ];
 
-  // Areas → internal links (SEO boost)
   const areaLinks = {
     "Allentown, PA": "/locations/allentown-pa",
     "Macungie, PA": "/locations/macungie-pa",
-    "Emmaus, PA": "/locations/emmaus-pa"
+    "Emmaus, PA": "/locations/emmaus-pa",
   };
 
-  // FAQ (Home) — on-page + FAQPage schema
   const FAQS = [
     {
       q: "What’s included in managed IT services?",
@@ -321,11 +299,9 @@ export default function HomePage() {
     },
   ];
 
-  // JSON-LD (Home) — ✅ IDs aligned with BASE_URL + connects to BUSINESS_ID
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      // ✅ WebPage
       {
         "@type": "WebPage",
         "@id": WEBPAGE_ID,
@@ -339,22 +315,13 @@ export default function HomePage() {
           url: new URL("/og-image.png?v=7", baseUrl).toString(),
         },
       },
-
-      // ✅ Breadcrumbs
       {
         "@type": "BreadcrumbList",
         "@id": BREADCRUMB_ID,
         itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: canonical,
-          },
+          { "@type": "ListItem", position: 1, name: "Home", item: canonical },
         ],
       },
-
-      // ✅ FAQPage
       {
         "@type": "FAQPage",
         "@id": FAQ_ID,
@@ -364,8 +331,6 @@ export default function HomePage() {
           acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
       },
-
-      // ✅ (Optional but helpful) WebSite node referencing Organization/LocalBusiness id
       {
         "@type": "WebSite",
         "@id": WEBSITE_ID,
@@ -394,12 +359,11 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Popup – client component */}
       <ClientOfferPopup />
 
       {/* ───────────── HERO ───────────── */}
       <section id="hero" className="relative">
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 items-center">
+        <div className="max-w-6xl mx-auto px-4 py-14 md:py-20 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-10 items-center">
           <div className="max-w-[62ch]">
             <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
               Managed IT & cybersecurity for Allentown, Macungie & Emmaus
@@ -407,7 +371,7 @@ export default function HomePage() {
 
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
               Managed IT Services in Allentown, Macungie &amp; Emmaus, PA — Fast,
-Friendly, Fixed-Fee
+              Friendly, Fixed-Fee
             </h1>
 
             <p className="mt-4 text-base md:text-lg text-slate-200">
@@ -430,7 +394,6 @@ Friendly, Fixed-Fee
               security backed by SLAs.
             </p>
 
-            {/* ✅ extra internal link (crawl depth) */}
             <div className="mt-2 text-sm text-slate-300">
               Explore all plans:{" "}
               <Link
@@ -440,56 +403,76 @@ Friendly, Fixed-Fee
                 Managed IT service plans
               </Link>
             </div>
-            {/* 🔗 Primary services emphasis (SEO + clean UI) */}
-<div className="mt-4 text-sm text-slate-300">
-  <span className="font-medium text-slate-200">
-    Core IT services:
-  </span>{" "}
-  <Link
-    href="/services/managed-it"
-    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-  >
-    Managed IT Services
-  </Link>
-  ,{" "}
-  <Link
-    href="/services/cybersecurity"
-    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-  >
-    Cybersecurity
-  </Link>{" "}
-  &{" "}
-  <Link
-    href="/services/cloud-workspace"
-    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-  >
-    Cloud & Microsoft 365
-  </Link>
-  .
-</div>
 
+            <div className="mt-4 text-sm text-slate-300">
+              <span className="font-medium text-slate-200">Core IT services:</span>{" "}
+              <Link
+                href="/services/managed-it"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Managed IT Services
+              </Link>
+              ,{" "}
+              <Link
+                href="/services/cybersecurity"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Cybersecurity
+              </Link>{" "}
+              &{" "}
+              <Link
+                href="/services/cloud-workspace"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Cloud & Microsoft 365
+              </Link>
+              .
+            </div>
 
+            {/* ✅ Conversion: Primary CTA = Free Assessment */}
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
-                href="/get-quote"
-                className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
+                href="/assessment"
+                className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition text-center"
               >
-                Get a Quote
+                {site?.cta || "Get a Free IT Assessment"}
+              </Link>
+
+              <Link
+                href="/get-quote"
+                className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition text-center"
+              >
+                Pricing &amp; Quote
               </Link>
 
               <a
+                href={phoneTel}
+                className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition inline-flex items-center justify-center gap-2"
+              >
+                <Phone className="h-4 w-4" />
+                Call {phoneRaw}
+              </a>
+            </div>
+
+            <div className="mt-3 text-xs text-slate-400">
+              No pressure. Quick 15-min call to map risks + next steps.
+            </div>
+
+            {/* ✅ Tighten spacing + better mobile layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-8">
+              <Stat k="<15 min" v="P1 response target" />
+              <Stat k="99.9%" v="EDR/XDR coverage target" />
+              <Stat k="24/7" v="Helpdesk & monitoring" />
+            </div>
+
+            <div className="mt-6">
+              <a
                 href="#services"
-                className="rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 inline-flex items-center gap-2 group"
+                className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-300 transition group"
               >
                 Explore IT services{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 mt-10">
-              <Stat k="<15 min" v="P1 response target" />
-              <Stat k="99.9%" v="EDR/XDR coverage target" />
-              <Stat k="24/7" v="Helpdesk & monitoring" />
             </div>
           </div>
 
@@ -515,7 +498,7 @@ Friendly, Fixed-Fee
       </section>
 
       {/* ───────────── ABOUT ───────────── */}
-      <Section id="about" className="py-16">
+      <Section id="about" className="py-14 md:py-16">
         <Title
           k="About"
           sub="We keep your business running with managed IT and real security"
@@ -540,7 +523,8 @@ Friendly, Fixed-Fee
         </p>
 
         <div className="grid md:grid-cols-2 gap-10 items-center mt-8">
-          <div className="grid grid-cols-3 gap-3">
+          {/* ✅ Fix cramped/empty feel: better responsive columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               ["Playbooks", "Documented SOPs for repeatable results"],
               ["Visibility", "Monthly KPIs leadership actually reads"],
@@ -569,7 +553,7 @@ Friendly, Fixed-Fee
           </div>
         </div>
 
-        <div className="mt-6 flex gap-3" data-reveal="up">
+        <div className="mt-6 flex flex-wrap gap-3" data-reveal="up">
           <Link
             href="/about"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
@@ -578,15 +562,15 @@ Friendly, Fixed-Fee
           </Link>
           <Link
             href="/assessment"
-            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
+            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
           >
-            Free IT Assessment <ArrowRight className="h-4 w-4" />
+            {site?.cta || "Free IT Assessment"} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </Section>
 
       {/* ───────────── SERVICES ───────────── */}
-      <Section id="services" className="py-16">
+      <Section id="services" className="py-14 md:py-16">
         <Title k="Services" sub="Managed IT, IT support & cybersecurity for SMBs" />
         <p className="text-slate-300 max-w-3xl" data-reveal="up">
           Choose fully-managed or co-managed IT with our{" "}
@@ -606,7 +590,7 @@ Friendly, Fixed-Fee
           ))}
         </div>
 
-        <div className="mt-8 flex gap-3" data-reveal="up">
+        <div className="mt-8 flex flex-wrap gap-3" data-reveal="up">
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
@@ -615,15 +599,21 @@ Friendly, Fixed-Fee
           </Link>
           <Link
             href="/get-quote"
+            className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-white/10 transition"
+          >
+            Pricing &amp; Quote <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            href="/assessment"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
           >
-            Pricing & Quote <ArrowRight className="h-4 w-4" />
+            {site?.cta || "Free IT Assessment"} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </Section>
 
       {/* ───────────── CASE STUDIES ───────────── */}
-      <Section id="wins" className="py-16">
+      <Section id="wins" className="py-14 md:py-16">
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
           <div data-reveal="up">
@@ -677,7 +667,7 @@ Friendly, Fixed-Fee
       </Section>
 
       {/* ───────────── PROCESS ───────────── */}
-      <Section id="process" className="py-16">
+      <Section id="process" className="py-14 md:py-16">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10">
           <ol className="relative border-s border-white/10 ps-6 space-y-8" data-reveal="up">
@@ -755,7 +745,7 @@ Friendly, Fixed-Fee
       </Section>
 
       {/* ───────────── TRUST ───────────── */}
-      <Section id="trust" className="py-16">
+      <Section id="trust" className="py-14 md:py-16">
         <Title k="Trust" sub="Security-first and SLA-backed" />
         <div className="grid md:grid-cols-3 gap-4">
           {[
@@ -797,7 +787,7 @@ Friendly, Fixed-Fee
       </Section>
 
       {/* ───────────── FAQ ───────────── */}
-      <Section id="faq" className="py-16">
+      <Section id="faq" className="py-14 md:py-16">
         <Title k="FAQs" sub="Quick answers before you book a call" />
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -826,14 +816,14 @@ Friendly, Fixed-Fee
             href="/get-quote"
             className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
           >
-            request a quote
+            see pricing
           </Link>
           .
         </p>
       </Section>
 
       {/* ───────────── GALLERY ───────────── */}
-      <Section id="gallery" className="py-16">
+      <Section id="gallery" className="py-14 md:py-16">
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
           {[
@@ -875,11 +865,10 @@ Friendly, Fixed-Fee
       </Section>
 
       {/* ───────────── AREAS ───────────── */}
-      <Section id="areas" className="py-16">
+      <Section id="areas" className="py-14 md:py-16">
         <Title
           k="Areas we serve"
           sub="Onsite & remote IT support in Allentown, Macungie & Emmaus"
-
         />
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -911,12 +900,12 @@ Friendly, Fixed-Fee
           >
             contact us
           </Link>{" "}
-          or{" "}
+          or start with a{" "}
           <Link
-            href="/get-quote"
+            href="/assessment"
             className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
           >
-            request a quote
+            free IT assessment
           </Link>
           .
         </p>
@@ -932,7 +921,7 @@ Friendly, Fixed-Fee
       </Section>
 
       {/* ───────────── FINAL CTA ───────────── */}
-      <Section id="cta" className="py-16">
+      <Section id="cta" className="py-14 md:py-16">
         <div
           className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 md:p-10 overflow-hidden relative"
           data-reveal="up"
@@ -951,23 +940,16 @@ Friendly, Fixed-Fee
               predictable costs.
             </h2>
             <p className="mt-3 text-slate-300 max-w-3xl">
-              Request a quote, run a quick assessment, or just call — we’ll map
-              gaps and give you next steps.
+              Start with a quick assessment and we’ll map gaps, risks, and next steps.
             </p>
 
+            {/* ✅ Conversion: Primary = Assessment, no WhatsApp/Email here */}
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
-                href="/get-quote"
+                href="/assessment"
                 className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
               >
-                Get a Quote <ArrowRight className="h-4 w-4" />
-              </Link>
-
-              <Link
-                href="/assessment"
-                className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition"
-              >
-                Free IT Assessment <ArrowRight className="h-4 w-4" />
+                {site?.cta || "Get a Free IT Assessment"} <ArrowRight className="h-4 w-4" />
               </Link>
 
               <a
@@ -977,12 +959,22 @@ Friendly, Fixed-Fee
                 <Phone className="h-4 w-4" />
                 Call {phoneRaw}
               </a>
+
+              <Link
+                href="/get-quote"
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition"
+              >
+                Pricing &amp; Quote <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="mt-3 text-xs text-slate-400">
+              Prefer email? Use: <span className="text-slate-200">{site?.email}</span>
             </div>
           </div>
         </div>
       </Section>
 
-      {/* FX (scroll / cursor stuff) */}
       <Suspense fallback={null}>
         <HomeFX />
       </Suspense>

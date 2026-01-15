@@ -1,103 +1,98 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail } from "lucide-react";
+import { ArrowRight, Phone, Mail, MessageCircle } from "lucide-react";
 import { site } from "@/lib/siteConfig";
-import TrackedPhoneLink from "@/components/TrackedPhoneLink";
-import TrackedEmailLink from "@/components/TrackedEmailLink";
-import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
-import { FaWhatsapp } from "react-icons/fa";
 
-function cleanTel(p) {
-  const s = String(p || "").trim();
-  if (!s) return "";
-  const cleaned = s.replace(/[^\d+]/g, "").replace(/\++/g, "+");
-  if (!cleaned) return "";
-  return cleaned.startsWith("+") ? cleaned : `+${cleaned}`;
-}
-
-function digitsOnly(p) {
-  return String(p || "").replace(/[^\d]/g, "");
+function cx(...a) {
+  return a.filter(Boolean).join(" ");
 }
 
 export default function ContactActionsRow({
-  source = "unknown",
-  compact = false,
+  source = "cta-row",
+  variant = "default", // future: "compact"
   className = "",
-  title = "Prefer a quick call?",
-  desc = "15-min no-pressure assessment — we’ll map gaps and next steps.",
 }) {
-  const email = site?.email ?? "supremeitexperts@gmail.com";
-  const phone = site?.phone ?? "+1 610-500-9209";
+  const phoneRaw = site?.phone || "+1 610-500-9209";
+  const email = site?.email || "supremeitexperts@gmail.com";
+  const whatsappRaw = site?.whatsapp || phoneRaw;
 
-  const telE164 = cleanTel(phone);
+  const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
+  const mailto = `mailto:${email}`;
 
-  // WhatsApp (prefer site.whatsapp, fallback phone)
-  const waRaw = site?.whatsapp || telE164 || phone;
-  const waDigits = digitsOnly(waRaw);
-
+  // digits only for wa.me
+  const WA_DIGITS = String(whatsappRaw).replace(/[^\d]/g, "");
   const WA_MSG =
-    "Hi! I need help with Managed IT / Cybersecurity.\n\n" +
-    "Company: __\n" +
-    "Users: __\n" +
-    "Issue / Request: __\n" +
-    "Best time to reach: __";
+    "Hi! I’d like to get help with managed IT / cybersecurity.\n\n" +
+    "Company:\nUsers:\nMain issue:\nLocation (Allentown/Macungie/Emmaus):";
+  const waHref = `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(WA_MSG)}`;
 
-  const waHref = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(WA_MSG)}` : "";
+  const assessmentHref = "/assessment";
 
   return (
     <div
-      className={[
-        "rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15",
-        compact ? "p-4" : "p-6 md:p-8",
-        className,
-      ].join(" ")}
+      className={cx(
+        "rounded-2xl border border-white/10 bg-white/[0.06] p-5 md:p-6",
+        className
+      )}
+      data-source={source}
+      data-variant={variant}
     >
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="text-slate-300">{desc}</p>
+          <div className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">
+            Quick contact
+          </div>
+          <div className="mt-2 text-lg md:text-xl font-extrabold text-slate-100">
+            {site?.cta || "Get a Free IT Assessment"}
+          </div>
+          <div className="mt-1 text-sm text-slate-300">
+            Call, WhatsApp, or email — we’ll point you to the cleanest next step.
+          </div>
+
+          <div className="mt-3 text-xs text-slate-400">
+            <span className="text-slate-200">{phoneRaw}</span> •{" "}
+            <span className="text-slate-200">{email}</span>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:w-auto">
+          {/* Primary */}
+          <Link
+            href={assessmentHref}
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
+          >
+            Free IT Assessment <ArrowRight className="h-4 w-4" />
+          </Link>
+
           {/* Call */}
-          {telE164 ? (
-            <TrackedPhoneLink
-              phone={telE164}
-              source={source}
-              className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
-            >
-              Call now <Phone className="h-4 w-4" />
-            </TrackedPhoneLink>
-          ) : null}
+          <a
+            href={phoneTel}
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
+          >
+            <Phone className="h-4 w-4 text-cyan-300" />
+            Call Now
+          </a>
 
           {/* WhatsApp */}
-          {waHref ? (
-            <TrackedWhatsAppLink
-              href={waHref}
-              source={source}
-              className="rounded-lg px-5 py-3 font-semibold border border-emerald-300/25 text-emerald-200 bg-emerald-400/10 hover:bg-emerald-400/15 inline-flex items-center gap-2"
-            >
-              WhatsApp <FaWhatsapp className="h-4 w-4" />
-            </TrackedWhatsAppLink>
-          ) : null}
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
+          >
+            <MessageCircle className="h-4 w-4 text-cyan-300" />
+            WhatsApp
+          </a>
 
           {/* Email */}
-          <TrackedEmailLink
-            email={email}
-            source={source}
-            className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center gap-2"
+          <a
+            href={mailto}
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
           >
-            Email <Mail className="h-4 w-4" />
-          </TrackedEmailLink>
-
-          {/* Get Quote */}
-          <Link
-            href="/get-quote"
-            className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20 inline-flex items-center gap-2"
-          >
-            Get Quote <span aria-hidden>✨</span>
-          </Link>
+            <Mail className="h-4 w-4 text-cyan-300" />
+            Email Us
+          </a>
         </div>
       </div>
     </div>

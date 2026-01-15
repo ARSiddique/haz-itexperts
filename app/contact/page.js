@@ -10,11 +10,16 @@ export async function generateMetadata() {
 
   return {
     metadataBase: new URL(baseUrl),
-    title: "Contact",
+    title: `Contact | ${brand}`,
     description: "Contact Supreme IT Experts for managed IT, cybersecurity and support.",
     alternates: { canonical },
     robots: { index: true, follow: true },
-    openGraph: { title: `Contact | ${brand}`, url: canonical, type: "website" },
+    openGraph: {
+      title: `Contact | ${brand}`,
+      description: "Contact Supreme IT Experts for managed IT, cybersecurity and support.",
+      url: canonical,
+      type: "website",
+    },
   };
 }
 
@@ -48,7 +53,9 @@ export default function ContactPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([breadcrumbsSchema, contactPageSchema]) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([breadcrumbsSchema, contactPageSchema]),
+        }}
       />
       <ContactClient mode="full" source="contact-page" />
     </>

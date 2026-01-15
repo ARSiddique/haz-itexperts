@@ -1,17 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck, Clock, ArrowRight, CheckCircle2, MapPin, Lock, Wrench } from "lucide-react";
+import {
+  ShieldCheck,
+  Clock,
+  ArrowRight,
+  CheckCircle2,
+  MapPin,
+  Lock,
+  Wrench,
+  Phone,
+  Mail,
+  MessageCircle,
+} from "lucide-react";
 import LeadFormSimple from "@/components/LeadFormSimple";
-import ContactActionsRow from "@/components/ContactActionsRow";
+import { site } from "@/lib/siteConfig";
 
 function cx(...a) {
   return a.filter(Boolean).join(" ");
 }
 
 export default function ContactClient({ source = "contact-page", mode = "full" }) {
+  const brand = site?.name || "Supreme IT Experts";
+  const email = site?.email || "supremeitexperts@gmail.com";
+  const phoneRaw = site?.phone || "+1 610-500-9209";
+  const whatsappRaw = site?.whatsapp || phoneRaw;
+
+  const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;
+  const mailto = `mailto:${email}`;
+
+  // ✅ WhatsApp link (digits only)
+  const WA_DIGITS = String(whatsappRaw).replace(/[^\d]/g, "");
+  const WA_MSG =
+    "Hi! I need help with managed IT / cybersecurity.\n\n" +
+    "Company:\nUsers:\nMain issue:\nLocation (Allentown/Macungie/Emmaus):";
+  const waHref = `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(WA_MSG)}`;
+
+  const primaryAssessmentHref = "/assessment"; // ✅ unify everywhere
+
   return (
-    <main className={cx("max-w-6xl mx-auto px-4 pb-24", mode === "full" ? "pt-12 md:pt-16" : "pt-10")}>
+    <main
+      className={cx(
+        "max-w-6xl mx-auto px-4 pb-24",
+        mode === "full" ? "pt-12 md:pt-16" : "pt-10"
+      )}
+    >
       {/* HERO / STORY */}
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 md:p-10">
         <div className="pointer-events-none absolute inset-0 -z-10">
@@ -44,15 +77,43 @@ export default function ContactClient({ source = "contact-page", mode = "full" }
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          {/* ✅ This now goes to FREE ASSESSMENT FORM section */}
+        {/* ✅ Conversion-first action row (WhatsApp included) */}
+        <div className="mt-6 grid gap-3 sm:grid-cols-4">
           <Link
-            href="/lp/allentown#claim"
-            className="rounded-lg px-4 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center gap-2"
+            href={primaryAssessmentHref}
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
           >
-            Free IT Assessment <ArrowRight className="h-4 w-4" />
+            {site?.cta || "Get a Free IT Assessment"} <ArrowRight className="h-4 w-4" />
           </Link>
 
+          <a
+            href={phoneTel}
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2"
+          >
+            <Phone className="h-4 w-4 text-cyan-300" />
+            Call Now
+          </a>
+
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2"
+          >
+            <MessageCircle className="h-4 w-4 text-cyan-300" />
+            WhatsApp
+          </a>
+
+          <a
+            href={mailto}
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2"
+          >
+            <Mail className="h-4 w-4 text-cyan-300" />
+            Email
+          </a>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <div className="text-xs text-slate-400 inline-flex items-center gap-2 px-2">
             <ShieldCheck className="h-4 w-4 text-cyan-300" />
             Remote-first MSP • Clear next steps
@@ -62,6 +123,12 @@ export default function ContactClient({ source = "contact-page", mode = "full" }
             <Clock className="h-4 w-4 text-cyan-300" />
             Reply during business hours
           </div>
+        </div>
+
+        <div className="mt-3 text-xs text-slate-400">
+          Call: <span className="text-slate-200">{phoneRaw}</span> • WhatsApp:{" "}
+          <span className="text-slate-200">{whatsappRaw}</span> • Email:{" "}
+          <span className="text-slate-200">{email}</span>
         </div>
       </section>
 
@@ -91,108 +158,75 @@ export default function ContactClient({ source = "contact-page", mode = "full" }
             </li>
           </ol>
 
-          <div className="mt-5 text-xs text-slate-400">
-            Want a faster option? The Allentown Free IT Assessment page has a dedicated claim form.
-          </div>
-
-          <div className="mt-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <Link
-              href="/lp/allentown#claim"
+              href={primaryAssessmentHref}
               className="w-full text-center rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
             >
-              Go to Free Assessment <ArrowRight className="h-4 w-4" />
+              Free Assessment <ArrowRight className="h-4 w-4" />
             </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* SEO CONTENT (to make page longer + rankable) */}
-      <section className="mt-10 grid lg:grid-cols-3 gap-6">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-2">
-          <div className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Why teams contact us</div>
-          <h2 className="mt-2 text-2xl font-extrabold">Managed IT + Cybersecurity, without the chaos</h2>
-
-          <p className="mt-3 text-slate-300 text-sm leading-relaxed">
-            If you’re in <span className="text-slate-100 font-medium">Allentown</span>,{" "}
-            <span className="text-slate-100 font-medium">Macungie</span>, or{" "}
-            <span className="text-slate-100 font-medium">Emmaus</span>, we can support you remotely with a predictable
-            helpdesk, device hygiene, Microsoft 365 hardening, backups you can actually restore, and practical security
-            baselines.
-          </p>
-
-          <div className="mt-5 grid sm:grid-cols-2 gap-3 text-sm">
-            {[
-              { icon: <Lock className="h-4 w-4 text-cyan-300" />, t: "Security baseline", d: "MFA/SSO, email security, endpoint protection." },
-              { icon: <Wrench className="h-4 w-4 text-cyan-300" />, t: "Stability + support", d: "Fast triage, clean escalations, less downtime." },
-              { icon: <CheckCircle2 className="h-4 w-4 text-cyan-300" />, t: "Backups that restore", d: "Testing + alerts so you’re not guessing." },
-              { icon: <MapPin className="h-4 w-4 text-cyan-300" />, t: "Local focus", d: "Allentown-area SMBs, remote-first delivery." },
-            ].map((x) => (
-              <div key={x.t} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center gap-2 font-semibold text-slate-100">
-                  {x.icon} {x.t}
-                </div>
-                <div className="mt-1 text-slate-300 text-sm">{x.d}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/services"
-              className="rounded-lg px-4 py-2 text-sm bg-white/10 ring-1 ring-white/15 hover:bg-white/15"
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full text-center rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 inline-flex items-center justify-center gap-2"
             >
-              View Services
-            </Link>
-            <Link
-              href="/areas-we-serve"
-              className="rounded-lg px-4 py-2 text-sm bg-white/10 ring-1 ring-white/15 hover:bg-white/15"
-            >
-              Areas We Serve
-            </Link>
-            <Link
-              href="/faqs"
-              className="rounded-lg px-4 py-2 text-sm bg-white/10 ring-1 ring-white/15 hover:bg-white/15"
-            >
-              FAQs
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Quick FAQ</div>
-          <h3 className="mt-2 text-lg font-bold">Before you reach out</h3>
-
-          <div className="mt-4 space-y-3 text-sm text-slate-300">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="font-semibold text-slate-100">How fast do you respond?</div>
-              <div className="mt-1">We triage incidents quickly and reply during business hours with next steps.</div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="font-semibold text-slate-100">Do you support remote-only?</div>
-              <div className="mt-1">Yes — remote-first support across the Allentown area for SMBs.</div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="font-semibold text-slate-100">What should I write in the message?</div>
-              <div className="mt-1">Just the basics: company, user count, and what’s currently breaking.</div>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <Link
-              href="/lp/allentown#claim"
-              className="w-full text-center rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 inline-flex items-center justify-center gap-2"
-            >
-              Claim Free Assessment <ArrowRight className="h-4 w-4" />
-            </Link>
+              WhatsApp Us <MessageCircle className="h-4 w-4 text-cyan-300" />
+            </a>
           </div>
         </div>
       </section>
 
       {/* Bottom CTA strip */}
       <section className="mt-10">
-        <ContactActionsRow source={source} />
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="text-sm font-semibold text-slate-100">
+              Quick next step: {site?.cta || "Free IT Assessment"}
+            </div>
+            <div className="text-xs text-slate-400 mt-1">
+              Call <span className="text-slate-200">{phoneRaw}</span> • WhatsApp{" "}
+              <span className="text-slate-200">{whatsappRaw}</span> • Email{" "}
+              <span className="text-slate-200">{email}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <Link
+              href={primaryAssessmentHref}
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
+            >
+              Free Assessment <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <a
+              href={phoneTel}
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
+            >
+              <Phone className="h-4 w-4 text-cyan-300" />
+              Call Now
+            </a>
+
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
+            >
+              <MessageCircle className="h-4 w-4 text-cyan-300" />
+              WhatsApp
+            </a>
+
+            <a
+              href={mailto}
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition"
+            >
+              <Mail className="h-4 w-4 text-cyan-300" />
+              Email
+            </a>
+          </div>
+        </div>
       </section>
     </main>
   );
