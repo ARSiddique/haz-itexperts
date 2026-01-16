@@ -24,40 +24,30 @@ import {
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
 
-  // ✅ single source of truth
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const canonical = `${baseUrl}/areas`;
 
-  const title = "Areas We Serve";
+  const title = "Areas We Serve: Allentown, Macungie & Emmaus, PA";
   const description =
-    "Remote-first managed IT services and cybersecurity for SMBs across Allentown, Macungie & Emmaus, clear SLAs, fast response, consistent service.";
+    "Areas we serve for business IT support and managed IT services across Allentown, Macungie & Emmaus, PA. Remote-first helpdesk, cybersecurity, clear SLAs and fast response.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title, // layout template appends brand
+    title: { absolute: `${title} | ${brand}` },
     description,
-    alternates: { canonical: "/areas" },
+    alternates: { canonical },
     robots: { index: true, follow: true },
-
     openGraph: {
       title: `${title} | ${brand}`,
       description,
       type: "website",
-      url: "/areas",
+      url: canonical,
       siteName: brand,
       images: [
-        {
-          url: "/og-image.png?v=7",
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Areas We Serve`,
-        },
+        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Areas We Serve` },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title: `${title} | ${brand}`,
@@ -66,6 +56,7 @@ export async function generateMetadata() {
     },
   };
 }
+
 
 const REGIONS = [
   {

@@ -30,32 +30,30 @@ import {
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
-
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/`;
 
+  // 👇 CTR-friendly + query-aligned
   const baseTitle =
-    "Managed IT Services & Cybersecurity in Allentown, Macungie & Emmaus, PA";
+    "Business IT Support & Managed IT Services Near Macungie, PA (Allentown & Emmaus)";
   const fullTitle = `${baseTitle} | ${brand}`;
 
   const description =
-    "Managed IT services, 24/7 IT support and cybersecurity for small and mid-sized businesses in Allentown, Macungie & Emmaus. Fixed-fee helpdesk, monitoring, cloud, backup and disaster recovery.";
+    "Business IT support near Macungie, PA — managed IT services, 24/7 helpdesk and cybersecurity for small & mid-sized businesses in Macungie, Allentown & Emmaus. Fixed-fee support, monitoring, cloud, backup and disaster recovery.";
 
   return {
     metadataBase: new URL(baseUrl),
     title: { absolute: fullTitle },
     description,
     keywords: [
+      "business IT support near Macungie PA",
+      "managed IT services Macungie PA",
+      "IT support Macungie PA",
       "managed IT services Allentown",
-      "IT support Allentown PA",
-      "managed IT services Macungie",
       "IT support Emmaus PA",
       "small business IT support",
-      "cybersecurity services Allentown",
-      "managed service provider Allentown",
+      "cybersecurity services Lehigh Valley",
+      "managed service provider Macungie",
     ],
     alternates: { canonical },
     openGraph: {
@@ -69,7 +67,7 @@ export async function generateMetadata() {
           url: "/og-image.png?v=7",
           width: 1200,
           height: 630,
-          alt: `${brand} — Managed IT Services`,
+          alt: `${brand} — Business IT Support`,
         },
       ],
     },
@@ -82,6 +80,7 @@ export async function generateMetadata() {
     robots: { index: true, follow: true },
   };
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -331,6 +330,27 @@ export default function HomePage() {
               partner for small and mid-sized businesses in Allentown, Macungie &amp; Emmaus.
               24/7 helpdesk, proactive monitoring and real security backed by SLAs.
             </p>
+
+
+<p className="mt-3 text-sm text-slate-300">
+  Looking for <span className="text-slate-100 font-medium">business IT support near Macungie, PA</span>?{" "}
+  <Link
+    href="/locations/macungie-pa"
+    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+  >
+    See our Macungie coverage
+  </Link>
+  {" "}or browse{" "}
+  <Link
+    href="/areas"
+    className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+  >
+    all service areas
+  </Link>
+  .
+</p>
+
+
 
             {/* ✅ tighter: keep only one helper line */}
             <div className="mt-3 text-sm text-slate-300">

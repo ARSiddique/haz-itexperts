@@ -23,37 +23,30 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
-
   const loc = getLocationBySlug(slug);
   if (!loc) return {};
 
   const brand = site?.name || "Supreme IT Experts";
-
-  // ✅ unified baseUrl (same pattern as Home/Services)
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
-
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const path = `/locations/${loc.slug}`;
 
-  // ✅ CTR-focused title/desc (avoid layout title template duplication)
-  const titleBase = `Managed IT Services in ${loc.city}, ${loc.state}`;
-  const fullTitle = `${titleBase} | Cybersecurity-First IT Support | ${brand}`;
+  // ✅ CTR-friendly: shorter + more “search intent” aligned
+  const titleBase = `Business IT Support in ${loc.city}, ${loc.state}`;
+  const fullTitle = `${titleBase} | Managed IT & Cybersecurity | ${brand}`;
 
   const description =
-    `Fast remote IT support for ${loc.city} businesses — helpdesk, cybersecurity, Microsoft 365, backups & disaster recovery. ` +
-    `Book a free 20-min IT assessment.`;
+    `Need business IT support near ${loc.city}, ${loc.state}? We provide managed IT services, cybersecurity, ` +
+    `Microsoft 365 support, backups & disaster recovery. Book a free 20-min IT assessment.`;
 
   return {
     metadataBase: new URL(baseUrl),
 
-    // ✅ prevent: "X | BRAND | BRAND"
+    // ✅ prevent layout template duplication
     title: { absolute: fullTitle },
-
     description,
 
     keywords: [
+      `business IT support near ${loc.city}`,
       `managed IT services ${loc.city}`,
       `IT support ${loc.city} ${loc.state}`,
       `cybersecurity services ${loc.city}`,
@@ -62,7 +55,7 @@ export async function generateMetadata({ params }) {
       `managed service provider ${loc.city}`,
     ],
 
-    // ✅ keep canonical RELATIVE (metadataBase makes it absolute)
+    // ✅ relative canonical (metadataBase makes it absolute)
     alternates: { canonical: path },
 
     robots: {
@@ -81,14 +74,14 @@ export async function generateMetadata({ params }) {
       title: fullTitle,
       description,
       type: "website",
-      url: path, // ✅ relative
+      url: path,
       siteName: brand,
       images: [
         {
-          url: "/og-image.png?v=7", // ✅ relative
+          url: "/og-image.png?v=7",
           width: 1200,
           height: 630,
-          alt: `${brand} — Managed IT Services in ${loc.city}, ${loc.state}`,
+          alt: `${brand} — IT Support in ${loc.city}, ${loc.state}`,
         },
       ],
     },
@@ -104,36 +97,31 @@ export async function generateMetadata({ params }) {
 
 export default async function LocationPage({ params }) {
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
-
   const loc = getLocationBySlug(slug);
   if (!loc) notFound();
 
   const brand = site?.name || "Supreme IT Experts";
 
-  // ✅ unified baseUrl
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
-
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   // ✅ Stable IDs
   const WEBSITE_ID = `${baseUrl}/#website`;
-  const WEBSITE_NODE_ID = `${baseUrl}/#website-node`;
   const BREADCRUMB_ID = `${canonical}#breadcrumb`;
   const SERVICE_ID = `${canonical}#service`;
   const WEBPAGE_ID = `${canonical}#webpage`;
   const FAQ_ID = `${canonical}#faq`;
+
+  const lede =
+    loc?.lede ||
+    `Managed IT services and cybersecurity-first IT support for businesses in ${loc.city}, ${loc.state}.`;
 
   // FAQs (safe)
   const faqs = Array.isArray(loc.faqs) ? loc.faqs : [];
 
   // Local copy (optional)
   const localParas =
-    Array.isArray(loc?.copy?.paragraphs) && loc.copy.paragraphs.length
-      ? loc.copy.paragraphs
-      : [];
+    Array.isArray(loc?.copy?.paragraphs) && loc.copy.paragraphs.length ? loc.copy.paragraphs : [];
 
   /**
    * ✅ IMPORTANT:
@@ -143,16 +131,14 @@ export default async function LocationPage({ params }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      // WebSite (safe + helps resolve WEBSITE_ID reference)
       {
         "@type": "WebSite",
         "@id": WEBSITE_ID,
         url: `${baseUrl}/`,
         name: brand,
         inLanguage: "en-US",
+        publisher: { "@id": BUSINESS_ID },
       },
-
-      // Breadcrumbs
       {
         "@type": "BreadcrumbList",
         "@id": BREADCRUMB_ID,
@@ -162,14 +148,12 @@ export default async function LocationPage({ params }) {
           { "@type": "ListItem", position: 3, name: `${loc.city}, ${loc.state}`, item: canonical },
         ],
       },
-
-      // Service
       {
         "@type": "Service",
         "@id": SERVICE_ID,
         name: `Managed IT Services in ${loc.city}, ${loc.state}`,
         serviceType: "Managed IT Services",
-        description: loc.lede,
+        description: lede,
         url: canonical,
         provider: { "@id": BUSINESS_ID },
         areaServed: {
@@ -177,14 +161,12 @@ export default async function LocationPage({ params }) {
           name: `${loc.city}, ${loc.state}`,
         },
       },
-
-      // WebPage
       {
         "@type": "WebPage",
         "@id": WEBPAGE_ID,
         url: canonical,
-        name: `Managed IT Services in ${loc.city}, ${loc.state} | ${brand}`,
-        description: loc.lede,
+        name: `Business IT Support in ${loc.city}, ${loc.state} | ${brand}`,
+        description: lede,
         isPartOf: { "@id": WEBSITE_ID },
         breadcrumb: { "@id": BREADCRUMB_ID },
         about: { "@id": BUSINESS_ID },
@@ -194,8 +176,6 @@ export default async function LocationPage({ params }) {
         },
         mainEntity: { "@id": SERVICE_ID },
       },
-
-      // FAQPage (only if exists)
       ...(faqs.length
         ? [
             {
@@ -219,35 +199,34 @@ export default async function LocationPage({ params }) {
       icon: ShieldCheck,
       title: "Cybersecurity-first IT support",
       desc: "MFA/identity hardening, endpoint protection, patching, and monitoring to reduce risk and downtime.",
-      link: "/services",
+      link: "/services/cybersecurity",
       cta: "View cybersecurity services",
     },
     {
       icon: Database,
       title: "Backups & disaster recovery",
       desc: "Backup + recovery planning with test restores so you can bounce back fast.",
-      link: "/services",
+      link: "/services/cybersecurity",
       cta: "Explore backup/DR",
     },
     {
       icon: Mail,
       title: "Microsoft 365 & email support",
       desc: "Setup, troubleshooting, and security best practices for Microsoft 365 and email.",
-      link: "/services",
+      link: "/services/cloud-workspace",
       cta: "Microsoft 365 help",
     },
     {
       icon: CheckCircle2,
       title: "Managed IT & helpdesk",
       desc: "Clear ownership, predictable response times, and proactive IT management for your team.",
-      link: "/services",
+      link: "/services/managed-it",
       cta: "Managed IT options",
     },
   ];
 
   return (
     <>
-      {/* ✅ Clean JSON-LD (single script) */}
       <Script
         id={`location-jsonld-${loc.slug}`}
         type="application/ld+json"
@@ -257,10 +236,38 @@ export default async function LocationPage({ params }) {
       <PageHero
         eyebrow="Areas we serve"
         title={`${loc.city}, ${loc.state}`}
-        sub={`Managed IT Services in ${loc.city}, ${loc.state} — cybersecurity-first support, backups & Microsoft 365.`}
+        sub={`Business IT support near ${loc.city} — managed IT services, cybersecurity, backups & Microsoft 365.`}
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
+        {/* ✅ Intent line (helps “near me” queries map to THIS page) */}
+        <Reveal className="mt-4">
+          <p className="text-sm text-slate-300">
+            Looking for{" "}
+            <span className="text-slate-100 font-medium">
+              business IT support near {loc.city}, {loc.state}
+            </span>
+            ? We provide{" "}
+            <span className="text-slate-100 font-medium">managed IT services</span>,{" "}
+            <span className="text-slate-100 font-medium">24/7 IT support</span> and{" "}
+            <span className="text-slate-100 font-medium">cybersecurity</span> for local teams.{" "}
+            <Link
+              href={`/contact?type=assessment&source=location-intent-${loc.slug}`}
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              Get a free 20-min assessment
+            </Link>{" "}
+            or browse{" "}
+            <Link
+              href="/services"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              service options
+            </Link>
+            .
+          </p>
+        </Reveal>
+
         {/* Top CTA */}
         <Reveal className="mt-4">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -269,7 +276,7 @@ export default async function LocationPage({ params }) {
                 <MapPin className="h-4 w-4" /> Supporting teams in {loc.city} and nearby areas
               </div>
 
-              <p className="text-slate-300 mt-2 max-w-2xl">{loc.lede}</p>
+              <p className="text-slate-300 mt-2 max-w-2xl">{lede}</p>
 
               {!!loc.nearby?.length && (
                 <p className="mt-2 text-sm text-slate-400">
@@ -295,13 +302,14 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Local copy (Allentown skeleton etc.) */}
+        {/* Local copy (optional) */}
         {localParas.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h2 className="text-xl font-semibold">
                 Local IT support for {loc.city}, {loc.state}
               </h2>
+
               <div className="mt-3 space-y-3 text-slate-300 leading-7">
                 {localParas.map((p, idx) => (
                   <p key={idx}>{p}</p>
@@ -320,7 +328,8 @@ export default async function LocationPage({ params }) {
                   href="/contact"
                   className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
                 >
-                  {loc?.copy?.secondaryCtaText || "Contact us"} <ArrowRight className="h-4 w-4" />
+                  {loc?.copy?.secondaryCtaText || "Contact us"}{" "}
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
 
@@ -362,7 +371,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Common problems (query alignment) */}
+        {/* Common problems */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h3 className="text-xl font-semibold">Common issues we fix in {loc.city}</h3>
@@ -384,7 +393,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Services list (keep) */}
+        {/* Services list */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -416,7 +425,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* FAQs (visible) */}
+        {/* FAQs */}
         {faqs.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
