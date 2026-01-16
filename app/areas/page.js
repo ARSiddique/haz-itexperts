@@ -57,7 +57,6 @@ export async function generateMetadata() {
   };
 }
 
-
 const REGIONS = [
   {
     key: "lehigh",
@@ -362,7 +361,13 @@ export default async function AreasPage({ searchParams }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([websiteSchema, breadcrumbsSchema, collectionPageSchema, popularItemListSchema, regionCityListSchema]),
+          __html: JSON.stringify([
+            websiteSchema,
+            breadcrumbsSchema,
+            collectionPageSchema,
+            popularItemListSchema,
+            regionCityListSchema,
+          ]),
         }}
       />
 
@@ -373,6 +378,44 @@ export default async function AreasPage({ searchParams }) {
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
+        {/* ✅ CTR / Query intent line (TOP) */}
+        <Reveal className="mt-4">
+          <p className="text-sm text-slate-300">
+            Looking for{" "}
+            <span className="text-slate-100 font-medium">business IT support near Macungie, PA</span>{" "}
+            or <span className="text-slate-100 font-medium">managed IT services in Allentown</span>? Start here, then open
+            your local page:{" "}
+            <Link
+              href="/locations/macungie-pa"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              Macungie
+            </Link>
+            {", "}
+            <Link
+              href="/locations/allentown-pa"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              Allentown
+            </Link>
+            {", "}
+            <Link
+              href="/locations/emmaus-pa"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              Emmaus
+            </Link>
+            . Or compare{" "}
+            <Link
+              href="/services"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              services
+            </Link>
+            .
+          </p>
+        </Reveal>
+
         <Reveal className="mt-2">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Popular locations</div>
@@ -404,10 +447,16 @@ export default async function AreasPage({ searchParams }) {
               </div>
 
               <div className="flex gap-2 flex-wrap">
-                <Link href="/services" className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10">
+                <Link
+                  href="/services"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
                   View all services <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link href="/faqs" className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10">
+                <Link
+                  href="/faqs"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
                   FAQs <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -519,7 +568,10 @@ export default async function AreasPage({ searchParams }) {
                 >
                   Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link href="/contact" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm border border-white/10 bg-white/5 hover:bg-white/10"
+                >
                   Contact
                 </Link>
               </div>
@@ -610,7 +662,10 @@ export default async function AreasPage({ searchParams }) {
                     </div>
 
                     <div className="mt-3">
-                      <a href={href} className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+                      <a
+                        href={href}
+                        className="inline-block text-xs rounded-lg px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+                      >
                         View this region
                       </a>
                     </div>
@@ -636,7 +691,10 @@ export default async function AreasPage({ searchParams }) {
               >
                 Book a 20-min Assessment
               </Link>
-              <Link href="/contact" className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20">
+              <Link
+                href="/contact"
+                className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
+              >
                 Talk to us
               </Link>
             </div>

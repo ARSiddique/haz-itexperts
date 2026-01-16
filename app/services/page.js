@@ -30,11 +30,11 @@ export async function generateMetadata() {
     ""
   );
 
-  const baseTitle = "Managed IT Services & Cybersecurity in Allentown";
-  const fullTitle = `${baseTitle} | ${brand}`;
+  const titleBase = "Managed IT Services & Cybersecurity in Allentown, PA";
+  const fullTitle = `${titleBase} | ${brand}`;
 
   const description =
-    "Managed IT, cybersecurity, cloud, and device management for SMBs in Allentown (Macungie, Emmaus). Helpdesk, monitoring, patching, backup/DR, and Microsoft 365 support.";
+    "Managed IT, cybersecurity, cloud, and device management for SMBs in Allentown, PA — including Macungie and Emmaus. Helpdesk, monitoring, patching, backup/DR, and Microsoft 365 support.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -86,7 +86,6 @@ const Badge = ({ children, tone = "cyan" }) => (
 export default async function ServicesPage() {
   const brand = site?.name || "Supreme IT Experts";
 
-  // ✅ FIX: use BASE_URL as primary source (consistent with metadata + other pages)
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services`;
 
@@ -186,7 +185,6 @@ export default async function ServicesPage() {
     href,
   }));
 
-  // ✅ Page-only schemas (clean graph)
   const breadcrumbsSchema = {
     "@type": "BreadcrumbList",
     "@id": `${canonical}#breadcrumb`,
@@ -221,13 +219,15 @@ export default async function ServicesPage() {
     })),
   };
 
+  const areaServed = ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
+
   const serviceSchemas = services.map((s) => ({
     "@type": "Service",
     "@id": `${baseUrl}${s.href}#service`,
     name: s.title,
     description: s.desc,
     provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+    areaServed,
     serviceType: s.title,
     url: `${baseUrl}${s.href}`,
   }));
@@ -272,21 +272,75 @@ export default async function ServicesPage() {
         sub="Pick the coverage you need: managed IT, cybersecurity, Microsoft 365, device management, and strategy. Simple onboarding. Clear deliverables."
       />
 
+      {/* ✅ Intent paragraph (GSC queries -> correct pages) */}
+      <section className="max-w-6xl mx-auto px-4 pt-4">
+        <Reveal>
+          <p className="text-sm text-slate-300">
+            Looking for{" "}
+            <span className="text-slate-100 font-medium">managed IT services in Allentown</span> or{" "}
+            <span className="text-slate-100 font-medium">business IT support near Macungie, PA</span>?{" "}
+            Start with your area:
+            <span className="ml-2">
+              <Link
+                href="/locations/allentown-pa"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Allentown
+              </Link>
+              {", "}
+              <Link
+                href="/locations/macungie-pa"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Macungie
+              </Link>
+              {", "}
+              <Link
+                href="/locations/emmaus-pa"
+                className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+              >
+                Emmaus
+              </Link>
+            </span>
+            . Or browse{" "}
+            <Link
+              href="/areas"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
+              all service areas
+            </Link>
+            .
+          </p>
+        </Reveal>
+      </section>
+
       <section className="max-w-6xl mx-auto px-4 pt-4 pb-8">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">On this page</div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <Link href="#services-overview" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-overview"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Services overview
             </Link>
-            <Link href="#services-deepdives" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-deepdives"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Compare services
             </Link>
-            <Link href="#services-pricing" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-pricing"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               Pricing & ROI
             </Link>
-            <Link href="#services-faq" className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+            <Link
+              href="#services-faq"
+              className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+            >
               FAQs
             </Link>
             <Link
@@ -299,7 +353,11 @@ export default async function ServicesPage() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {services.map((s) => (
-              <Link key={s.key} href={s.href} className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10">
+              <Link
+                key={s.key}
+                href={s.href}
+                className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
+              >
                 {s.title}
               </Link>
             ))}
@@ -309,6 +367,7 @@ export default async function ServicesPage() {
 
       <section className="max-w-6xl mx-auto px-4 pb-10 text-sm text-slate-300 space-y-2">
         <p>This page gives you a clear overview of what we do. Open any service to see deliverables and what’s included.</p>
+
         <p>
           Looking for locations? See{" "}
           <Link href="/areas" className="text-cyan-300 hover:underline">
@@ -346,7 +405,7 @@ export default async function ServicesPage() {
               href="/get-quote"
               className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
             >
-              Get a Quote <ArrowRight className="h-4 w-4" />
+              Free IT Assessment <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
@@ -364,6 +423,7 @@ export default async function ServicesPage() {
                     <span className="grid place-items-center size-10 rounded-xl bg-cyan-400/10 border border-cyan-300/20">
                       <Icon className="h-5 w-5 text-cyan-300" />
                     </span>
+
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-lg">{title}</h3>
