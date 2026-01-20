@@ -63,8 +63,8 @@ export default function Footer({ className = "" }) {
   const phoneE164 = cleanTel(phoneRaw);
 
   // ✅ CTA changes per region
-  const ctaHref = isUk ? "/uk/contact" : "/get-quote";
-  const ctaText = isUk ? "Book a Call" : "Get a Free IT Assessment";
+  const ctaHref = isUk ? "/uk/contact" : (site?.assessmentHref || "/lp/allentown#claim");
+  const ctaText = isUk ? "Book a Call" : (site?.cta || "Get a Free IT Assessment");
 
   const tagline = isUk
     ? "UK-focused IT support & cybersecurity — clear deliverables, friendly support, and security-first coverage."

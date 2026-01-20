@@ -27,7 +27,7 @@ export default function ContactActionsRow({
     "Company:\nUsers:\nMain issue:\nLocation (Allentown/Macungie/Emmaus):";
   const waHref = `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(WA_MSG)}`;
 
-  const assessmentHref = "/assessment";
+  const assessmentHref = site?.assessmentHref || "/lp/allentown#claim";
 
   return (
     <div
