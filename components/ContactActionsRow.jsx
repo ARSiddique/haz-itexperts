@@ -14,7 +14,7 @@ export default function ContactActionsRow({
   className = "",
 }) {
   const phoneRaw = site?.phone || "+1 610-500-9209";
-  const email = site?.email || "supremeitexperts@gmail.com";
+  const email = site?.email || "support@supremeitexperts.com";
   const whatsappRaw = site?.whatsapp || phoneRaw;
 
   const phoneTel = `tel:${String(phoneRaw).replace(/[^\d+]/g, "")}`;

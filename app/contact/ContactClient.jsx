@@ -22,7 +22,7 @@ function cx(...a) {
 
 export default function ContactClient({ source = "contact-page", mode = "full" }) {
   const brand = site?.name || "Supreme IT Experts";
-  const email = site?.email || "supremeitexperts@gmail.com";
+  const email = site?.email || "support@supremeitexperts.com";
   const phoneRaw = site?.phone || "+1 610-500-9209";
   const whatsappRaw = site?.whatsapp || phoneRaw;
 

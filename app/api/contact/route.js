@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // --- email config ---
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const MAIL_TO = process.env.MAIL_TO || "supremeitexperts@gmail.com";
+const MAIL_TO = process.env.MAIL_TO || "support@supremeitexperts.com";
 const MAIL_CC = process.env.MAIL_CC || "";
 const MAIL_FROM = process.env.MAIL_FROM || "Supreme IT Experts <onboarding@resend.dev>";
 

@@ -35,7 +35,7 @@ const TextArea = ({ error, className, ...props }) => (
 );
 
 export default function QuoteFormClient({ source = "get-quote-page" }) {
-  const email = site?.email ?? "supremeitexperts@gmail.com";
+  const email = site?.email ?? "support@supremeitexperts.com";
   const phone = site?.phone ?? "+1 610-500-9209";
 
   const pageCtx = () => {

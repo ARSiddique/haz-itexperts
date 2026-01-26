@@ -4,6 +4,7 @@ import Image from "next/image";
 import BodyClass from "@/components/BodyClass";
 import TrackedPhoneLink from "@/components/TrackedPhoneLink";
 import TrackedEmailLink from "@/components/TrackedEmailLink";
+import { site } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "Allentown Managed IT Support for SMBs | Supreme IT Experts",
@@ -22,8 +23,7 @@ export default async function Page({ searchParams }) {
 
   const source = "ads-allentown-it-support";
   const phone = "+16105009209";
-  const email = "supremeitexperts@gmail.com";
-
+  const email = site?.email || "support@supremeitexperts.com";
   const wrap = {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial",
     lineHeight: 1.6,

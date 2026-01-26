@@ -18,7 +18,7 @@ const OG_IMAGE = new URL("/og-image.png?v=7", BASE_URL).toString();
 
 const cleanPhone = (site?.phone || "+1 610-500-9209").replace(/[^\d+]/g, "");
 const phoneE164 = cleanPhone.startsWith("+") ? cleanPhone : `+${cleanPhone}`;
-const email = site?.email || "supremeitexperts@gmail.com";
+const email = site?.email || "support@supremeitexperts.com";
 
 // socials (if site.socials is an object)
 const sameAs = uniq(Object.values(site?.socials || {}).filter(Boolean));

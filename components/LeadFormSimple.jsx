@@ -32,7 +32,7 @@ export default function LeadFormSimple({
   className = "",
   defaultSubject = "Website Contact",
 }) {
-  const email = site?.email ?? "supremeitexperts@gmail.com";
+  const email = site?.email ?? "support@supremeitexperts.com";
   const phone = site?.phone ?? "+1 610-500-9209";
   const telE164 = cleanTel(phone);
 

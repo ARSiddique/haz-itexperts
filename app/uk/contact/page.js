@@ -70,7 +70,7 @@ export default function UKContactPage() {
   const canonical = `${baseUrl}/uk/contact`;
 
   // ✅ Use shared business email
-  const EMAIL = site?.email || "supremeitexperts@gmail.com";
+  const EMAIL = site?.email || "support@supremeitexperts.com";
 
   // ✅ WhatsApp: use your existing number (works for UK enquiries too)
   const WA_DISPLAY = "+92 305 5249093";

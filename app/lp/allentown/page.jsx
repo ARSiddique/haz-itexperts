@@ -20,7 +20,7 @@ function digitsOnly(p) {
 
 export default function AllentownLP() {
   const source = "lp-allentown";
-  const email = site?.email ?? "supremeitexperts@gmail.com";
+  const email = site?.email ?? "support@supremeitexperts.com";
   const phone = site?.phone || "+1 610-500-9209";
 
   const waRaw = site?.whatsapp || phone;

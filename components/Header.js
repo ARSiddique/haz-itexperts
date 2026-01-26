@@ -12,11 +12,11 @@ const US_LINKS = [
   { href: "/services", label: "Services" },
   { href: "/faqs", label: "FAQs" },
   { href: "/areas", label: "Areas" },
+  { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
   { href: "/gallery", label: "Gallery" },
 ];
 
-// Keep UK links in code, hide when rollout OFF
 const UK_LINKS = [
   { href: "/uk", label: "Home" },
   { href: "/uk/about", label: "About" },
@@ -56,14 +56,6 @@ function isUkRolloutOn() {
   return v === "on" || v === "true" || v === "1";
 }
 
-const cleanTel = (p) => {
-  const s = String(p || "").trim();
-  if (!s) return "";
-  const cleaned = s.replace(/[^\d+]/g, "").replace(/\++/g, "+");
-  if (!cleaned) return "";
-  return cleaned.startsWith("+") ? cleaned : `+${cleaned}`;
-};
-
 export default function Header({ className = "" }) {
   const pathname = usePathname();
 
@@ -73,7 +65,7 @@ export default function Header({ className = "" }) {
 
   const LINKS = isUk ? UK_LINKS : US_LINKS;
 
-  // ✅ prevent desktop wrap: on lg show fewer links, on xl show all
+  // ✅ prevent wrap: lg show fewer links, xl show all
   const LINKS_LG = LINKS.filter((l) => !["/gallery", "/areas", "/uk/areas"].includes(l.href));
   const LINKS_XL = LINKS;
 
@@ -85,22 +77,17 @@ export default function Header({ className = "" }) {
   const brandHref = isUk ? "/uk" : "/";
 
   // Primary CTA
-  const ctaHref = isUk ? "/uk/contact" : "/lp/allentown#claim";
+  const ctaHref = isUk ? "/uk/contact" : (site?.assessmentHref || "/lp/allentown#claim");
   const ctaText = isUk ? "Book a Call" : "Free IT Assessment";
 
   // Secondary Quote
   const quoteHref = isUk ? "/uk/contact" : "/get-quote";
   const quoteText = isUk ? "Get Quote" : "Pricing & Quote";
 
-  // Region switch
+  // Region switch (optional)
   const regionSwitchHref = isUk ? "/" : "/uk";
   const regionSwitchText = isUk ? "US" : "UK";
   const regionSwitchTitle = isUk ? "Switch to United States" : "Switch to United Kingdom";
-
-  // Phone CTA
-  const phoneDisplay = site?.phone || "+1 610-500-9209";
-  const phoneE164 = cleanTel(site?.phoneTel?.replace("tel:", "") || phoneDisplay);
-  const phoneHref = phoneE164 ? `tel:${phoneE164}` : "tel:+16105009209";
 
   return (
     <header
@@ -108,15 +95,17 @@ export default function Header({ className = "" }) {
     >
       <div className="h-[2px] bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/40 to-cyan-500/50" />
 
-      <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3 leading-none">
+      {/* ✅ 3-column layout: left logo | center menu | right CTAs */}
+      <div className="max-w-6xl mx-auto px-4 py-2 grid grid-cols-[auto_1fr_auto] items-center gap-3 leading-none">
+        {/* Left */}
         <Link href={brandHref} className="shrink-0" aria-label={isUk ? "Go to UK homepage" : "Go to US homepage"}>
           <BrandLogo size={40} withText />
         </Link>
 
-        {/* Desktop nav (tight + no wrap) */}
-        <nav className="hidden lg:flex items-center gap-3 whitespace-nowrap">
+        {/* Center (desktop menu centered) */}
+        <nav className="hidden lg:flex justify-center">
           {/* lg: fewer links */}
-          <div className="hidden lg:flex xl:hidden items-center gap-3">
+          <div className="hidden lg:flex xl:hidden items-center gap-4 whitespace-nowrap">
             {LINKS_LG.map((l) => {
               const active = isActive(l.href);
               return (
@@ -140,7 +129,7 @@ export default function Header({ className = "" }) {
           </div>
 
           {/* xl: all links */}
-          <div className="hidden xl:flex items-center gap-4">
+          <div className="hidden xl:flex items-center gap-5 whitespace-nowrap">
             {LINKS_XL.map((l) => {
               const active = isActive(l.href);
               return (
@@ -162,7 +151,10 @@ export default function Header({ className = "" }) {
               );
             })}
           </div>
+        </nav>
 
+        {/* Right (desktop CTAs stay right) */}
+        <div className="hidden lg:flex items-center gap-3 justify-end whitespace-nowrap">
           {UK_ENABLED && (
             <Link
               href={regionSwitchHref}
@@ -174,17 +166,6 @@ export default function Header({ className = "" }) {
             </Link>
           )}
 
-          {/* Phone */}
-          <a
-            href={phoneHref}
-            className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
-            aria-label={`Call ${phoneDisplay}`}
-            title={`Call ${phoneDisplay}`}
-          >
-            Call {phoneDisplay}
-          </a>
-
-          {/* Quote */}
           <Link
             href={quoteHref}
             className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-white/0 hover:bg-white/5 text-slate-100 transition"
@@ -192,28 +173,16 @@ export default function Header({ className = "" }) {
             {quoteText}
           </Link>
 
-          {/* Primary CTA */}
           <Link
             href={ctaHref}
             className="rounded-lg px-3.5 py-2 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
           >
             {ctaText}
           </Link>
-        </nav>
+        </div>
 
-        {/* Mobile */}
-        <div className="lg:hidden flex items-center gap-2">
-          <a
-            href={phoneHref}
-            className="inline-flex items-center justify-center rounded-lg w-10 h-10 border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition"
-            aria-label={`Call ${phoneDisplay}`}
-            title={`Call ${phoneDisplay}`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path d="M2.25 6.75a3 3 0 013-3h2.25a1.5 1.5 0 011.5 1.5v2.25a1.5 1.5 0 01-1.5 1.5H6.9a.6.6 0 00-.57.78 12.06 12.06 0 006.9 6.9.6.6 0 00.78-.57v-.6a1.5 1.5 0 011.5-1.5h2.25a1.5 1.5 0 011.5 1.5v2.25a3 3 0 01-3 3h-.75C8.2 22.5 2.25 16.55 2.25 9.75v-3z" />
-            </svg>
-          </a>
-
+        {/* Mobile (right side) */}
+        <div className="lg:hidden flex items-center gap-2 justify-end">
           <Link
             href={ctaHref}
             className="rounded-lg px-3 py-2 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition"
@@ -257,13 +226,6 @@ export default function Header({ className = "" }) {
               </div>
 
               <div className="mt-4 grid gap-2">
-                <a
-                  href={phoneHref}
-                  className="rounded-lg px-4 py-3 text-sm font-semibold border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 transition text-center"
-                >
-                  Call {phoneDisplay}
-                </a>
-
                 <Link
                   href={ctaHref}
                   className="rounded-lg px-4 py-3 text-sm font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20 transition text-center"

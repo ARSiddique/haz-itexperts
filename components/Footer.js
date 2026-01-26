@@ -52,8 +52,8 @@ export default function Footer({ className = "" }) {
   const year = new Date().getFullYear();
   const s = site?.socials || {};
 
-  // ✅ Email same for US + UK
-  const email = site?.email || "supremeitexperts@gmail.com";
+  // ✅ Email same for US + UK (no Gmail fallback)
+  const email = site?.email || "support@supremeitexperts.com";
 
   // ✅ Phones: US default, UK override (only if UK enabled + on UK route)
   const usPhoneRaw = site?.phone || "+1 610-500-9209";
@@ -116,7 +116,7 @@ export default function Footer({ className = "" }) {
 
             <div className="text-xs text-slate-200">{hoursText}</div>
 
-            {/* ✅ Footer region switch — only if UK enabled (commented-out behaviour) */}
+            {/* ✅ Footer region switch — only if UK enabled */}
             {UK_ENABLED && (
               <div className="pt-2 text-xs text-slate-300">
                 {isUk ? (
