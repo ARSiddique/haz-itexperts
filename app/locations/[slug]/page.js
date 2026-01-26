@@ -17,12 +17,19 @@ import {
 } from "lucide-react";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
+function normalizeSlug(raw) {
+  if (!raw) return "";
+  return Array.isArray(raw) ? String(raw[0] || "") : String(raw || "");
+}
+
 export async function generateStaticParams() {
   return LOCATIONS.map((l) => ({ slug: l.slug }));
 }
 
 export async function generateMetadata({ params }) {
-  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
+  // ✅ Next.js 15 fix: params must be awaited
+  const awaitedParams = await params;
+  const slug = normalizeSlug(awaitedParams?.slug);
 
   const loc = getLocationBySlug(slug);
   if (!loc) return {};
@@ -92,7 +99,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function LocationPage({ params }) {
-  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
+  // ✅ Next.js 15 fix: params must be awaited
+  const awaitedParams = await params;
+  const slug = normalizeSlug(awaitedParams?.slug);
 
   const loc = getLocationBySlug(slug);
   if (!loc) notFound();
@@ -226,7 +235,6 @@ export default async function LocationPage({ params }) {
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
-        {/* ✅ Query-alignment intent line (helps GSC query -> location page connection) */}
         <Reveal className="mt-4">
           <p className="text-sm text-slate-300">
             Looking for{" "}
@@ -254,7 +262,6 @@ export default async function LocationPage({ params }) {
           </p>
         </Reveal>
 
-        {/* Top CTA */}
         <Reveal className="mt-4">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -288,7 +295,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Local copy */}
         {localParas.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -327,7 +333,6 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
-        {/* Intent-based focus blocks */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-xl font-semibold">Core IT services for {loc.city} businesses</h2>
@@ -357,7 +362,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Common problems */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h3 className="text-xl font-semibold">Common issues we fix in {loc.city}</h3>
@@ -379,7 +383,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* Services list */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -412,7 +415,6 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* FAQs */}
         {faqs.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -432,7 +434,6 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
-        {/* Next steps */}
         <Reveal className="mt-10">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h3 className="text-xl font-semibold">Next steps</h3>
