@@ -12,7 +12,7 @@ const US_LINKS = [
   { href: "/services", label: "Services" },
   { href: "/faqs", label: "FAQs" },
   { href: "/areas", label: "Areas" },
-  { href: "/blog", label: "Blog" },
+  // { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
   { href: "/gallery", label: "Gallery" },
 ];

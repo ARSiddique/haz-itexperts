@@ -3,6 +3,7 @@ export const runtime = "edge";
 
 import { site } from "@/lib/siteConfig";
 import { LOCATIONS } from "@/lib/locations";
+import { POSTS } from "@/lib/blogData";
 
 function esc(s) {
   return String(s)
@@ -23,7 +24,7 @@ function urlTag({ loc, lastmod, changefreq, priority }) {
 }
 
 export async function GET() {
-  const baseUrl = site?.url || "https://supremeitexperts.com";
+  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const today = new Date().toISOString().slice(0, 10);
 
   const staticUrls = [
@@ -43,15 +44,26 @@ export async function GET() {
     { path: "/contact", changefreq: "yearly", priority: "0.6" },
     { path: "/gallery", changefreq: "monthly", priority: "0.5" },
     { path: "/get-quote", changefreq: "weekly", priority: "0.7" },
+
+    // ✅ Blog index
+    // { path: "/blog", changefreq: "weekly", priority: "0.7" },
   ];
 
   const locationUrls = (LOCATIONS || []).map((l) => ({
     path: `/locations/${l.slug}`,
     changefreq: "monthly",
     priority: "0.6",
+    lastmod: today,
   }));
 
-  const all = [...staticUrls, ...locationUrls];
+  // ✅ Blog posts
+  const blogUrls = [];
+
+  const all = [
+    ...staticUrls.map((u) => ({ ...u, lastmod: today })),
+    ...locationUrls,
+    ...blogUrls,
+  ];
 
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
@@ -60,7 +72,7 @@ export async function GET() {
       .map((u) =>
         urlTag({
           loc: `${baseUrl}${u.path}`,
-          lastmod: today,
+          lastmod: u.lastmod || today,
           changefreq: u.changefreq,
           priority: u.priority,
         })
