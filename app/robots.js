@@ -12,12 +12,18 @@ export default function robots() {
   const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const ukOn = isUkRolloutOn();
 
+  const disallow = [];
+  if (!ukOn) disallow.push("/uk/");
+  // ✅ blog OFF for now
+  disallow.push("/blog");
+  disallow.push("/blog/");
+
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        ...(ukOn ? {} : { disallow: ["/uk/"] }),
+        ...(disallow.length ? { disallow } : {}),
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

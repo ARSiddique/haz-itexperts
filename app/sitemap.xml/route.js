@@ -3,7 +3,6 @@ export const runtime = "edge";
 
 import { site } from "@/lib/siteConfig";
 import { LOCATIONS } from "@/lib/locations";
-import { POSTS } from "@/lib/blogData";
 
 function esc(s) {
   return String(s)
@@ -45,7 +44,7 @@ export async function GET() {
     { path: "/gallery", changefreq: "monthly", priority: "0.5" },
     { path: "/get-quote", changefreq: "weekly", priority: "0.7" },
 
-    // ✅ Blog index
+    // ✅ Blog OFF for now
     // { path: "/blog", changefreq: "weekly", priority: "0.7" },
   ];
 
@@ -56,13 +55,9 @@ export async function GET() {
     lastmod: today,
   }));
 
-  // ✅ Blog posts
-  const blogUrls = [];
-
   const all = [
     ...staticUrls.map((u) => ({ ...u, lastmod: today })),
     ...locationUrls,
-    ...blogUrls,
   ];
 
   const body =
