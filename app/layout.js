@@ -39,7 +39,9 @@ const address = {
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
-  alternates: { canonical: "/" },
+
+  // ✅ IMPORTANT: global canonical remove (warna har page "/" ban jata)
+  // alternates: { canonical: "/" },
 
   title: {
     default: `${BRAND} — Managed IT & Cybersecurity`,
@@ -75,7 +77,7 @@ export const metadata = {
   openGraph: {
     title: `${BRAND} — Managed IT & Cybersecurity`,
     description: DEFAULT_DESC,
-    url: "/",
+    url: BASE_URL, // ✅ was "/"
     siteName: BRAND,
     type: "website",
     locale: "en_US",

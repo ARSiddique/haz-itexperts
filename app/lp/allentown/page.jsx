@@ -1,3 +1,4 @@
+// app/lp/allentown/page.jsx
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/siteConfig";
@@ -7,12 +8,43 @@ import TrackedEmailLink from "@/components/TrackedEmailLink";
 import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import LeadFormSimple from "@/components/LeadFormSimple";
 import { FaWhatsapp } from "react-icons/fa";
+import { BASE_URL } from "@/lib/seoIds";
 
-export const metadata = {
-  title: "Allentown IT Launch Offer — Free IT Assessment for First 20 SMBs",
-  description:
-    "Allentown, Macungie, Emmaus: First 20 customers get a free IT assessment — uptime, security, Microsoft 365, backups — quick wins and a clear 90-day plan.",
-};
+// ✅ SEO (server-side) — fixes canonical for this LP
+export async function generateMetadata() {
+  const brand = site?.name || "Supreme IT Experts";
+  const canonical = `${BASE_URL}/lp/allentown`;
+  const title = "Allentown IT Launch Offer — Free IT Assessment for First 20 SMBs";
+  const description =
+    "Allentown, Macungie, Emmaus: First 20 customers get a free IT assessment — uptime, security, Microsoft 365, backups — quick wins and a clear 90-day plan.";
+
+  const ogImage = `${BASE_URL}/og-image.png?v=7`;
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title,
+    description,
+    alternates: { canonical }, // ✅ THIS is the key
+    robots: { index: true, follow: true },
+
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: brand,
+      type: "website",
+      locale: "en_US",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: brand }],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 function digitsOnly(p) {
   return String(p || "").replace(/[^\d]/g, "");
@@ -33,7 +65,9 @@ export default function AllentownLP() {
     "Biggest issue right now: __\n" +
     "Best time to reach: __";
 
-  const waHref = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(WA_MSG)}` : "";
+  const waHref = waDigits
+    ? `https://wa.me/${waDigits}?text=${encodeURIComponent(WA_MSG)}`
+    : "";
 
   return (
     <main className="min-h-screen bg-[#0b1220] text-slate-100">
@@ -116,7 +150,6 @@ export default function AllentownLP() {
                   <div className="flex items-center gap-2">
                     <div className="font-semibold truncate">Muhammad Barkat Saifee</div>
 
-                    {/* ✅ tick (like your popup screenshot) */}
                     <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-200">
                       <BadgeCheck className="h-4 w-4 text-cyan-300" />
                       CEO
@@ -154,7 +187,7 @@ export default function AllentownLP() {
         </div>
       </section>
 
-      {/* CLAIM FORM SECTION ✅ */}
+      {/* CLAIM FORM SECTION */}
       <section id="claim" className="max-w-6xl mx-auto px-4 pb-20 scroll-mt-28">
         <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-6 md:p-8">
           <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-6 items-start">
@@ -167,7 +200,9 @@ export default function AllentownLP() {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Pick the fastest way to reach us</div>
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">
+                Pick the fastest way to reach us
+              </div>
               <h2 className="mt-2 text-xl font-extrabold">WhatsApp, Email, or Call</h2>
               <p className="mt-2 text-sm text-slate-300">
                 We’ll reply with next steps. No pressure — just clarity.
