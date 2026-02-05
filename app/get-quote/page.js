@@ -7,10 +7,10 @@ import { BASE_URL, BUSINESS_ID } from "@/lib/seoIds";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
-  const brand = site?.name || "Supreme IT Experts";
   const canonical = `${BASE_URL}/get-quote`;
 
-  const title = `Get a Quote — ${brand}`;
+  // ✅ IMPORTANT: do NOT include brand here (layout template will add it)
+  const title = "Get a Quote (Allentown, PA)";
   const description =
     "See how our pricing works and request a tailored quote for your team, tools and risk profile.";
 
@@ -27,8 +27,8 @@ export async function generateMetadata() {
       description,
       type: "website",
       url: canonical,
-      siteName: brand,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${brand} — Get a Quote` }],
+      // ✅ siteName optional (root OG already has it)
+      images: [{ url: ogImage, width: 1200, height: 630, alt: "Get a Quote" }],
     },
     twitter: {
       card: "summary_large_image",
@@ -96,7 +96,10 @@ export default function GetQuotePage() {
     "@type": "WebPage",
     "@id": `${canonical}#webpage`,
     url: canonical,
+
+    // ✅ Schema name can include brand safely (SERP title is controlled by metadata)
     name: `Get a Quote — ${brand}`,
+
     isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
     about: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
