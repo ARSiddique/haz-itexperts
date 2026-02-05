@@ -14,6 +14,11 @@ import {
   Mail,
   Database,
   ShieldCheck,
+  PhoneCall,
+  BadgeCheck,
+  Sparkles,
+  Laptop2,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
@@ -28,7 +33,6 @@ export async function generateStaticParams() {
 
 /**
  * ✅ Query-aligned snippets (based on your GSC screenshots)
- * Keep it natural — no stuffing.
  */
 function getQueryPack(slug, city, state) {
   const packs = {
@@ -69,7 +73,6 @@ function getQueryPack(slug, city, state) {
       metaBoost:
         "Managed IT services, cybersecurity, help desk solutions, IT support, backup planning in Allentown, PA.",
     },
-
     "macungie-pa": {
       headline: `Popular searches in ${city}`,
       items: [
@@ -96,7 +99,6 @@ function getQueryPack(slug, city, state) {
       ],
       metaBoost: "Business IT support near Macungie, PA + managed IT and cybersecurity.",
     },
-
     "emmaus-pa": {
       headline: `Popular searches in ${city}`,
       items: [
@@ -145,6 +147,18 @@ function getQueryPack(slug, city, state) {
   );
 }
 
+/**
+ * helper: attempt to find service href from SERVICES list
+ */
+function findServiceHref(match, fallback) {
+  const list = Array.isArray(SERVICES) ? SERVICES : [];
+  const hit = list.find((s) => {
+    const t = String(s?.title || "").toLowerCase();
+    return match.some((m) => t.includes(String(m).toLowerCase()));
+  });
+  return hit?.href || fallback;
+}
+
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const slug = normalizeSlug(awaitedParams?.slug);
@@ -158,10 +172,7 @@ export async function generateMetadata({ params }) {
 
   const pack = getQueryPack(loc.slug, loc.city, loc.state);
 
-  // ✅ CTR-friendly title (contains city + service + benefit)
   const title = `Managed IT Services ${loc.city}, ${loc.state} | Help Desk + Cybersecurity | ${brand}`;
-
-  // ✅ Snippet-friendly meta (includes “business IT support” intent + CTA)
   const description =
     `Need business IT support in ${loc.city}, ${loc.state}? Managed IT, help desk, cybersecurity, Microsoft 365, backups & disaster recovery. ` +
     `Book a free 20-min IT assessment.`;
@@ -175,9 +186,11 @@ export async function generateMetadata({ params }) {
       `business IT support ${loc.city}`,
       `IT support ${loc.city} ${loc.state}`,
       `help desk ${loc.city}`,
+      `help desk solutions in ${loc.city}`,
       `cybersecurity near ${loc.city}`,
       `Microsoft 365 support ${loc.city}`,
-      `backup planning ${loc.city}`,
+      `backup planning services ${loc.city}`,
+      `IT management solutions ${loc.city}`,
       `managed service provider ${loc.city}`,
     ],
     alternates: { canonical: path },
@@ -238,18 +251,14 @@ export default async function LocationPage({ params }) {
   const localParas =
     Array.isArray(loc?.copy?.paragraphs) && loc.copy.paragraphs.length ? loc.copy.paragraphs : [];
 
+  const serviceSections = Array.isArray(loc?.serviceSections) ? loc.serviceSections : [];
+
   const pack = getQueryPack(loc.slug, loc.city, loc.state);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": WEBSITE_ID,
-        url: `${baseUrl}/`,
-        name: brand,
-        inLanguage: "en-US",
-      },
+      { "@type": "WebSite", "@id": WEBSITE_ID, url: `${baseUrl}/`, name: brand, inLanguage: "en-US" },
       {
         "@type": "BreadcrumbList",
         "@id": BREADCRUMB_ID,
@@ -301,38 +310,52 @@ export default async function LocationPage({ params }) {
     ],
   };
 
+  // ✅ 6 services coverage on the location page (links auto-match your SERVICES list if possible)
   const focusCards = [
     {
+      icon: CheckCircle2,
+      title: "Managed IT Services",
+      desc: "Helpdesk, monitoring, patching, and proactive IT management with clear ownership.",
+      link: findServiceHref(["managed it"], "/services/managed-it"),
+      cta: "Managed IT services",
+    },
+    {
       icon: ShieldCheck,
-      title: "Cybersecurity-first IT support",
-      desc: "MFA/identity hardening, endpoint protection, patching, and monitoring to reduce risk and downtime.",
-      link: "/services/cybersecurity",
+      title: "Cybersecurity",
+      desc: "MFA, endpoint protection, baselines, and monitoring to reduce risk and downtime.",
+      link: findServiceHref(["cyber"], "/services/cybersecurity"),
       cta: "Cybersecurity options",
     },
     {
-      icon: Database,
-      title: "Backups & disaster recovery",
-      desc: "Backup + recovery planning with test restores so you can bounce back fast.",
-      link: "/services/projects-consulting",
-      cta: "Backup/DR planning",
-    },
-    {
       icon: Mail,
-      title: "Microsoft 365 & email support",
-      desc: "Setup, troubleshooting, and security best practices for Microsoft 365 and email.",
-      link: "/services/cloud-workspace",
+      title: "Cloud & Microsoft 365",
+      desc: "Microsoft 365 setup, troubleshooting, tenant security, and ongoing support.",
+      link: findServiceHref(["microsoft 365", "cloud"], "/services/cloud-workspace"),
       cta: "Microsoft 365 help",
     },
     {
-      icon: CheckCircle2,
-      title: "Managed IT & helpdesk",
-      desc: "Clear ownership, predictable response times, and proactive IT management for your team.",
-      link: "/services/managed-it",
-      cta: "Managed IT services",
+      icon: Database,
+      title: "IT Projects & Consulting",
+      desc: "Backup/DR planning, audits, refresh projects, network improvements, and cleanup.",
+      link: findServiceHref(["projects", "consult"], "/services/projects-consulting"),
+      cta: "Projects & consulting",
+    },
+    {
+      icon: Laptop2,
+      title: "Device Management (MDM)",
+      desc: "Standard configs, device enrollment, compliance checks, and policy-based control.",
+      link: findServiceHref(["mdm", "device"], "/services/device-management"),
+      cta: "MDM options",
+    },
+    {
+      icon: BriefcaseBusiness,
+      title: "vCIO / IT Strategy",
+      desc: "Roadmaps, budget planning, vendor alignment, and measurable IT leadership KPIs.",
+      link: findServiceHref(["vcio", "strategy"], "/services/vcio-it-strategy"),
+      cta: "IT strategy",
     },
   ];
 
-  // ✅ Cross-link to the other 2 locations (extra strong internal links)
   const otherLocations = (LOCATIONS || []).filter((l) => l.slug !== loc.slug).slice(0, 2);
 
   return (
@@ -346,10 +369,30 @@ export default async function LocationPage({ params }) {
       <PageHero
         eyebrow="Areas we serve"
         title={`${loc.city}, ${loc.state}`}
-        sub={`Managed IT services, help desk & cybersecurity in ${loc.city}, ${loc.state} — plus backups & Microsoft 365 support.`}
+        sub={`Managed IT services, help desk & cybersecurity in ${loc.city}, ${loc.state} — plus Microsoft 365, backups/DR, MDM and IT strategy.`}
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
+        {/* ✅ mini badges row */}
+        <Reveal className="mt-4">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { icon: BadgeCheck, text: "Business-first support" },
+              { icon: Sparkles, text: "Security-first mindset" },
+              { icon: PhoneCall, text: "Fast response times" },
+              { icon: MapPin, text: `Serving ${loc.city} + nearby` },
+            ].map((b) => (
+              <div
+                key={b.text}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200"
+              >
+                <b.icon className="h-3.5 w-3.5 text-cyan-300" />
+                {b.text}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
         <Reveal className="mt-4">
           <p className="text-sm text-slate-300">
             Looking for{" "}
@@ -358,8 +401,12 @@ export default async function LocationPage({ params }) {
             </span>
             ? We provide{" "}
             <span className="text-slate-100 font-medium">managed IT services</span>,{" "}
-            <span className="text-slate-100 font-medium">help desk support</span> and{" "}
-            <span className="text-slate-100 font-medium">cybersecurity</span> for local teams.{" "}
+            <span className="text-slate-100 font-medium">help desk support</span>,{" "}
+            <span className="text-slate-100 font-medium">cybersecurity</span>,{" "}
+            <span className="text-slate-100 font-medium">Microsoft 365 support</span>,{" "}
+            <span className="text-slate-100 font-medium">backup/DR planning</span>,{" "}
+            <span className="text-slate-100 font-medium">MDM</span> and{" "}
+            <span className="text-slate-100 font-medium">IT strategy</span>.{" "}
             <Link
               href={`/contact?type=assessment&source=location-intent-${loc.slug}`}
               className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
@@ -367,16 +414,19 @@ export default async function LocationPage({ params }) {
               Get a free 20-min assessment
             </Link>{" "}
             or browse{" "}
-            <Link href="/services" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
+            <Link
+              href="/services"
+              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+            >
               service options
             </Link>
             .
           </p>
         </Reveal>
 
-        {/* ✅ GSC query aligned block + links */}
-        <Reveal className="mt-6">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+        {/* ✅ Queries block */}
+        <Reveal className="mt-7">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/6 to-white/3 p-6 md:p-7">
             <div className="flex items-end justify-between gap-4 flex-wrap">
               <div>
                 <h2 className="text-xl font-semibold">{pack.headline}</h2>
@@ -406,7 +456,7 @@ export default async function LocationPage({ params }) {
                 <Link
                   key={it.term}
                   href={it.href}
-                  className="rounded-xl border border-white/10 bg-black/15 p-4 hover:border-cyan-300/30 hover:bg-cyan-400/10 transition"
+                  className="rounded-2xl border border-white/10 bg-black/15 p-4 hover:border-cyan-300/30 hover:bg-cyan-400/10 transition"
                 >
                   <div className="font-semibold text-slate-100">{it.term}</div>
                   <div className="mt-1 text-sm text-slate-300">{it.desc}</div>
@@ -416,32 +466,12 @@ export default async function LocationPage({ params }) {
                 </Link>
               ))}
             </div>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/services/managed-it" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Managed IT
-              </Link>
-              <Link href="/services/cybersecurity" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Cybersecurity
-              </Link>
-              <Link href="/services/cloud-workspace" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Microsoft 365
-              </Link>
-              <Link href="/services/projects-consulting" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Backup/DR Planning
-              </Link>
-              <Link href="/contact" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Contact
-              </Link>
-              <Link href="/areas" className="text-sm text-cyan-200/85 hover:text-cyan-200 hover:underline">
-                Areas we serve
-              </Link>
-            </div>
           </div>
         </Reveal>
 
-        <Reveal className="mt-6">
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* ✅ CTA band */}
+        <Reveal className="mt-7">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-cyan-500/12 to-fuchsia-500/12 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80 flex items-center gap-2">
                 <MapPin className="h-4 w-4" /> Supporting teams in {loc.city} and nearby areas
@@ -456,16 +486,16 @@ export default async function LocationPage({ params }) {
               )}
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link
                 href={`/contact?type=assessment&source=location-${loc.slug}`}
-                className="rounded-lg px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                className="rounded-xl px-5 py-3 font-semibold border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
               >
                 Free 20-min assessment
               </Link>
               <Link
                 href="/contact"
-                className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
+                className="rounded-xl px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
               >
                 Contact us
               </Link>
@@ -473,10 +503,13 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
+        {/* ✅ Local paragraphs */}
         {localParas.length > 0 && (
           <Reveal className="mt-10">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold">Local IT support for {loc.city}, {loc.state}</h2>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
+              <h2 className="text-xl font-semibold">
+                Local IT support for {loc.city}, {loc.state}
+              </h2>
 
               <div className="mt-3 space-y-3 text-slate-300 leading-7">
                 {localParas.map((p, idx) => (
@@ -489,7 +522,8 @@ export default async function LocationPage({ params }) {
                   href={`/contact?type=assessment&source=location-${loc.slug}`}
                   className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                 >
-                  {loc?.copy?.primaryCtaText || "Free 20-min IT assessment"} <ArrowRight className="h-4 w-4" />
+                  {loc?.copy?.primaryCtaText || "Free 20-min IT assessment"}{" "}
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
 
                 <Link
@@ -512,16 +546,20 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
+        {/* ✅ Services coverage (6 cards) */}
         <Reveal className="mt-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">Core IT services for {loc.city} businesses</h2>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
+            <h2 className="text-xl font-semibold">IT services we provide in {loc.city}</h2>
             <p className="text-slate-300 mt-2 max-w-3xl">
-              Based on what businesses typically search for in {loc.city}, these are the most requested support areas.
+              These map directly to the core services listed on our Services page, with local intent for {loc.city}.
             </p>
 
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
               {focusCards.map((c) => (
-                <div key={c.title} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <div
+                  key={c.title}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/7 transition"
+                >
                   <div className="flex items-start gap-3">
                     <c.icon className="h-5 w-5 text-cyan-300 mt-0.5" />
                     <div>
@@ -538,8 +576,73 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
+        {/* ✅ NEW: Service Sections (SEO headings that match queries) */}
+        {serviceSections.length > 0 && (
+          <Reveal className="mt-10">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
+              <h2 className="text-xl font-semibold">
+                Managed IT, help desk, cybersecurity & more — in {loc.city}
+              </h2>
+              <p className="mt-2 text-slate-300 max-w-3xl">
+                Below sections are written to match real search intent (like “IT support”, “help desk solutions”, “cybersecurity near me”, and “backup planning”).
+              </p>
+
+              <div className="mt-6 space-y-6">
+                {serviceSections.map((sec) => (
+                  <div key={sec.id} id={sec.id} className="rounded-3xl border border-white/10 bg-black/10 p-5">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-100">{sec.title}</h3>
+                        {!!sec.sub && <p className="mt-1 text-sm text-slate-300">{sec.sub}</p>}
+                      </div>
+
+                      {!!sec.href && (
+                        <Link
+                          href={sec.href}
+                          className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                        >
+                          Learn more <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      )}
+                    </div>
+
+                    {!!sec.text && <p className="mt-3 text-slate-300 leading-7">{sec.text}</p>}
+
+                    {Array.isArray(sec.bullets) && sec.bullets.length > 0 && (
+                      <div className="mt-4 grid md:grid-cols-2 gap-3 text-slate-200">
+                        {sec.bullets.map((x) => (
+                          <div key={x} className="flex gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-cyan-300 mt-0.5" />
+                            {x}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={`/contact?type=assessment&source=location-sections-${loc.slug}`}
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  Free assessment <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/services"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  View services <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        )}
+
+        {/* ✅ Issues */}
         <Reveal className="mt-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <h3 className="text-xl font-semibold">Common issues we fix in {loc.city}</h3>
             <div className="mt-4 grid md:grid-cols-2 gap-3 text-slate-200">
               {[
@@ -559,8 +662,9 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
+        {/* ✅ Services list */}
         <Reveal className="mt-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <div className="flex items-end justify-between gap-4 flex-wrap">
               <div>
                 <h3 className="text-xl font-semibold">Popular services</h3>
@@ -578,23 +682,24 @@ export default async function LocationPage({ params }) {
             </div>
 
             <div className="mt-6 grid sm:grid-cols-2 gap-3">
-              {SERVICES.map((s) => (
-                <Link
-                  key={s.href}
-                  href={s.href}
-                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
-                >
-                  {s.title}
-                </Link>
-              ))}
+              {Array.isArray(SERVICES) &&
+                SERVICES.map((s) => (
+                  <Link
+                    key={s.href}
+                    href={s.href}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
+                  >
+                    {s.title}
+                  </Link>
+                ))}
             </div>
           </div>
         </Reveal>
 
-        {/* ✅ Nearby locations links (extra internal links + cluster) */}
+        {/* ✅ Nearby */}
         {otherLocations.length ? (
           <Reveal className="mt-10">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
               <h3 className="text-xl font-semibold">Nearby areas</h3>
               <p className="mt-2 text-slate-300">
                 If you’re close to {loc.city}, these nearby locations are also covered:
@@ -620,16 +725,17 @@ export default async function LocationPage({ params }) {
           </Reveal>
         ) : null}
 
+        {/* ✅ FAQs */}
         {faqs.length > 0 && (
           <Reveal className="mt-10">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
               <h3 className="text-xl font-semibold">
                 FAQs — {loc.city}, {loc.state}
               </h3>
 
               <div className="mt-4 space-y-3">
                 {faqs.map((f) => (
-                  <details key={f.q} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <details key={f.q} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <summary className="cursor-pointer font-semibold text-slate-200">{f.q}</summary>
                     <p className="mt-2 text-sm text-slate-300 leading-6">{f.a}</p>
                   </details>
@@ -639,8 +745,9 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
+        {/* ✅ Next steps */}
         <Reveal className="mt-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <h3 className="text-xl font-semibold">Next steps</h3>
             <p className="text-slate-300 mt-2">
               Compare options from our{" "}

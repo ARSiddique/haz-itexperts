@@ -5,7 +5,7 @@ export const metadata = { title: "Privacy Policy | Supreme IT Experts" };
 
 export default function Page() {
   const source = "privacy";
-  const email = "hello@supremeitexperts.com";
+  const email = "support@supremeitexperts.com";
 
   return (
     <main style={{ maxWidth: 900, margin: "0 auto", padding: 24, lineHeight: 1.6 }}>
