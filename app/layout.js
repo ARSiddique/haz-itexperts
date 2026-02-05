@@ -45,7 +45,7 @@ export const metadata = {
 
   title: {
     default: `${BRAND} — Managed IT & Cybersecurity`,
-    template: `%s | ${BRAND}`,
+    template: `%s — ${BRAND}`, 
   },
 
   description: DEFAULT_DESC,
