@@ -6,26 +6,21 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com")
-    .replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
-  const fullTitle =
-    `Managed IT Services in Allentown, PA | Helpdesk, Monitoring & Patching | ${brand}`;
+  const fullTitle = `Managed IT Services in Allentown, PA | Helpdesk, Monitoring & Patching | ${brand}`;
 
   const description =
     "Managed IT for small businesses in Allentown (Macungie, Emmaus): responsive helpdesk, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting (fully managed or co-managed).";
 
   return {
     metadataBase: new URL(baseUrl),
-
-    // ✅ prevents: "Managed IT ... | BRAND | BRAND"
     title: { absolute: fullTitle },
-
     description,
-
-    // ✅ keep canonical relative (metadataBase makes absolute)
     alternates: { canonical: "/services/managed-it" },
-
     robots: {
       index: true,
       follow: true,
@@ -37,7 +32,6 @@ export async function generateMetadata() {
         "max-video-preview": -1,
       },
     },
-
     openGraph: {
       title: fullTitle,
       description,
@@ -53,7 +47,6 @@ export async function generateMetadata() {
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
@@ -63,19 +56,47 @@ export async function generateMetadata() {
   };
 }
 
-
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
   const canonical = `${baseUrl}/services/managed-it`;
+
+  const faqs = [
+    {
+      q: "What’s included in managed IT?",
+      a: "Helpdesk (email/chat/portal), monitoring, patch management, baseline security hardening, onboarding/offboarding checklists, and monthly KPI reporting. We can run everything end-to-end or co-manage with your internal IT.",
+    },
+    {
+      q: "Do you offer co-managed IT?",
+      a: "Yes. We can share tools, SOPs, escalations, and reporting with your internal IT team. You keep control; we strengthen coverage and visibility where you need it most.",
+    },
+    {
+      q: "What are your SLA targets?",
+      a: "We set SLA targets based on business hours and risk. Critical issues get rapid response targets, while standard requests follow agreed same-day/next-day handling—with monthly SLA reporting and continuous improvement.",
+    },
+    {
+      q: "How do you handle onboarding and offboarding?",
+      a: "We use checklists: accounts, MFA, device baselines, email/groups, app access, and admin rights. That reduces access mistakes and keeps audits simpler.",
+    },
+    {
+      q: "Do you support Microsoft 365 and Google Workspace environments?",
+      a: "Yes. We support identity, email, device baselines, and collaboration tooling, and we can coordinate with your vendors or manage the stack directly.",
+    },
+    {
+      q: "How fast can you stabilize a messy environment?",
+      a: "Many SMBs see noticeable improvement within the first 30 days once monitoring, patching, baselines, and ticket ownership are in place. Exact timelines depend on device count, tooling, and current risk level.",
+    },
+  ];
 
   const cfg = {
     title: "Managed IT Services",
     lede:
-      "Day-to-day IT, done right—helpdesk, patching, monitoring, and secure device baselines—so your team can stay focused on the business.",
+      "Day-to-day IT, done right—helpdesk, patching, monitoring, and secure device baselines—so your team can stay focused on the business (fully managed or co-managed).",
     hero: "/images/services/managed-hero.svg",
 
-    // ✅ avoid hard guarantees; keep “targets / typical”
     stats: [
       { kpi: "Fast", label: "P1 response targets" },
       { kpi: "Stable", label: "Patch & baseline cadence" },
@@ -87,21 +108,21 @@ export default function Page() {
       {
         heading: "Helpdesk that actually closes tickets",
         body:
-          "Requests come in through email, chat, or portal—our triage process assigns the right priority fast and keeps clear ownership on every ticket. You get monthly SLA/KPI reporting, so leadership sees what’s working, what’s trending, and what needs attention.",
+          "Requests come in through email, chat, or portal—our triage process assigns the right priority fast and keeps clear ownership on every ticket. You get monthly SLA/KPI reporting, so leadership sees what’s working, what’s trending, and what needs attention. Less ping-pong, faster resolution, and clearer accountability.",
         image: "/images/illus/helpdesk.svg",
         imageSide: "right",
       },
       {
         heading: "Standardized endpoints = fewer surprises",
         body:
-          "We implement consistent Windows/macOS baselines, automated patching, and curated app policies to reduce drift. Monitoring catches issues early, and backup verification plus restore testing makes recovery predictable—not a guess.",
+          "We implement consistent Windows/macOS baselines, automated patching, and curated app policies to reduce drift. Monitoring catches issues early, and backup verification plus restore testing makes recovery predictable—not a guess. The goal is fewer incidents and faster recovery when something breaks.",
         image: "/images/illus/devices.svg",
         imageSide: "left",
       },
       {
         heading: "Co-managed or fully managed—your choice",
         body:
-          "Have internal IT? We can complement your team with shared tooling, SOPs, escalations, and reporting. Or we can run everything end-to-end. Either way, the goal is the same: fewer incidents, faster resolution, and better visibility.",
+          "Have internal IT? We can complement your team with shared tooling, SOPs, escalations, and reporting. Or we can run everything end-to-end. Either way, the outcome is the same: fewer repeat issues, faster resolution, better security hygiene, and better visibility for leadership.",
         image: "/images/illus/screens-2.svg",
         imageSide: "right",
       },
@@ -112,6 +133,8 @@ export default function Page() {
       "Endpoints drift — missed patches, outdated apps, inconsistent configs",
       "On/Offboarding takes too long and access mistakes happen",
       "Leadership has no simple KPIs or risk visibility",
+      "Backups exist but recovery steps aren’t tested",
+      "Vendors and renewals feel reactive and expensive",
     ],
 
     outcomes: [
@@ -119,15 +142,17 @@ export default function Page() {
       "Predictable patching & hardened device baselines",
       "Checklist-driven hires/leavers with fewer access errors",
       "Executive-ready reporting (tickets, assets, patch, risk)",
+      "Backup verification + restore tests for recovery confidence",
+      "Cleaner tooling with fewer overlaps and surprises",
     ],
 
     features: [
       { icon: "Wrench", title: "Helpdesk", desc: "Email/chat/portal support with triage and ownership." },
-      { icon: "Server", title: "Monitoring", desc: "Endpoint/server/network health signals and alerts." },
+      { icon: "Server", title: "Monitoring", desc: "Endpoint/server/network health signals and alerting." },
       { icon: "Lock", title: "Baseline Security", desc: "Practical hardening + MFA guidance + endpoint protection baseline." },
       { icon: "Database", title: "Backup Checks", desc: "Verification + restore testing for predictable recovery." },
-      { icon: "Users", title: "Lifecycle", desc: "Onboarding/offboarding checklists and access control hygiene." },
-      { icon: "LineChart", title: "Reporting", desc: "Monthly KPI pack: tickets, response, patch, risk trends." },
+      { icon: "Users", title: "Lifecycle", desc: "Onboarding/offboarding checklists and access hygiene." },
+      { icon: "LineChart", title: "Reporting", desc: "Monthly KPI pack: tickets, response, patch, and risk trends." },
     ],
 
     gallery: [
@@ -139,32 +164,33 @@ export default function Page() {
     steps: [
       {
         title: "Assess",
-        desc: "Users, devices, identity, and risks.",
-        outputs: ["Access & tooling plan", "Initial risk register"],
+        desc: "Users, devices, identity, and risks. We align support hours and SLA expectations.",
+        outputs: ["Access & tooling plan", "Initial risk register", "Ticket categories & priorities"],
       },
       {
         title: "Stabilize",
-        desc: "Monitoring + patching + baseline hardening + backup checks.",
-        outputs: ["Patch cadence/rings", "Baseline policies"],
+        desc: "Monitoring + patching + baseline hardening + backup checks to stop recurring fires.",
+        outputs: ["Patch cadence/rings", "Baseline policies", "Backup verification notes"],
       },
       {
         title: "Optimize",
-        desc: "SOPs, automation, and self-service improvements.",
-        outputs: ["Runbooks & KB", "Automation backlog"],
+        desc: "SOPs, automation, and self-service improvements that reduce tickets and downtime.",
+        outputs: ["Runbooks & KB", "Automation backlog", "Repeat-issue elimination plan"],
       },
       {
         title: "Grow",
-        desc: "Roadmap planning and continuous improvement cadence.",
-        outputs: ["QBR deck", "Quarterly plan / OKRs"],
+        desc: "Roadmap planning and continuous improvement cadence with leadership reporting.",
+        outputs: ["QBR deck", "Quarterly plan / OKRs", "Budget + refresh timeline"],
       },
     ],
 
     deliverables: [
       "Ticketing + SLA dashboard (monthly)",
-      "Asset inventory + ownership",
+      "Asset inventory + ownership map",
       "Patch + baseline status reporting",
       "Backup verification + restore test notes",
-      "Roadmap & budget view (quarterly)",
+      "Security hygiene checklist (MFA, admin roles, device posture)",
+      "Quarterly roadmap & budget view",
     ],
 
     tooling: [
@@ -174,6 +200,7 @@ export default function Page() {
       "M365/Workspace",
       "Ticketing + KB",
       "Reporting/KPI pack",
+      "Password/MFA standards",
     ],
 
     timeline: [
@@ -199,9 +226,10 @@ export default function Page() {
         rating: 5,
       },
     ],
+
+    faqs,
   };
 
-  // ✅ Breadcrumbs
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -213,7 +241,6 @@ export default function Page() {
     ],
   };
 
-  // ✅ Service
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -224,7 +251,7 @@ export default function Page() {
       "Helpdesk with SLAs, proactive monitoring, patch management, endpoint baselines, onboarding/offboarding, and leadership reporting for small and mid-sized businesses.",
     url: canonical,
     provider: { "@id": BUSINESS_ID },
-   areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
@@ -232,7 +259,6 @@ export default function Page() {
     },
   };
 
-  // ✅ WebPage
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -247,40 +273,15 @@ export default function Page() {
     mainEntity: { "@id": `${canonical}#service` },
   };
 
-  // ✅ FAQ
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": `${canonical}#faq`,
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "What’s included in managed IT?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text:
-            "Helpdesk (email/chat/portal), monitoring, patch management, endpoint baselines, onboarding/offboarding checklists, and monthly reporting. Security hardening guidance (MFA, encryption, endpoint protection baseline) is included as part of a practical standard.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Do you offer co-managed IT?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text:
-            "Yes. We can run IT end-to-end or work alongside your internal team with shared tooling, SOPs, escalations, and reporting.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What are your SLA targets?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text:
-            "We set SLA targets based on your environment and plan. Critical issues get rapid response targets, while standard requests follow defined same-day/next-day handling—with monthly SLA reporting and continuous improvement.",
-        },
-      },
-    ],
+    mainEntity: faqs.map((x) => ({
+      "@type": "Question",
+      name: x.q,
+      acceptedAnswer: { "@type": "Answer", text: x.a },
+    })),
   };
 
   return (

@@ -1,23 +1,25 @@
 // app/services/projects-consulting/page.js
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
-import { BUSINESS_ID } from "@/lib/seoIds";
+import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/services/projects-consulting`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
-  const title = `IT Projects & Consulting in Allentown, PA | Migrations, Audits & Network Refresh | ${brand}`;
+  const fullTitle = `IT Projects & Consulting in Allentown, PA | Migrations, Audits & Network Refresh | ${brand}`;
+
   const description =
     "Fixed-scope IT projects for SMBs in Allentown, Macungie & Emmaus: IT audits, office moves, network refresh, cloud migrations, directory cleanup, decommissions, and automation — with runbooks, rollback plans, and clean handover documentation.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+    title: { absolute: fullTitle },
     description,
-    alternates: { canonical },
+    alternates: { canonical: "/services/projects-consulting" },
     robots: {
       index: true,
       follow: true,
@@ -30,30 +32,27 @@ export async function generateMetadata() {
       },
     },
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       type: "website",
-      url: canonical,
+      url: "/services/projects-consulting",
       siteName: brand,
       images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: `${brand} — Projects & Consulting`,
-        },
+        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Projects & Consulting` },
       ],
     },
-    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
+    twitter: { card: "summary_large_image", title: fullTitle, description, images: ["/og-image.png?v=7"] },
   };
 }
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
   const canonical = `${baseUrl}/services/projects-consulting`;
 
-  // ✅ FAQs (keep short + real)
   const faqs = [
     {
       q: "Do you offer fixed-scope projects?",
@@ -61,11 +60,23 @@ export default function Page() {
     },
     {
       q: "Can projects be done after-hours or on weekends?",
-      a: "Yes. We can plan change windows to reduce business disruption, including evenings and weekends, with rollback steps documented in advance.",
+      a: "Yes. We plan change windows to reduce business disruption, including evenings and weekends, with rollback steps documented in advance.",
     },
     {
       q: "What does the handover include?",
       a: "As-built documentation, runbooks, admin notes/training, and a short post-project support path so the environment is easy to operate.",
+    },
+    {
+      q: "Do you handle network refresh projects?",
+      a: "Yes. We can plan and implement switch/Wi-Fi refresh, segmentation, and standard configurations with validation and rollback steps.",
+    },
+    {
+      q: "Can you help with tenant migrations or rebrands?",
+      a: "Yes. We can plan cutovers, staged moves, and validation so business disruption stays low and handover stays clean.",
+    },
+    {
+      q: "Do you coordinate with vendors?",
+      a: "Yes. We can coordinate ISPs, SaaS vendors, VoIP, and hardware suppliers as part of the project plan and change windows.",
     },
   ];
 
@@ -75,7 +86,6 @@ export default function Page() {
       "Fixed-scope IT projects with clear timelines, acceptance checks, and clean handovers—so upgrades happen without business disruption.",
     hero: "/images/services/projects-hero.svg",
 
-    // ✅ no inflated numbers
     stats: [
       { kpi: "Fixed-scope", label: "Clear deliverables" },
       { kpi: "Runbooks", label: "Step-by-step execution" },
@@ -107,6 +117,24 @@ export default function Page() {
       },
     ],
 
+    problems: [
+      "Projects run without clear acceptance criteria",
+      "Cutovers happen without rollback steps",
+      "Vendor coordination becomes chaotic",
+      "Post-project documentation is missing or outdated",
+      "Legacy systems linger and increase risk",
+      "Stakeholders don’t know timelines or next actions",
+    ],
+
+    outcomes: [
+      "Clear scope and milestones with acceptance checks",
+      "Runbooks and rollback plans for safer change windows",
+      "Simplified environment with less operational risk",
+      "Clean handover pack that internal IT can operate",
+      "Reduced disruption via staged execution where possible",
+      "Better planning for future refresh and budgets",
+    ],
+
     features: [
       { icon: "Wrench", title: "Network Refresh", desc: "Switches, Wi-Fi, VLANs/segmentation, and standard configs." },
       { icon: "Server", title: "Server Refresh / Decommission", desc: "Migrate workloads and retire legacy safely." },
@@ -116,11 +144,31 @@ export default function Page() {
       { icon: "Sparkles", title: "Automation", desc: "Scripting and lightweight workflow automation." },
     ],
 
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
+
     steps: [
-      { title: "Discovery", desc: "Workshops + current-state capture.", outputs: ["Requirements", "Risks & dependencies"] },
-      { title: "Plan", desc: "Design + cutover + rollback plan.", outputs: ["Runbook", "Backout plan"] },
-      { title: "Implement", desc: "Execution with change windows.", outputs: ["Acceptance checks", "As-built docs"] },
-      { title: "Handover", desc: "Docs + admin notes + support path.", outputs: ["Handover pack", "Warranty window"] },
+      { title: "Discovery", desc: "Workshops + current-state capture.", outputs: ["Requirements", "Risks & dependencies", "Success criteria"] },
+      { title: "Plan", desc: "Design + cutover + rollback plan.", outputs: ["Runbook", "Backout plan", "Comms plan"] },
+      { title: "Implement", desc: "Execution with change windows.", outputs: ["Acceptance checks", "As-built docs", "Validation steps"] },
+      { title: "Handover", desc: "Docs + admin notes + support path.", outputs: ["Handover pack", "Warranty window", "Next-step roadmap"] },
+    ],
+
+    deliverables: [
+      "Project scope + milestones + acceptance checks",
+      "Cutover runbook + rollback plan",
+      "As-built documentation + diagrams (where needed)",
+      "Admin notes + access guidance",
+      "Post-project validation checklist",
+      "Short warranty/support path",
+    ],
+
+    tooling: [
+      "Network tooling (switch/Wi-Fi configs)",
+      "Cloud platforms (M365/Workspace)",
+      "Identity directories (AD/Entra)",
+      "Documentation + runbooks",
+      "Monitoring/validation checks",
+      "Ticketing for change tracking",
     ],
 
     timeline: [
@@ -130,7 +178,6 @@ export default function Page() {
       { when: "Week 7", title: "Handover", desc: "Docs, admin notes, support path" },
     ],
 
-    // ✅ no fake names
     testimonials: [
       {
         quote: "The project plan was clear and the cutover went smoothly with minimal disruption.",
@@ -151,7 +198,6 @@ export default function Page() {
     faqs,
   };
 
-  // ✅ JSON-LD (aligned IDs)
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -172,13 +218,9 @@ export default function Page() {
     description:
       "Fixed-scope IT projects including audits, office moves, network refresh, migrations, directory cleanup, decommissions, and automation — delivered with runbooks, rollback plans, acceptance checks, and clean handover documentation.",
     url: canonical,
-  provider: { "@id": BUSINESS_ID },
+    provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
-    offers: {
-      "@type": "Offer",
-      url: `${baseUrl}/get-quote`,
-      availability: "https://schema.org/InStock",
-    },
+    offers: { "@type": "Offer", url: `${baseUrl}/get-quote`, availability: "https://schema.org/InStock" },
   };
 
   const webPageSchema = {
@@ -199,10 +241,10 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": `${canonical}#faq`,
-    mainEntity: faqs.map(({ q, a }) => ({
+    mainEntity: faqs.map((x) => ({
       "@type": "Question",
-      name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      name: x.q,
+      acceptedAnswer: { "@type": "Answer", text: x.a },
     })),
   };
 

@@ -5,19 +5,21 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-  const canonical = `${baseUrl}/services/cloud-workspace`;
-  const ogImage = `${baseUrl}/og-image.png?v=7`;
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
 
-  const title = `Cloud & Microsoft 365 Support in Allentown, PA | Migrations, Security & Automation | ${brand}`;
+  const fullTitle = `Cloud & Microsoft 365 Support in Allentown, PA | Migrations, Security & Automation | ${brand}`;
+
   const description =
     "Microsoft 365, Google Workspace and cloud support for SMBs in Allentown, Macungie & Emmaus: migrations, identity/SSO, SharePoint/Drive governance, DLP/retention, Teams/Meet setup, and SaaS backup with restore testing.";
 
   return {
     metadataBase: new URL(baseUrl),
-    title,
+    title: { absolute: fullTitle },
     description,
-    alternates: { canonical },
+    alternates: { canonical: "/services/cloud-workspace" },
     robots: {
       index: true,
       follow: true,
@@ -30,14 +32,14 @@ export async function generateMetadata() {
       },
     },
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       type: "website",
-      url: canonical,
+      url: "/services/cloud-workspace",
       siteName: brand,
       images: [
         {
-          url: ogImage,
+          url: "/og-image.png?v=7",
           width: 1200,
           height: 630,
           alt: `${brand} — Cloud & Microsoft 365`,
@@ -46,20 +48,21 @@ export async function generateMetadata() {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
-      images: [ogImage],
+      images: ["/og-image.png?v=7"],
     },
   };
 }
 
-
 export default function Page() {
-  const baseUrl = (site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
   const brand = site?.name || "Supreme IT Experts";
   const canonical = `${baseUrl}/services/cloud-workspace`;
 
-  // ✅ FAQs (also used for FAQPage schema)
   const faqs = [
     {
       q: "How long does a Microsoft 365 / Workspace migration take?",
@@ -67,15 +70,23 @@ export default function Page() {
     },
     {
       q: "Can you migrate without downtime?",
-      a: "We plan cutovers to minimize downtime and user impact. Most users experience minimal interruption, and we validate results with a clear rollback option if needed.",
+      a: "We plan cutovers to minimize downtime and user impact. Most users experience minimal interruption, and we validate outcomes with clear rollback steps if anything unexpected happens.",
     },
     {
       q: "Do you set up DLP and retention policies?",
-      a: "Yes. We can implement retention rules/labels, sharing controls, auditing, and reporting so collaboration stays secure and compliant.",
+      a: "Yes. We can implement retention rules/labels, sharing controls, auditing, and reporting so collaboration stays secure and evidence-friendly.",
     },
     {
       q: "Is SaaS backup necessary if we use Microsoft/Google?",
-      a: "Native retention/recycle bin features aren’t the same as independent backup. SaaS backup provides point-in-time recovery for mail and files, plus restore testing for real confidence.",
+      a: "Native retention and recycle bin features aren’t the same as independent backup. SaaS backup provides point-in-time recovery for mail and files, plus restore testing for confidence.",
+    },
+    {
+      q: "Can you standardize Teams/SharePoint structure?",
+      a: "Yes. We define naming, ownership, permissions, and lifecycle rules so Teams and SharePoint don’t become chaotic over time.",
+    },
+    {
+      q: "Do you help with identity and SSO?",
+      a: "Yes. We configure Entra ID / Google identity, MFA, Conditional Access guidance, and secure access standards so logins are simpler and safer.",
     },
   ];
 
@@ -83,10 +94,8 @@ export default function Page() {
     title: "Cloud & Microsoft 365 / Google Workspace",
     lede:
       "Migrate email and files safely, standardize identity, clean up sharing, and add real recoverability with SaaS backups and restore testing.",
-
     hero: "/images/services/cloud-hero.svg",
 
-    // ✅ no hard claims
     stats: [
       { kpi: "Pilot-first", label: "Low-risk migrations" },
       { kpi: "SSO + MFA", label: "Identity hardening" },
@@ -98,21 +107,21 @@ export default function Page() {
       {
         heading: "Migrations that stay calm",
         body:
-          "We start with discovery and a pilot to confirm mail flow, permissions, and edge cases before moving everyone. Then we migrate in controlled batches, validate results, and provide hypercare support so users stay productive during the transition.",
+          "We start with discovery and a pilot to confirm mail flow, permissions, and edge cases before moving everyone. Then we migrate in controlled batches, validate results, and provide hypercare support so users stay productive during the transition. You get a runbook, cutover checklist, and a rollback plan—so the move stays predictable.",
         image: "/images/illus/cloud-move.svg",
         imageSide: "right",
       },
       {
         heading: "Governance that prevents mess later",
         body:
-          "We design SharePoint/Drive structure, ownership rules, and sharing policies so collaboration stays organized and least-privilege by default. Retention and DLP help reduce accidental exposure—without blocking normal work.",
+          "We design SharePoint/Drive structure, ownership rules, and sharing policies so collaboration stays organized and least-privilege by default. Retention and DLP reduce accidental exposure—without blocking normal work. Auditing and reporting help leadership see where risk is trending and what to tighten next.",
         image: "/images/illus/dlp.svg",
         imageSide: "left",
       },
       {
         heading: "Backups beyond ‘recycle bin’",
         body:
-          "SaaS backup gives independent point-in-time recovery for mail and files. We also schedule restore tests so you know recovery works—before a deletion, ransomware, or account compromise forces the issue.",
+          "SaaS backup gives independent point-in-time recovery for mail and files. We also schedule restore tests so you know recovery works—before a deletion, ransomware event, or account compromise forces the issue. This turns “we think we can recover” into “we have proof we can recover.”",
         image: "/images/illus/screens-1.svg",
         imageSide: "right",
       },
@@ -123,6 +132,8 @@ export default function Page() {
       "Legacy mailboxes, PST sprawl, and unclear ownership",
       "No governance: retention/DLP/audit settings missing",
       "Teams/Meet and shared drives become chaotic",
+      "Account compromises create high-impact business disruption",
+      "No independent backup or restore testing",
     ],
 
     outcomes: [
@@ -130,64 +141,64 @@ export default function Page() {
       "Predictable migration with validation and rollback plan",
       "Retention + DLP policies with auditing/reporting",
       "SaaS backup with restore testing and recovery confidence",
+      "Stronger identity standards (MFA/SSO) with fewer login surprises",
+      "Collaboration that stays organized over time",
     ],
 
     features: [
-      {
-        icon: "Cloud",
-        title: "Email & Files Migration",
-        desc: "Pilot-first, batch migrations with validation and rollback planning.",
-      },
-      {
-        icon: "Users",
-        title: "Identity & SSO",
-        desc: "Entra ID / Google identity setup, MFA, and access standards.",
-      },
-      {
-        icon: "Lock",
-        title: "Governance (DLP/Retention)",
-        desc: "Sharing controls, retention policies, auditing, and reporting.",
-      },
-      {
-        icon: "Server",
-        title: "SharePoint/Drive Design",
-        desc: "Structure, ownership, lifecycle, and permission hygiene.",
-      },
-      {
-        icon: "Database",
-        title: "SaaS Backup",
-        desc: "Independent backup for mail and files with restore testing.",
-      },
-      {
-        icon: "Globe",
-        title: "Collaboration Standards",
-        desc: "Teams/Channels/Spaces naming, templates, and lifecycle rules.",
-      },
+      { icon: "Cloud", title: "Email & Files Migration", desc: "Pilot-first, batch migrations with validation and rollback planning." },
+      { icon: "Users", title: "Identity & SSO", desc: "Entra ID / Google identity setup, MFA, and access standards." },
+      { icon: "Lock", title: "Governance (DLP/Retention)", desc: "Sharing controls, retention policies, auditing, and reporting." },
+      { icon: "Server", title: "SharePoint/Drive Design", desc: "Structure, ownership, lifecycle, and permission hygiene." },
+      { icon: "Database", title: "SaaS Backup", desc: "Independent backup for mail and files with restore testing." },
+      { icon: "Globe", title: "Collaboration Standards", desc: "Teams/Channels/Spaces naming, templates, and lifecycle rules." },
     ],
 
-    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-3.svg", "/images/illus/screens-2.svg"],
+    gallery: [
+      "/images/illus/screens-1.svg",
+      "/images/illus/screens-3.svg",
+      "/images/illus/screens-2.svg",
+    ],
 
     steps: [
       {
         title: "Plan",
         desc: "Inventory mail, files, permissions, and dependencies. Choose a staged or cutover approach.",
-        outputs: ["Migration runbook", "Pilot cohort + success criteria"],
+        outputs: ["Migration runbook", "Pilot cohort + success criteria", "Risk & comms plan"],
       },
       {
         title: "Prep",
         desc: "Identity, DNS, licensing, security baselines, and pre-checks.",
-        outputs: ["SSO/MFA setup", "Backup readiness checklist"],
+        outputs: ["SSO/MFA setup", "Backup readiness checklist", "Governance baseline draft"],
       },
       {
         title: "Move",
         desc: "Migrate in batches, validate outcomes, and support users during hypercare.",
-        outputs: ["Cutover checklist", "Hypercare support plan"],
+        outputs: ["Cutover checklist", "Hypercare support plan", "Validation & sign-off steps"],
       },
       {
         title: "Harden",
         desc: "Enable governance and reporting; schedule restore tests for ongoing confidence.",
-        outputs: ["Retention/DLP policies", "Backup + restore test cadence"],
+        outputs: ["Retention/DLP policies", "Backup + restore test cadence", "Collaboration standards"],
       },
+    ],
+
+    deliverables: [
+      "Migration runbook + cutover checklist",
+      "Identity standards (MFA/SSO guidance)",
+      "SharePoint/Drive structure + ownership rules",
+      "Sharing policy + governance baseline (retention/DLP)",
+      "SaaS backup configuration + restore test report",
+      "Post-migration hardening checklist + next steps",
+    ],
+
+    tooling: [
+      "Microsoft 365 / Google Workspace",
+      "Entra ID / Google Identity",
+      "SharePoint / OneDrive / Google Drive",
+      "Teams / Meet collaboration standards",
+      "SaaS backup + restore testing",
+      "Audit/logging configuration",
     ],
 
     timeline: [
@@ -197,7 +208,6 @@ export default function Page() {
       { when: "Week 7", title: "Harden", desc: "Governance + backup reporting + restore tests" },
     ],
 
-    // ✅ remove fake people names; keep credible
     testimonials: [
       {
         quote: "The migration was structured and calm—users stayed productive during the move.",
@@ -218,7 +228,6 @@ export default function Page() {
     faqs,
   };
 
-  // ✅ JSON-LD (Breadcrumb + WebPage + Service + FAQPage)
   const breadcrumbsSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -256,7 +265,7 @@ export default function Page() {
     url: canonical,
     name: `Cloud & Microsoft 365 / Google Workspace | ${brand}`,
     description:
-      "Migrations, identity, governance, collaboration tuning, and SaaS backup for SMBs in Allentown & tMacungie & Emmaus.",
+      "Migrations, identity, governance, collaboration tuning, and SaaS backup for SMBs in Allentown, Macungie & Emmaus.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
     mainEntity: { "@id": `${canonical}#service` },
