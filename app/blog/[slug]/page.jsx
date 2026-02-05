@@ -96,7 +96,7 @@ export async function generateMetadata({ params }) {
     description: p.excerpt,
     alternates: { canonical: `/blog/${p.slug}` },
     openGraph: {
-      title: `${p.title} | ${brand}`,
+      title: p.title,
       description: p.excerpt,
       type: "article",
       url: `/blog/${p.slug}`,
@@ -111,7 +111,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${p.title} | ${brand}`,
+      title: p.title,
       description: p.excerpt,
       images: [p.cover],
     },

@@ -39,7 +39,7 @@ export async function generateMetadata() {
     alternates: { canonical },
     robots: { index: true, follow: true },
     openGraph: {
-      title: `${title} | ${brand}`,
+      title,
       description,
       type: "website",
       url: canonical,
@@ -50,7 +50,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ${brand}`,
+      title,
       description,
       images: ["/og-image.png?v=7"],
     },

@@ -7,7 +7,7 @@ import TrackedEmailLink from "@/components/TrackedEmailLink";
 import { site } from "@/lib/siteConfig";
 
 export const metadata = {
-  title: "Allentown Managed IT Support for SMBs | Supreme IT Experts",
+  title: "Allentown Managed IT Support for SMBs",
   description:
     "Local MSP in Allentown providing 24/7 helpdesk, device management, cybersecurity & backups, and network monitoring. Fast response. Fixed monthly pricing.",
   robots: { index: false, follow: true },

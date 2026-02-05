@@ -1,7 +1,7 @@
 // app/privacy/page.js
 import TrackedEmailLink from "@/components/TrackedEmailLink";
 
-export const metadata = { title: "Privacy Policy | Supreme IT Experts" };
+export const metadata = { title: "Privacy Policy" };
 
 export default function Page() {
   const source = "privacy";
