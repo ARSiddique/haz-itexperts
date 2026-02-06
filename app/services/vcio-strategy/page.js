@@ -5,10 +5,8 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonicalAbs = `${baseUrl}/services/vcio-strategy`;
 
   const fullTitle = `vCIO & IT Strategy in Allentown, PA | Roadmaps, Budgets & KPI Reporting | ${brand}`;
 
@@ -35,20 +33,29 @@ export async function generateMetadata() {
       title: fullTitle,
       description,
       type: "website",
-      url: "/services/vcio-strategy",
+      url: canonicalAbs,
       siteName: brand,
-      images: [{ url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — vCIO / Strategy` }],
+      images: [
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — vCIO / Strategy`,
+        },
+      ],
     },
-    twitter: { card: "summary_large_image", title: fullTitle, description, images: ["/og-image.png?v=7"] },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
   };
 }
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/vcio-strategy`;
 
   const faqs = [
@@ -83,6 +90,32 @@ export default function Page() {
     lede:
       "Turn IT into a plan you can run: roadmaps, budgets, vendor decisions, and KPIs presented in a leadership-friendly format.",
     hero: "/images/services/vcio-hero.svg",
+
+    // ✅ Optional internal-link block (safe even if your component ignores it)
+    localLinks: {
+      eyebrow: "Local leadership support",
+      title: "Strategy support across Allentown + nearby",
+      desc: "Open a location page for coverage details and a simple “start here” path.",
+      items: [
+        {
+          label: "Allentown, PA",
+          href: "/locations/allentown-pa",
+          desc: "Roadmaps, vendor reviews, KPI dashboards, QBR cadence.",
+        },
+        {
+          label: "Macungie, PA",
+          href: "/locations/macungie-pa",
+          desc: "Budget planning, refresh cycles, risk register + mitigation.",
+        },
+        {
+          label: "Emmaus, PA",
+          href: "/locations/emmaus-pa",
+          desc: "Executive reporting + prioritized initiative sequencing.",
+        },
+      ],
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: { label: "Request a Strategy Call", href: "/get-quote?source=vcio-areas" },
+    },
 
     stats: [
       { kpi: "Roadmap", label: "Prioritized initiatives" },
@@ -135,18 +168,18 @@ export default function Page() {
 
     features: [
       { icon: "LineChart", title: "QBRs", desc: "KPIs, risks, and health reviews with leadership." },
-      { icon: "BookOpen", title: "Standards & Governance", desc: "Practical policies and an operating model your team can follow." },
+      {
+        icon: "BookOpen",
+        title: "Standards & Governance",
+        desc: "Practical policies and an operating model your team can follow.",
+      },
       { icon: "BarChart3", title: "Budget & Forecast", desc: "12–18 month view of spend, refresh cycles, and licensing." },
       { icon: "Network", title: "Vendor Management", desc: "Right-size tools, reduce overlap, and manage renewals." },
       { icon: "Sparkles", title: "Pilot Before You Commit", desc: "Small, low-risk trials to validate value." },
       { icon: "Building2", title: "Exec Reporting", desc: "Clear summaries that work for owners and leadership teams." },
     ],
 
-    gallery: [
-      "/images/illus/screens-1.svg",
-      "/images/illus/screens-2.svg",
-      "/images/illus/screens-3.svg",
-    ],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
 
     steps: [
       {
@@ -235,9 +268,14 @@ export default function Page() {
     description:
       "Roadmaps, budget planning, vendor reviews, governance, and executive reporting with measurable KPIs for small and mid-sized businesses.",
     url: canonical,
-    provider: { "@id": BUSINESS_ID }, // ✅ fixed (was publisher)
+    provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
-    offers: { "@type": "Offer", url: `${baseUrl}/get-quote`, availability: "https://schema.org/InStock" },
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
@@ -246,8 +284,7 @@ export default function Page() {
     "@id": `${canonical}#webpage`,
     name: `vCIO / Strategy | ${brand}`,
     url: canonical,
-    description:
-      "Roadmaps, budgets, vendor decisions, executive reporting, and measurable KPIs—built for SMBs.",
+    description: "Roadmaps, budgets, vendor decisions, executive reporting, and measurable KPIs—built for SMBs.",
     isPartOf: { "@type": "WebSite", "@id": `${baseUrl}/#website` },
     publisher: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${canonical}#breadcrumb` },
@@ -273,7 +310,7 @@ export default function Page() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
-      <ServiceClientPage cfg={cfg} />
+      <ServiceClientPage cfg={cfg} canonical={canonical} />
     </>
   );
 }

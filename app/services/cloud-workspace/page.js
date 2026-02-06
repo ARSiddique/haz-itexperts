@@ -1,14 +1,12 @@
 // app/services/cloud-workspace/page.js
+import Link from "next/link";
 import ServiceClientPage from "../_components/ServiceClientPage";
 import { site } from "@/lib/siteConfig";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
 
   const fullTitle = `Cloud & Microsoft 365 Support in Allentown, PA | Migrations, Security & Automation | ${brand}`;
 
@@ -56,12 +54,16 @@ export async function generateMetadata() {
 }
 
 export default function Page() {
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
   const canonical = `${baseUrl}/services/cloud-workspace`;
+
+  // ✅ Local linking block (Services → Locations / Areas)
+  const AREAS = [
+    { name: "Allentown, PA", slug: "allentown-pa" },
+    { name: "Macungie, PA", slug: "macungie-pa" },
+    { name: "Emmaus, PA", slug: "emmaus-pa" },
+  ];
 
   const faqs = [
     {
@@ -95,6 +97,20 @@ export default function Page() {
     lede:
       "Migrate email and files safely, standardize identity, clean up sharing, and add real recoverability with SaaS backups and restore testing.",
     hero: "/images/services/cloud-hero.svg",
+
+    // ✅ add-on: local intent + internal links (shows inside the page UI)
+    localLinks: {
+      eyebrow: "Areas we serve",
+      title: "Cloud support for Allentown, Macungie & Emmaus",
+      desc:
+        "Start with your city page for local intent. These pages connect cloud support with managed IT, cybersecurity, and quick assessment booking.",
+      items: AREAS.map((x) => ({
+        label: x.name,
+        href: `/locations/${x.slug}`,
+      })),
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: { label: "Book a 20-min assessment", href: "/contact?type=assessment&source=cloud-workspace" },
+    },
 
     stats: [
       { kpi: "Pilot-first", label: "Low-risk migrations" },
@@ -154,11 +170,7 @@ export default function Page() {
       { icon: "Globe", title: "Collaboration Standards", desc: "Teams/Channels/Spaces naming, templates, and lifecycle rules." },
     ],
 
-    gallery: [
-      "/images/illus/screens-1.svg",
-      "/images/illus/screens-3.svg",
-      "/images/illus/screens-2.svg",
-    ],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-3.svg", "/images/illus/screens-2.svg"],
 
     steps: [
       {
@@ -239,6 +251,7 @@ export default function Page() {
     ],
   };
 
+  // ✅ Cleaner Service schema (areaServed as City objects)
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -246,10 +259,14 @@ export default function Page() {
     name: "Cloud & Microsoft 365 / Google Workspace",
     description:
       "Microsoft 365 and Google Workspace services: migrations, identity/SSO, SharePoint/Drive governance, DLP/retention, collaboration standards, and SaaS backup with restore testing.",
-    serviceType: "Cloud Migration & Productivity",
+    serviceType: "Cloud & Microsoft 365 Support",
     url: canonical,
     provider: { "@id": BUSINESS_ID },
-    areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
+    areaServed: [
+      { "@type": "City", name: "Allentown, PA" },
+      { "@type": "City", name: "Macungie, PA" },
+      { "@type": "City", name: "Emmaus, PA" },
+    ],
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
@@ -282,14 +299,37 @@ export default function Page() {
     })),
   };
 
+  // ✅ Optional: Areas ItemList schema (service → location pages)
+  const areasItemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${canonical}#areas`,
+    name: "Areas served",
+    itemListElement: AREAS.map((x, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: x.name,
+      url: `${baseUrl}/locations/${x.slug}`,
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
+          __html: JSON.stringify([
+            breadcrumbsSchema,
+            webPageSchema,
+            serviceSchema,
+            faqSchema,
+            areasItemListSchema,
+          ]),
         }}
       />
+      {/* ServiceClientPage will ignore localLinks if you don't render it there.
+          If you want it visible on UI, tell me your ServiceClientPage config usage,
+          or I can patch ServiceClientPage to render cfg.localLinks safely. */}
       <ServiceClientPage cfg={cfg} />
     </>
   );

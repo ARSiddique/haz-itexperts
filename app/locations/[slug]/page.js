@@ -73,6 +73,7 @@ function getQueryPack(slug, city, state) {
       metaBoost:
         "Managed IT services, cybersecurity, help desk solutions, IT support, backup planning in Allentown, PA.",
     },
+
     "macungie-pa": {
       headline: `Popular searches in ${city}`,
       items: [
@@ -99,6 +100,7 @@ function getQueryPack(slug, city, state) {
       ],
       metaBoost: "Business IT support near Macungie, PA + managed IT and cybersecurity.",
     },
+
     "emmaus-pa": {
       headline: `Popular searches in ${city}`,
       items: [
@@ -169,10 +171,12 @@ export async function generateMetadata({ params }) {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const path = `/locations/${loc.slug}`;
+  const canonical = `${baseUrl}${path}`;
 
   const pack = getQueryPack(loc.slug, loc.city, loc.state);
 
-  const title = `Managed IT Services ${loc.city}, ${loc.state} | Help Desk + Cybersecurity | ${brand}`;
+  // ✅ Keep title CTR-friendly but city-focused
+  const title = `Managed IT Services ${loc.city}, ${loc.state} | Help Desk + Cybersecurity — ${brand}`;
   const description =
     `Need business IT support in ${loc.city}, ${loc.state}? Managed IT, help desk, cybersecurity, Microsoft 365, backups & disaster recovery. ` +
     `Book a free 20-min IT assessment.`;
@@ -193,7 +197,7 @@ export async function generateMetadata({ params }) {
       `IT management solutions ${loc.city}`,
       `managed service provider ${loc.city}`,
     ],
-    alternates: { canonical: path },
+    alternates: { canonical }, // ✅ absolute canonical
     robots: {
       index: true,
       follow: true,
@@ -209,7 +213,7 @@ export async function generateMetadata({ params }) {
       title,
       description: `${description} ${pack.metaBoost}`,
       type: "website",
-      url: path,
+      url: canonical, // ✅ absolute OG url
       siteName: brand,
       images: [
         {
@@ -310,7 +314,7 @@ export default async function LocationPage({ params }) {
     ],
   };
 
-  // ✅ 6 services coverage on the location page (links auto-match your SERVICES list if possible)
+  // ✅ 6 services coverage on the location page
   const focusCards = [
     {
       icon: CheckCircle2,
@@ -351,7 +355,7 @@ export default async function LocationPage({ params }) {
       icon: BriefcaseBusiness,
       title: "vCIO / IT Strategy",
       desc: "Roadmaps, budget planning, vendor alignment, and measurable IT leadership KPIs.",
-      link: findServiceHref(["vcio", "strategy"], "/services/vcio-it-strategy"),
+      link: findServiceHref(["vcio", "strategy"], "/services/vcio-strategy"), // ✅ fixed slug
       cta: "IT strategy",
     },
   ];
@@ -366,10 +370,11 @@ export default async function LocationPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* ✅ H1 should include primary keyword + city */}
       <PageHero
         eyebrow="Areas we serve"
-        title={`${loc.city}, ${loc.state}`}
-        sub={`Managed IT services, help desk & cybersecurity in ${loc.city}, ${loc.state} — plus Microsoft 365, backups/DR, MDM and IT strategy.`}
+        title={`Managed IT Services in ${loc.city}, ${loc.state}`}
+        sub={`Business IT support, help desk & cybersecurity in ${loc.city}, ${loc.state} — plus Microsoft 365, backups/DR, MDM and IT strategy.`}
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
@@ -407,6 +412,9 @@ export default async function LocationPage({ params }) {
             <span className="text-slate-100 font-medium">backup/DR planning</span>,{" "}
             <span className="text-slate-100 font-medium">MDM</span> and{" "}
             <span className="text-slate-100 font-medium">IT strategy</span>.{" "}
+            <span className="text-slate-400">
+              (If you searched “IT support near me” in {loc.city}, this page is designed for that intent.)
+            </span>{" "}
             <Link
               href={`/contact?type=assessment&source=location-intent-${loc.slug}`}
               className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"

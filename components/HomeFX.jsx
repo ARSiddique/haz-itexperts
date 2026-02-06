@@ -6,9 +6,21 @@ export default function HomeFX() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ---- once-only reveal for [data-reveal]
-    const els = Array.from(document.querySelectorAll("[data-reveal]"))
-      .filter((el) => el instanceof HTMLElement && !el.dataset.revealed);
+    const els = Array.from(document.querySelectorAll("[data-io]")).filter(
+      (el) => el instanceof HTMLElement && !el.dataset.revealed
+    );
+
+    // ✅ Only hide AFTER JS loads (so no blank page)
+    if (!reduce) {
+      els.forEach((el) => {
+        const dir = el.getAttribute("data-io") || "up";
+        const y = dir === "up" ? 16 : dir === "down" ? -16 : 0;
+        const x = dir === "left" ? 16 : dir === "right" ? -16 : 0;
+        el.style.opacity = "0";
+        el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        el.style.willChange = "opacity, transform";
+      });
+    }
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -16,14 +28,6 @@ export default function HomeFX() {
           const el = e.target;
           if (!e.isIntersecting || el.dataset.revealed === "1") return;
           el.dataset.revealed = "1";
-          if (reduce) {
-            el.style.opacity = "1";
-            el.style.transform = "none";
-            return;
-          }
-          const dir = el.getAttribute("data-reveal") || "up";
-          const y = dir === "up" ? 16 : dir === "down" ? -16 : 0;
-          const x = dir === "left" ? 16 : dir === "right" ? -16 : 0;
           el.style.transition = "opacity .42s ease, transform .42s ease";
           el.style.opacity = "1";
           el.style.transform = "translate3d(0,0,0)";
@@ -34,9 +38,10 @@ export default function HomeFX() {
 
     els.forEach((el) => io.observe(el));
 
-    // ---- cheap parallax for [data-parallax]
-    const para = Array.from(document.querySelectorAll("[data-parallax]"))
-      .filter((el) => el instanceof HTMLElement);
+    // parallax stays same
+    const para = Array.from(document.querySelectorAll("[data-parallax]")).filter(
+      (el) => el instanceof HTMLElement
+    );
 
     let raf = 0;
     const tick = () => {
@@ -51,6 +56,7 @@ export default function HomeFX() {
         el.style.transform = `translate3d(0, ${t * speed * 60}px, 0)`;
       });
     };
+
     const onScroll = () => {
       if (raf) return;
       raf = requestAnimationFrame(tick);
@@ -68,5 +74,5 @@ export default function HomeFX() {
     };
   }, []);
 
-  return null; // ⬅️ IMPORTANT: koi layout/markup nahi
+  return null;
 }

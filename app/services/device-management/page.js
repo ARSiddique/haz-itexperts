@@ -5,10 +5,8 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonicalAbs = `${baseUrl}/services/device-management`;
 
   const fullTitle = `Device Management (MDM) in Allentown, PA | Windows, Mac, iOS & Android | ${brand}`;
 
@@ -35,20 +33,29 @@ export async function generateMetadata() {
       title: fullTitle,
       description,
       type: "website",
-      url: "/services/device-management",
+      url: canonicalAbs,
       siteName: brand,
-      images: [{ url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Device Management` }],
+      images: [
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Device Management`,
+        },
+      ],
     },
-    twitter: { card: "summary_large_image", title: fullTitle, description, images: ["/og-image.png?v=7"] },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
   };
 }
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/device-management`;
 
   const faqs = [
@@ -87,6 +94,35 @@ export default function Page() {
     lede:
       "Standardize devices across Windows, macOS, iOS, and Android with enrollment, baselines, patching, app catalogs, and compliance visibility—without slowing users down.",
     hero: "/images/services/device-hero.svg",
+
+    // ✅ NEW: MDM-specific local internal linking block (renders in ServiceClientPage)
+    localLinks: {
+      eyebrow: "Areas we serve",
+      title: "Device management coverage in your area",
+      desc: "Open your local page for availability, coverage details, FAQs, and next steps.",
+      items: [
+        {
+          label: "Allentown, PA",
+          href: "/locations/allentown-pa",
+          desc: "MDM + managed IT for Allentown SMBs.",
+        },
+        {
+          label: "Macungie, PA",
+          href: "/locations/macungie-pa",
+          desc: "Autopilot/ABM enrollment + compliance reporting.",
+        },
+        {
+          label: "Emmaus, PA",
+          href: "/locations/emmaus-pa",
+          desc: "Baselines, patch rings, and lifecycle control.",
+        },
+      ],
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: {
+        label: "Book a 20-min Assessment",
+        href: "/contact?type=assessment&source=device-management-areas",
+      },
+    },
 
     stats: [
       { kpi: "Zero-touch", label: "Autopilot / ABM" },
@@ -146,11 +182,7 @@ export default function Page() {
       { icon: "Users", title: "Lifecycle", desc: "Procure → assign → replace → retire → disposal guidance." },
     ],
 
-    gallery: [
-      "/images/illus/screens-1.svg",
-      "/images/illus/screens-2.svg",
-      "/images/illus/screens-3.svg",
-    ],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
 
     steps: [
       {
@@ -247,6 +279,7 @@ export default function Page() {
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },
   };
@@ -284,7 +317,7 @@ export default function Page() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
-      <ServiceClientPage cfg={cfg} />
+      <ServiceClientPage cfg={cfg} canonical={canonical} />
     </>
   );
 }

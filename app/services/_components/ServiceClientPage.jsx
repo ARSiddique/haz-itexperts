@@ -56,25 +56,48 @@ const ICONS = {
   MapPin,
 };
 
+/**
+ * infer service key from pathname
+ * - fast path for your known routes
+ * - fallback tries to match SERVICE_LINKS href for future-proofing
+ */
 function inferServiceKeyFromPath(pathname = "") {
   if (!pathname) return null;
+
+  // fast path (your 6 routes)
   if (pathname.includes("/services/managed-it")) return "managed";
   if (pathname.includes("/services/cybersecurity")) return "security";
   if (pathname.includes("/services/cloud-workspace")) return "cloud";
   if (pathname.includes("/services/projects-consulting")) return "projects";
   if (pathname.includes("/services/device-management")) return "mdm";
   if (pathname.includes("/services/vcio-strategy")) return "vcio";
-  return null;
+
+  // fallback: match by href from services list
+  const found = Array.isArray(SERVICE_LINKS)
+    ? SERVICE_LINKS.find((s) => s?.href && pathname.includes(s.href))
+    : null;
+
+  return found?.key || null;
 }
 
-/* Safe image: if src 404s, swap to a local fallback */
+/**
+ * SafeImage
+ * - Next/Image sometimes doesn't reliably bubble onError for optimized images,
+ *   especially with SVG/local assets. `unoptimized` ensures predictable behavior.
+ */
 const SafeImage = ({ src, alt, ...rest }) => {
-  const [err, setErr] = React.useState(false);
+  const [imgSrc, setImgSrc] = React.useState(src);
+
+  React.useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
   return (
     <Image
-      src={err ? "/images/illus/fallback.svg" : src}
+      src={imgSrc || "/images/illus/fallback.svg"}
       alt={alt}
-      onError={() => setErr(true)}
+      onError={() => setImgSrc("/images/illus/fallback.svg")}
+      unoptimized
       {...rest}
     />
   );
@@ -123,7 +146,9 @@ const FeatureCard = ({ icon: iconName, title, desc, bullets = [] }) => {
         </div>
         <h3 className="font-bold">{title}</h3>
       </div>
+
       <p className="mt-3 text-slate-300">{desc}</p>
+
       {bullets.length > 0 && (
         <ul className="mt-3 list-disc list-inside text-slate-300 space-y-1">
           {bullets.map((b, i) => (
@@ -131,6 +156,7 @@ const FeatureCard = ({ icon: iconName, title, desc, bullets = [] }) => {
           ))}
         </ul>
       )}
+
       <div className="mt-4 h-1 w-0 bg-emerald-400 group-hover:w-full transition-all rounded-full" />
     </motion.div>
   );
@@ -143,6 +169,7 @@ const Step = ({ n, title, desc, outputs = [] }) => (
     </div>
     <div className="font-semibold mt-1">{title}</div>
     <p className="text-slate-300 mt-1">{desc}</p>
+
     {outputs.length > 0 && (
       <ul className="mt-3 text-slate-300 text-sm space-y-1">
         {outputs.map((o, i) => (
@@ -170,6 +197,7 @@ const LongSection = ({
       <h3 className="text-xl md:text-2xl font-extrabold">{heading}</h3>
       <p className="mt-3 text-slate-300 leading-7">{body}</p>
     </div>
+
     <motion.div
       whileHover={{ scale: 1.02 }}
       className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-white/5"
@@ -202,6 +230,7 @@ const TestimonialCard = ({ quote, author, role, avatar, rating = 5 }) => (
     <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-white/10 bg-white/10 shrink-0">
       <SafeImage src={avatar} alt={author} fill sizes="64px" className="object-cover" />
     </div>
+
     <div>
       <Stars n={rating} />
       <p className="text-slate-100 mt-1">“{quote}”</p>
@@ -226,11 +255,13 @@ function RelatedServiceCard({ s }) {
         <div className="h-10 w-10 rounded-xl bg-white/10 grid place-items-center shrink-0">
           {Icon ? <Icon className="h-5 w-5 text-cyan-200" /> : <span>★</span>}
         </div>
+
         <div className="min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-extrabold text-base">{s.title}</h3>
             <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-cyan-200 transition" />
           </div>
+
           <p className="mt-2 text-slate-300 text-sm leading-6">{s.blurb}</p>
         </div>
       </div>
@@ -248,27 +279,40 @@ function RelatedServiceCard({ s }) {
   );
 }
 
-/* ✅ Areas we serve card */
+/* ✅ Areas card (supports LOCATIONS shape OR cfg.localLinks item shape) */
 function AreaCard({ area }) {
-  const title =
-    area?.city && area?.state ? `${area.city}, ${area.state}` : area?.title || "Area";
-  const desc = area?.lede || "Coverage details, FAQs, and service options for this area.";
+  // Case A: LOCATIONS entry
+  const locTitle =
+    area?.city && area?.state ? `${area.city}, ${area.state}` : area?.title;
+  const locHref = area?.slug ? `/locations/${area.slug}` : null;
+  const locDesc = area?.lede || "Coverage details, FAQs, and service options for this area.";
+
+  // Case B: cfg.localLinks item { label, href, desc? }
+  const customTitle = area?.label;
+  const customHref = area?.href;
+  const customDesc = area?.desc;
+
+  const title = customTitle || locTitle || "Area";
+  const href = customHref || locHref || "/areas";
+  const desc = customDesc || locDesc;
 
   return (
     <Link
-      href={`/locations/${area.slug}`}
+      href={href}
       className="group block rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-emerald-300/30 transition"
-      aria-label={`Open ${title} location page`}
+      aria-label={`Open ${title}`}
     >
       <div className="flex items-start gap-3">
         <div className="h-10 w-10 rounded-xl bg-white/10 grid place-items-center shrink-0">
           <MapPin className="h-5 w-5 text-emerald-200" />
         </div>
+
         <div className="min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-extrabold text-base truncate">{title}</h3>
             <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-emerald-200 transition" />
           </div>
+
           <p className="mt-2 text-slate-300 text-sm leading-6">{desc}</p>
         </div>
       </div>
@@ -298,6 +342,8 @@ export default function ServiceClientPage({ cfg }) {
     compare = [],
     faqs = [],
     testimonials = [],
+    // ✅ NEW: optional local links config
+    localLinks,
   } = cfg || {};
 
   const currentKey = React.useMemo(
@@ -306,10 +352,10 @@ export default function ServiceClientPage({ cfg }) {
   );
 
   const relatedServices = React.useMemo(() => {
-    const order = (currentKey && RELATED[currentKey]) || [];
-    const pool = SERVICE_LINKS;
+    const order = (currentKey && RELATED?.[currentKey]) || [];
+    const pool = Array.isArray(SERVICE_LINKS) ? SERVICE_LINKS : [];
 
-    if (!order.length) return pool.slice(0, 3);
+    if (!order.length) return pool.slice(0, 4);
 
     return order
       .map((k) => pool.find((x) => x.key === k))
@@ -317,10 +363,24 @@ export default function ServiceClientPage({ cfg }) {
       .slice(0, 4);
   }, [currentKey]);
 
-  const topAreas = React.useMemo(() => {
+  // ✅ Areas list: prefer cfg.localLinks.items, fallback to LOCATIONS top 6
+  const areasList = React.useMemo(() => {
+    if (localLinks?.items && Array.isArray(localLinks.items) && localLinks.items.length) {
+      return localLinks.items.slice(0, 6);
+    }
     const list = Array.isArray(LOCATIONS) ? LOCATIONS : [];
     return list.slice(0, 6);
-  }, []);
+  }, [localLinks]);
+
+  // ✅ Areas header content: prefer cfg.localLinks values
+  const areasEyebrow = localLinks?.eyebrow || ""; // better default (no duplicate)
+  const areasTitle = localLinks?.title || "Areas we serve";
+  const areasDesc =
+    localLinks?.desc ||
+    "Browse location pages for service availability, coverage details, and next steps.";
+
+  const areasCta1 = localLinks?.cta1 || { label: "View all areas", href: "/areas" };
+  const areasCta2 = localLinks?.cta2 || null; // optional
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
@@ -528,6 +588,7 @@ export default function ServiceClientPage({ cfg }) {
                   ))}
                 </tr>
               </thead>
+
               <tbody className="[&>tr:nth-child(even)]:bg-white/[0.03]">
                 {compare.slice(1).map((row, idx) => (
                   <tr key={idx}>
@@ -584,7 +645,8 @@ export default function ServiceClientPage({ cfg }) {
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold">Related services</h2>
               <p className="mt-2 text-slate-300 max-w-3xl">
-                Explore connected services that teams usually bundle together for better stability, security, and visibility.
+                Explore connected services that teams usually bundle together for better stability,
+                security, and visibility.
               </p>
             </div>
 
@@ -598,34 +660,51 @@ export default function ServiceClientPage({ cfg }) {
 
           <div className="mt-6 grid md:grid-cols-2 gap-4">
             {relatedServices.map((s) => (
-              <RelatedServiceCard key={s.key} s={s} />
+              <RelatedServiceCard key={s?.key || s?.href} s={s} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ✅ AREAS WE SERVE (NEW internal linking boost) */}
+      {/* ✅ AREAS WE SERVE (supports cfg.localLinks) */}
       <section className="mt-12">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="flex items-end justify-between gap-3 flex-wrap">
             <div>
-              <h2 className="text-2xl md:text-3xl font-extrabold">Areas we serve</h2>
-              <p className="mt-2 text-slate-300 max-w-3xl">
-                Browse location pages for service availability, coverage details, and next steps.
-              </p>
+              {areasEyebrow ? (
+                <div className="text-xs uppercase tracking-[0.18em] text-emerald-300/80">
+                  {areasEyebrow}
+                </div>
+              ) : null}
+
+              <h2 className="text-2xl md:text-3xl font-extrabold">{areasTitle}</h2>
+              <p className="mt-2 text-slate-300 max-w-3xl">{areasDesc}</p>
             </div>
 
-            <Link
-              href="/areas"
-              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm border border-emerald-300/30 text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20"
-            >
-              View all areas <ChevronRight className="h-4 w-4" />
-            </Link>
+            <div className="flex gap-2 flex-wrap">
+              {areasCta1?.href && (
+                <Link
+                  href={areasCta1.href}
+                  className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm border border-emerald-300/30 text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20"
+                >
+                  {areasCta1.label || "View all areas"} <ChevronRight className="h-4 w-4" />
+                </Link>
+              )}
+
+              {areasCta2?.href && (
+                <Link
+                  href={areasCta2.href}
+                  className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  {areasCta2.label || "Book assessment"} <ChevronRight className="h-4 w-4" />
+                </Link>
+              )}
+            </div>
           </div>
 
           <div className="mt-6 grid md:grid-cols-2 gap-4">
-            {topAreas.map((a) => (
-              <AreaCard key={a.slug} area={a} />
+            {areasList.map((a, idx) => (
+              <AreaCard key={(a?.slug || a?.href || "area") + idx} area={a} />
             ))}
           </div>
         </div>
@@ -646,12 +725,14 @@ export default function ServiceClientPage({ cfg }) {
             >
               Get Quote
             </Link>
+
             <Link
               href="/contact"
               className="rounded-lg px-5 py-3 font-semibold bg-white/10 ring-1 ring-white/20 hover:bg-white/20"
             >
               Contact
             </Link>
+
             <Link
               href="/services"
               className="rounded-lg px-5 py-3 font-semibold bg-white/10 hover:bg-white/20"

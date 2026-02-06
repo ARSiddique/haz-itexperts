@@ -1,5 +1,6 @@
 // app/areas/page.js
 import Link from "next/link";
+import Script from "next/script";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
@@ -19,13 +20,13 @@ import {
   Lock,
   Wrench,
   LineChart,
+  CheckCircle2,
 } from "lucide-react";
 
 // --- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
-
   const canonical = `${baseUrl}/areas`;
 
   const title = "Areas We Serve: Allentown, Macungie & Emmaus, PA";
@@ -44,9 +45,7 @@ export async function generateMetadata() {
       type: "website",
       url: canonical,
       siteName: brand,
-      images: [
-        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Areas We Serve` },
-      ],
+      images: [{ url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Areas We Serve` }],
     },
     twitter: {
       card: "summary_large_image",
@@ -131,6 +130,25 @@ const SERVICE_HUB = [
     href: "/services/vcio-strategy",
     icon: LineChart,
     tags: ["Roadmaps", "Budgets", "KPIs"],
+  },
+];
+
+const FAQS = [
+  {
+    q: "Do you provide IT support across Allentown, Macungie, and Emmaus?",
+    a: "Yes — we support SMBs across Allentown, Macungie, and Emmaus with remote-first help desk support and onsite visits when needed.",
+  },
+  {
+    q: "Should this Areas page rank, or the city Location page?",
+    a: "The city Location pages are built to rank for city-specific searches. This Areas page is a hub that strengthens crawl paths and helps users reach the correct city page fast.",
+  },
+  {
+    q: "Do you offer managed IT services and cybersecurity together?",
+    a: "Yes — we combine managed IT (monitoring, patching, helpdesk) with security-first baselines, identity hardening, endpoint protection, and backup/recovery planning.",
+  },
+  {
+    q: "What’s the fastest way to get started?",
+    a: "Book a free 20-minute assessment or request a quote. We’ll confirm scope and share a practical 30–90 day stabilization plan.",
   },
 ];
 
@@ -270,6 +288,7 @@ export default async function AreasPage({ searchParams }) {
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const brand = site?.name || "Supreme IT Experts";
 
+  // ✅ keep this await (Next 15 sync-dynamic-apis warning)
   const sp = (await searchParams) || {};
   const regionParam = Array.isArray(sp.region) ? sp.region[0] : sp.region;
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
@@ -295,81 +314,81 @@ export default async function AreasPage({ searchParams }) {
     { name: "Emmaus, PA", slug: "emmaus-pa" },
   ];
 
-  // ✅ JSON-LD (SEO) — cleaner graph + consistent IDs
+  // ✅ JSON-LD (Best practice: single @graph)
   const CANONICAL = `${baseUrl}/areas`;
   const WEBSITE_ID = `${baseUrl}/#website`;
+  const WEBPAGE_ID = `${CANONICAL}#webpage`;
+  const BREADCRUMB_ID = `${CANONICAL}#breadcrumb`;
+  const POPULAR_ID = `${CANONICAL}#popular-locations`;
+  const REGION_ID = `${CANONICAL}#region-${region.key}`;
+  const FAQ_ID = `${CANONICAL}#faq`;
 
-  const breadcrumbsSchema = {
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "@id": `${CANONICAL}#breadcrumb`,
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Areas We Serve", item: CANONICAL },
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        url: `${baseUrl}/`,
+        name: brand,
+        publisher: { "@id": BUSINESS_ID },
+        inLanguage: "en-US",
+      },
+      {
+        "@type": "WebPage",
+        "@id": WEBPAGE_ID,
+        url: CANONICAL,
+        name: "Areas We Serve",
+        isPartOf: { "@id": WEBSITE_ID },
+        about: { "@id": BUSINESS_ID },
+        breadcrumb: { "@id": BREADCRUMB_ID },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": BREADCRUMB_ID,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+          { "@type": "ListItem", position: 2, name: "Areas We Serve", item: CANONICAL },
+        ],
+      },
+      {
+        "@type": "ItemList",
+        "@id": POPULAR_ID,
+        name: "Popular IT Support Locations",
+        itemListElement: popularLocations.map((x, idx) => ({
+          "@type": "ListItem",
+          position: idx + 1,
+          name: x.name,
+          url: `${baseUrl}/locations/${x.slug}`,
+        })),
+      },
+      {
+        "@type": "ItemList",
+        "@id": REGION_ID,
+        name: `Service cities — ${region.name}`,
+        itemListElement: region.cities.map((c, idx) => ({
+          "@type": "ListItem",
+          position: idx + 1,
+          name: c.name,
+          url: `${baseUrl}/locations/${c.slug}`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        "@id": FAQ_ID,
+        mainEntity: FAQS.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+        isPartOf: { "@id": WEBPAGE_ID },
+      },
     ],
-  };
-
-  const collectionPageSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "@id": `${CANONICAL}#collection`,
-    url: CANONICAL,
-    name: "Areas We Serve",
-    isPartOf: { "@id": WEBSITE_ID },
-    about: { "@id": BUSINESS_ID },
-    breadcrumb: { "@id": `${CANONICAL}#breadcrumb` },
-  };
-
-  const popularItemListSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "@id": `${CANONICAL}#popular-locations`,
-    name: "Popular IT Support Locations",
-    itemListElement: popularLocations.map((x, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: x.name,
-      url: `${baseUrl}/locations/${x.slug}`,
-    })),
-  };
-
-  // ✅ Extra: region city list (stronger crawl mapping Areas → Location Pages)
-  const regionCityListSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "@id": `${CANONICAL}#region-${region.key}`,
-    name: `Service cities — ${region.name}`,
-    itemListElement: region.cities.map((c, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: c.name,
-      url: `${baseUrl}/locations/${c.slug}`,
-    })),
-  };
-
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": WEBSITE_ID,
-    url: `${baseUrl}/`,
-    name: brand,
-    publisher: { "@id": BUSINESS_ID },
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            websiteSchema,
-            breadcrumbsSchema,
-            collectionPageSchema,
-            popularItemListSchema,
-            regionCityListSchema,
-          ]),
-        }}
-      />
+      <Script id="areas-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <PageHero
         eyebrow="Areas we serve"
@@ -378,45 +397,67 @@ export default async function AreasPage({ searchParams }) {
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
-        {/* ✅ CTR / Query intent line (TOP) */}
+        {/* ✅ Intent line */}
         <Reveal className="mt-4">
           <p className="text-sm text-slate-300">
             Looking for{" "}
-            <span className="text-slate-100 font-medium">business IT support near Macungie, PA</span>{" "}
-            or <span className="text-slate-100 font-medium">managed IT services in Allentown</span>? Start here, then open
+            <span className="text-slate-100 font-medium">business IT support near Macungie, PA</span> or{" "}
+            <span className="text-slate-100 font-medium">managed IT services in Allentown</span>? Start here, then open
             your local page:{" "}
-            <Link
-              href="/locations/macungie-pa"
-              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-            >
+            <Link href="/locations/macungie-pa" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
               Macungie
             </Link>
             {", "}
-            <Link
-              href="/locations/allentown-pa"
-              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-            >
+            <Link href="/locations/allentown-pa" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
               Allentown
             </Link>
             {", "}
-            <Link
-              href="/locations/emmaus-pa"
-              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-            >
+            <Link href="/locations/emmaus-pa" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
               Emmaus
-            </Link>
-            . Or compare{" "}
-            <Link
-              href="/services"
-              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-            >
-              services
             </Link>
             .
           </p>
         </Reveal>
 
-        <Reveal className="mt-2">
+        {/* ✅ City mini-sections (unique text) — important hub content */}
+        <Reveal className="mt-6">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">City coverage highlights</div>
+            <div className="mt-4 grid md:grid-cols-3 gap-4">
+              {[
+                {
+                  title: "Allentown, PA",
+                  href: "/locations/allentown-pa",
+                  text: "Managed IT services + help desk support for teams that need fast response, proactive monitoring, and practical security hardening.",
+                },
+                {
+                  title: "Macungie, PA",
+                  href: "/locations/macungie-pa",
+                  text: "Business IT support near Macungie with remote-first troubleshooting, onsite support when required, and predictable fixed-fee options.",
+                },
+                {
+                  title: "Emmaus, PA",
+                  href: "/locations/emmaus-pa",
+                  text: "IT support and cybersecurity-focused baselines for SMBs that want fewer recurring issues and stable day-to-day operations.",
+                },
+              ].map((x) => (
+                <div key={x.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="font-semibold">{x.title}</div>
+                  <p className="mt-2 text-sm text-slate-300 leading-6">{x.text}</p>
+                  <Link
+                    href={x.href}
+                    className="mt-3 inline-flex items-center gap-2 text-sm text-cyan-300 hover:underline"
+                  >
+                    View location page <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Popular locations pills */}
+        <Reveal className="mt-6">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Popular locations</div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -435,6 +476,7 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
+        {/* Services hub */}
         <Reveal className="mt-6">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -442,7 +484,7 @@ export default async function AreasPage({ searchParams }) {
                 <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Services hub</div>
                 <h2 className="text-xl md:text-2xl font-semibold">Explore the services our team bundles together</h2>
                 <p className="mt-2 text-slate-300 max-w-3xl">
-                  <span className="text-slate-200">Services → Areas</span>. Better crawl paths, better topical relevance.
+                  Services → Areas → Location Pages. Better crawl paths and topical relevance.
                 </p>
               </div>
 
@@ -452,12 +494,6 @@ export default async function AreasPage({ searchParams }) {
                   className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
                 >
                   View all services <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/faqs"
-                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
-                >
-                  FAQs <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/contact?type=assessment&source=areas-services-hub"
@@ -476,6 +512,7 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
+        {/* Map + Region list */}
         <div className="grid md:grid-cols-2 gap-6 items-start mt-6">
           <Reveal>
             <RegionMap regions={REGIONS} active={region.key} />
@@ -579,6 +616,7 @@ export default async function AreasPage({ searchParams }) {
           </Reveal>
         </div>
 
+        {/* How we deliver */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">How we deliver</div>
@@ -621,6 +659,7 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
+        {/* Regions accordion */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-white/5">
             {REGIONS.map((r) => {
@@ -676,6 +715,39 @@ export default async function AreasPage({ searchParams }) {
           </div>
         </Reveal>
 
+        {/* ✅ NEW: FAQ section (matches FAQ schema) */}
+        <Reveal className="mt-12">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-7">
+            <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">FAQs</div>
+            <h2 className="text-xl font-semibold mt-1">Quick answers</h2>
+
+            <div className="mt-4 space-y-3">
+              {FAQS.map((f) => (
+                <details key={f.q} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <summary className="cursor-pointer font-semibold text-slate-200">{f.q}</summary>
+                  <p className="mt-2 text-sm text-slate-300 leading-6">{f.a}</p>
+                </details>
+              ))}
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/contact?type=assessment&source=areas-faq"
+                className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+              >
+                Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/get-quote"
+                className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+              >
+                Pricing & quote <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Footer CTA */}
         <Reveal className="mt-12">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/15 to-fuchsia-500/15 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>

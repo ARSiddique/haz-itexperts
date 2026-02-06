@@ -5,11 +5,8 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonicalAbs = `${baseUrl}/services/managed-it`;
 
   const fullTitle = `Managed IT Services in Allentown, PA | Helpdesk, Monitoring & Patching | ${brand}`;
 
@@ -36,7 +33,7 @@ export async function generateMetadata() {
       title: fullTitle,
       description,
       type: "website",
-      url: "/services/managed-it",
+      url: canonicalAbs,
       siteName: brand,
       images: [
         {
@@ -58,10 +55,7 @@ export async function generateMetadata() {
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/managed-it`;
 
   const faqs = [
@@ -96,6 +90,35 @@ export default function Page() {
     lede:
       "Day-to-day IT, done right—helpdesk, patching, monitoring, and secure device baselines—so your team can stay focused on the business (fully managed or co-managed).",
     hero: "/images/services/managed-hero.svg",
+
+    // ✅ NEW: internal linking block (renders in ServiceClientPage if supported)
+    localLinks: {
+      eyebrow: "Start with your area",
+      title: "Managed IT coverage in the Lehigh Valley",
+      desc: "Open your location page for coverage details, FAQs, and the right service bundle for your business.",
+      items: [
+        {
+          label: "Allentown, PA",
+          href: "/locations/allentown-pa",
+          desc: "Helpdesk + monitoring + patching for Allentown SMBs.",
+        },
+        {
+          label: "Macungie, PA",
+          href: "/locations/macungie-pa",
+          desc: "Stabilization sprint + baseline hardening.",
+        },
+        {
+          label: "Emmaus, PA",
+          href: "/locations/emmaus-pa",
+          desc: "Co-managed or fully managed support options.",
+        },
+      ],
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: {
+        label: "Get a Free IT Assessment",
+        href: "/get-quote?source=managed-it-areas",
+      },
+    },
 
     stats: [
       { kpi: "Fast", label: "P1 response targets" },
@@ -155,11 +178,7 @@ export default function Page() {
       { icon: "LineChart", title: "Reporting", desc: "Monthly KPI pack: tickets, response, patch, and risk trends." },
     ],
 
-    gallery: [
-      "/images/illus/screens-1.svg",
-      "/images/illus/screens-2.svg",
-      "/images/illus/screens-3.svg",
-    ],
+    gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
 
     steps: [
       {
@@ -193,15 +212,7 @@ export default function Page() {
       "Quarterly roadmap & budget view",
     ],
 
-    tooling: [
-      "RMM",
-      "EDR/XDR",
-      "Intune/Jamf",
-      "M365/Workspace",
-      "Ticketing + KB",
-      "Reporting/KPI pack",
-      "Password/MFA standards",
-    ],
+    tooling: ["RMM", "EDR/XDR", "Intune/Jamf", "M365/Workspace", "Ticketing + KB", "Reporting/KPI pack", "Password/MFA standards"],
 
     timeline: [
       { when: "Week 1", title: "Access & discovery", desc: "Tooling connected + quick wins" },
@@ -255,6 +266,7 @@ export default function Page() {
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },
   };
@@ -292,7 +304,7 @@ export default function Page() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
-      <ServiceClientPage cfg={cfg} />
+      <ServiceClientPage cfg={cfg} canonical={canonical} />
     </>
   );
 }

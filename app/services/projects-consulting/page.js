@@ -5,10 +5,8 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonicalAbs = `${baseUrl}/services/projects-consulting`;
 
   const fullTitle = `IT Projects & Consulting in Allentown, PA | Migrations, Audits & Network Refresh | ${brand}`;
 
@@ -35,22 +33,29 @@ export async function generateMetadata() {
       title: fullTitle,
       description,
       type: "website",
-      url: "/services/projects-consulting",
+      url: canonicalAbs,
       siteName: brand,
       images: [
-        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Projects & Consulting` },
+        {
+          url: "/og-image.png?v=7",
+          width: 1200,
+          height: 630,
+          alt: `${brand} — Projects & Consulting`,
+        },
       ],
     },
-    twitter: { card: "summary_large_image", title: fullTitle, description, images: ["/og-image.png?v=7"] },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/og-image.png?v=7"],
+    },
   };
 }
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/projects-consulting`;
 
   const faqs = [
@@ -85,6 +90,32 @@ export default function Page() {
     lede:
       "Fixed-scope IT projects with clear timelines, acceptance checks, and clean handovers—so upgrades happen without business disruption.",
     hero: "/images/services/projects-hero.svg",
+
+    // ✅ NEW: internal linking block (same style as the Managed IT update)
+    localLinks: {
+      eyebrow: "Start with your area",
+      title: "Projects delivered across Allentown + nearby",
+      desc: "Open your location page for coverage details, common project types, and next steps.",
+      items: [
+        {
+          label: "Allentown, PA",
+          href: "/locations/allentown-pa",
+          desc: "Audits, migrations, refreshes, and after-hours change windows.",
+        },
+        {
+          label: "Macungie, PA",
+          href: "/locations/macungie-pa",
+          desc: "Network/Wi-Fi refresh, office moves, and clean handover packs.",
+        },
+        {
+          label: "Emmaus, PA",
+          href: "/locations/emmaus-pa",
+          desc: "Tenant moves, rebrands, and staged cutovers with rollback plans.",
+        },
+      ],
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: { label: "Get a Free IT Assessment", href: "/get-quote?source=projects-consulting-areas" },
+    },
 
     stats: [
       { kpi: "Fixed-scope", label: "Clear deliverables" },
@@ -147,10 +178,26 @@ export default function Page() {
     gallery: ["/images/illus/screens-1.svg", "/images/illus/screens-2.svg", "/images/illus/screens-3.svg"],
 
     steps: [
-      { title: "Discovery", desc: "Workshops + current-state capture.", outputs: ["Requirements", "Risks & dependencies", "Success criteria"] },
-      { title: "Plan", desc: "Design + cutover + rollback plan.", outputs: ["Runbook", "Backout plan", "Comms plan"] },
-      { title: "Implement", desc: "Execution with change windows.", outputs: ["Acceptance checks", "As-built docs", "Validation steps"] },
-      { title: "Handover", desc: "Docs + admin notes + support path.", outputs: ["Handover pack", "Warranty window", "Next-step roadmap"] },
+      {
+        title: "Discovery",
+        desc: "Workshops + current-state capture.",
+        outputs: ["Requirements", "Risks & dependencies", "Success criteria"],
+      },
+      {
+        title: "Plan",
+        desc: "Design + cutover + rollback plan.",
+        outputs: ["Runbook", "Backout plan", "Comms plan"],
+      },
+      {
+        title: "Implement",
+        desc: "Execution with change windows.",
+        outputs: ["Acceptance checks", "As-built docs", "Validation steps"],
+      },
+      {
+        title: "Handover",
+        desc: "Docs + admin notes + support path.",
+        outputs: ["Handover pack", "Warranty window", "Next-step roadmap"],
+      },
     ],
 
     deliverables: [
@@ -220,7 +267,12 @@ export default function Page() {
     url: canonical,
     provider: { "@id": BUSINESS_ID },
     areaServed: ["Allentown, PA", "Macungie, PA", "Emmaus, PA"],
-    offers: { "@type": "Offer", url: `${baseUrl}/get-quote`, availability: "https://schema.org/InStock" },
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
   };
 
   const webPageSchema = {
@@ -256,7 +308,7 @@ export default function Page() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
-      <ServiceClientPage cfg={cfg} />
+      <ServiceClientPage cfg={cfg} canonical={canonical} />
     </>
   );
 }

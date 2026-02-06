@@ -6,10 +6,8 @@ import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const canonicalAbs = `${baseUrl}/services/cybersecurity`;
 
   const fullTitle = `Cybersecurity Services in Allentown, PA | EDR/XDR, MFA & Backup/DR | ${brand}`;
 
@@ -36,7 +34,7 @@ export async function generateMetadata() {
       title: fullTitle,
       description,
       type: "website",
-      url: "/services/cybersecurity",
+      url: canonicalAbs,
       siteName: brand,
       images: [
         {
@@ -58,10 +56,7 @@ export async function generateMetadata() {
 
 export default function Page() {
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services/cybersecurity`;
 
   const faqs = [
@@ -96,6 +91,35 @@ export default function Page() {
     lede:
       "Identity-first security, modern endpoint defense, email protection, and tested recovery—built into a practical security program for small businesses.",
     hero: "/images/services/cyber-hero.svg",
+
+    // ✅ NEW: Security-specific local internal linking block (renders in ServiceClientPage)
+    localLinks: {
+      eyebrow: "Areas we serve",
+      title: "Cybersecurity coverage in your area",
+      desc: "Open your local page for coverage details, FAQs, and next steps.",
+      items: [
+        {
+          label: "Allentown, PA",
+          href: "/locations/allentown-pa",
+          desc: "Cybersecurity + managed IT for Allentown SMBs.",
+        },
+        {
+          label: "Macungie, PA",
+          href: "/locations/macungie-pa",
+          desc: "MFA, EDR/XDR, email protection, and backup/DR.",
+        },
+        {
+          label: "Emmaus, PA",
+          href: "/locations/emmaus-pa",
+          desc: "Security-first IT support with practical controls.",
+        },
+      ],
+      cta1: { label: "View all areas", href: "/areas" },
+      cta2: {
+        label: "Book a 20-min Assessment",
+        href: "/contact?type=assessment&source=cybersecurity-areas",
+      },
+    },
 
     stats: [
       { kpi: "MFA + CA", label: "Identity hardening" },
@@ -249,6 +273,7 @@ export default function Page() {
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/get-quote`,
+      priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },
   };
@@ -286,7 +311,7 @@ export default function Page() {
           __html: JSON.stringify([breadcrumbsSchema, webPageSchema, serviceSchema, faqSchema]),
         }}
       />
-      <ServiceClientPage cfg={cfg} />
+      <ServiceClientPage cfg={cfg} canonical={canonical} />
     </>
   );
 }

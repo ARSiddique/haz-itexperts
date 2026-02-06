@@ -32,26 +32,35 @@ export async function generateMetadata() {
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/`;
 
-  // Keep title tight (CTR + not over-stuffed)
-  const baseTitle = "Business IT Support Near Macungie, PA";
+  // ✅ 3 cities (no Lehigh Valley as main keyword)
+  const baseTitle = "Business IT Support in Allentown, Macungie & Emmaus, PA";
   const fullTitle = `${baseTitle} | Managed IT & Cybersecurity — ${brand}`;
 
   const description =
-    "Fast, friendly managed IT services, 24/7 helpdesk and cybersecurity for SMBs in Macungie, Allentown & Emmaus. Monitoring, patching, cloud, backup/DR and fixed-fee support.";
+    "Fast, friendly managed IT services, 24/7 helpdesk and cybersecurity for small businesses in Allentown, Macungie & Emmaus, PA. Monitoring, patching, cloud, backup/DR and fixed-fee support.";
 
   return {
     metadataBase: new URL(baseUrl),
     title: { absolute: fullTitle },
     description,
     keywords: [
-      "business IT support near Macungie PA",
-      "managed IT services Macungie",
+      "business IT support Allentown PA",
+      "business IT support Macungie PA",
+      "business IT support Emmaus PA",
       "managed IT services Allentown",
-      "IT support Emmaus PA",
-      "cybersecurity near Allentown",
-      "help desk solutions Allentown",
-      "backup planning solutions Allentown",
-      "managed service provider Lehigh Valley",
+      "managed IT services Macungie",
+      "managed IT services Emmaus",
+      "IT support Allentown",
+      "IT support Macungie",
+      "IT support Emmaus",
+      "cybersecurity Allentown PA",
+      "cybersecurity Macungie PA",
+      "cybersecurity Emmaus PA",
+      "24/7 helpdesk Allentown",
+      "24/7 helpdesk Macungie",
+      "24/7 helpdesk Emmaus",
+      "backup and disaster recovery Allentown",
+      "Microsoft 365 support Allentown",
     ],
     alternates: { canonical },
     openGraph: {
@@ -84,7 +93,7 @@ export async function generateMetadata() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Collage({ items = [], priority = false, ratio = "aspect-[16/11] md:aspect-[16/10]" }) {
   return (
-    <div className={`relative ${ratio}`} data-reveal="up">
+    <div className={`relative ${ratio}`} data-io="up">
       {items[0] && (
         <div className="absolute inset-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 group">
           <Image
@@ -126,7 +135,7 @@ const Section = ({ id, children, className = "" }) => (
 );
 
 const Title = ({ k, sub }) => (
-  <div className="mb-5 md:mb-6" data-reveal="up">
+  <div className="mb-5 md:mb-6" data-io="up">
     <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">{k}</div>
     <h2 className="text-3xl md:text-5xl font-extrabold leading-tight bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
       {sub}
@@ -137,7 +146,7 @@ const Title = ({ k, sub }) => (
 const Stat = ({ k, v }) => (
   <div
     className="rounded-xl border border-white/10 bg-white/[0.06] p-4 text-center transition hover:-translate-y-0.5 hover:border-cyan-300/30"
-    data-reveal="up"
+    data-io="up"
   >
     <div className="text-xl font-bold text-cyan-300">{k}</div>
     <div className="text-slate-300 text-xs">{v}</div>
@@ -173,11 +182,11 @@ const ServiceCard = ({ Icon, t, d, bullets = [], href }) => {
   );
 
   return href ? (
-    <Link href={href} className="block" aria-label={`${t} details`} data-reveal="up">
+    <Link href={href} className="block" aria-label={`${t} details`} data-io="up">
       {Card}
     </Link>
   ) : (
-    <div data-reveal="up">{Card}</div>
+    <div data-io="up">{Card}</div>
   );
 };
 
@@ -264,27 +273,27 @@ export default function HomePage() {
     "Emmaus, PA": "/locations/emmaus-pa",
   };
 
-  // More query-aligned FAQs (matches what GSC is showing)
+  // ✅ Balanced FAQs for Allentown + Macungie + Emmaus
   const FAQS = [
     {
-      q: "Do you provide business IT support near Macungie, PA?",
-      a: "Yes. We provide business IT support near Macungie with 24/7 helpdesk coverage, proactive monitoring, patching, and clear SLAs — plus onsite visits when required.",
+      q: "Do you provide business IT support in Allentown, Macungie and Emmaus, PA?",
+      a: "Yes. We provide business IT support across Allentown, Macungie and Emmaus with proactive monitoring, patching, clear SLAs, and onsite support when needed.",
     },
     {
       q: "Do you offer managed IT services in Allentown?",
       a: "Yes. Our managed IT services in Allentown include proactive monitoring, patch management, endpoint baselines, reporting, and a roadmap that keeps IT predictable.",
     },
     {
-      q: "Can you help with cybersecurity near Allentown?",
-      a: "Yes. We strengthen identity and endpoint security with MFA/SSO guidance, endpoint protection, email security, and backup/disaster recovery planning.",
+      q: "Do you offer managed IT services in Macungie, PA?",
+      a: "Yes. We provide managed IT services in Macungie including monitoring, patching, helpdesk workflows, and security best practices tailored for small businesses.",
     },
     {
-      q: "Do you do backup planning solutions in Allentown?",
-      a: "Yes. We set up reliable backups, define recovery points, and test restores so you’re not guessing during an outage or ransomware event.",
-    },
-    {
-      q: "Do you support tech support in Emmaus, PA too?",
+      q: "Do you support IT support in Emmaus, PA too?",
       a: "Yes. We provide IT support and managed services across Emmaus, Macungie, and Allentown — remote-first with onsite support when needed.",
+    },
+    {
+      q: "Can you help with cybersecurity in Allentown?",
+      a: "Yes. We strengthen identity and endpoint security with MFA/SSO guidance, endpoint protection, email security, and backup/disaster recovery planning.",
     },
   ];
 
@@ -295,7 +304,7 @@ export default function HomePage() {
         "@type": "WebPage",
         "@id": WEBPAGE_ID,
         url: canonical,
-        name: "Business IT Support Near Macungie, PA | Managed IT & Cybersecurity",
+        name: "Business IT Support in Allentown, Macungie & Emmaus, PA | Managed IT & Cybersecurity",
         isPartOf: { "@type": "WebSite", "@id": WEBSITE_ID },
         breadcrumb: { "@id": BREADCRUMB_ID },
         about: { "@id": BUSINESS_ID },
@@ -352,34 +361,34 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 pt-10 pb-10 md:pt-14 md:pb-12 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-8 md:gap-10 items-center">
           <div className="max-w-[62ch]">
             <div className="text-xs md:text-sm uppercase tracking-[0.2em] text-cyan-300/80">
-              Managed IT services & cybersecurity for Lehigh Valley SMBs
+              Managed IT services & cybersecurity for SMBs in Allentown, Macungie & Emmaus
             </div>
 
-            {/* ✅ Shorter H1 (no “wall of text”) */}
             <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.06] bg-gradient-to-r from-cyan-300 via-white to-fuchsia-400 bg-clip-text text-transparent">
-              Business IT Support Near Macungie, PA
+              Business IT Support in Allentown, Macungie &amp; Emmaus, PA
             </h1>
 
             <div className="mt-3 text-base md:text-lg text-slate-200">
-              Managed IT Services &amp; Cybersecurity for{" "}
-              <span className="font-semibold text-slate-100">Allentown</span> and{" "}
+              Managed IT services &amp; cybersecurity for{" "}
+              <span className="font-semibold text-slate-100">Allentown</span>,{" "}
+              <span className="font-semibold text-slate-100">Macungie</span> and{" "}
               <span className="font-semibold text-slate-100">Emmaus</span>.
             </div>
 
             <p className="mt-4 text-sm md:text-base text-slate-300">
               {brand} helps small and mid-sized businesses reduce downtime with proactive monitoring, patching,
-              practical security, and clear SLAs — remote-first with onsite help when needed.
+              practical security, and clear SLAs — remote-first with onsite help when needed across Allentown, Macungie
+              and Emmaus.
             </p>
 
-            {/* quick internal links (helps UX + SEO) */}
-            <div className="mt-4 flex flex-wrap gap-2" data-reveal="up">
-              <Pill href="/locations/macungie-pa">Macungie coverage</Pill>
-              <Pill href="/locations/allentown-pa">Allentown managed IT</Pill>
-              <Pill href="/locations/emmaus-pa">Emmaus tech support</Pill>
+            <div className="mt-4 flex flex-wrap gap-2" data-io="up">
+              <Pill href="/locations/allentown-pa">Allentown IT support</Pill>
+              <Pill href="/locations/macungie-pa">Macungie IT support</Pill>
+              <Pill href="/locations/emmaus-pa">Emmaus IT support</Pill>
+              <Pill href="/services/managed-it">Managed IT</Pill>
               <Pill href="/services/cybersecurity">Cybersecurity</Pill>
             </div>
 
-            {/* CTA row (compact + clean) */}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Link
                 href={site?.assessmentHref || "/lp/allentown#claim"}
@@ -408,11 +417,10 @@ export default function HomePage() {
               No pressure — quick 15-min call to map risks + next steps.
             </div>
 
-            {/* stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
               <Stat k="<15 min" v="P1 response target" />
               <Stat k="24/7" v="Helpdesk & monitoring" />
-              <Stat k="Backups" v="Tested restores" />
+              <Stat k="Onsite" v="Allentown + nearby" />
             </div>
 
             <div className="mt-5">
@@ -429,8 +437,8 @@ export default function HomePage() {
           <div className="lg:pl-2">
             <Collage
               items={[
-                { src: "/media/hero-1.jpg", alt: "Network and cabling for managed IT environments" },
-                { src: "/media/hero-2.jpg", alt: "Cloud and devices managed by an MSP" },
+                { src: "/media/hero-1.jpg", alt: "Managed IT network cabling for businesses in Allentown, PA" },
+                { src: "/media/hero-2.jpg", alt: "Cloud and devices managed by an MSP in Macungie and Emmaus, PA" },
               ]}
               ratio="aspect-[16/11] md:aspect-[16/10]"
               priority
@@ -445,13 +453,16 @@ export default function HomePage() {
       <Section id="about" className="pt-10 pb-12 md:pt-12 md:pb-14">
         <Title k="About" sub="We keep your business running with managed IT and real security" />
 
-        <p className="text-slate-300 max-w-3xl" data-reveal="up">
+        <p className="text-slate-300 max-w-3xl" data-io="up">
           We act as your IT department (or augment your in-house team) with{" "}
           <Link href="/services/managed-it" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
             managed IT services
           </Link>{" "}
           and{" "}
-          <Link href="/services/cybersecurity" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
+          <Link
+            href="/services/cybersecurity"
+            className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
+          >
             cybersecurity
           </Link>
           , backed by documented playbooks, clear SLAs, and reporting leadership actually reads.
@@ -467,7 +478,7 @@ export default function HomePage() {
               <div
                 key={t}
                 className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/30"
-                data-reveal="up"
+                data-io="up"
               >
                 <h3 className="font-medium text-sm">{t}</h3>
                 <p className="text-slate-300 text-xs mt-1">{d}</p>
@@ -478,15 +489,15 @@ export default function HomePage() {
           <div data-parallax="y" data-speed="0.12">
             <Collage
               items={[
-                { src: "/media/rack.jpg", alt: "Server rack and network gear" },
-                { src: "/media/dashboard.jpg", alt: "IT monitoring dashboard" },
+                { src: "/media/rack.jpg", alt: "Server rack and network gear for business IT support" },
+                { src: "/media/dashboard.jpg", alt: "IT monitoring dashboard for managed IT services" },
               ]}
               ratio="aspect-[4/3] md:aspect-[16/11]"
             />
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3" data-reveal="up">
+        <div className="mt-6 flex flex-wrap gap-3" data-io="up">
           <Link
             href="/about"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
@@ -505,9 +516,10 @@ export default function HomePage() {
       {/* SERVICES */}
       <Section id="services" className="py-12 md:py-14">
         <Title k="Services" sub="Managed IT, IT support and cybersecurity for SMBs" />
-        <p className="text-slate-300 max-w-3xl" data-reveal="up">
-          Choose fully-managed or co-managed IT. If you need Allentown IT management solutions, help desk support,
-          Microsoft 365 hardening, or backup planning — we can start quickly and stabilize your environment.
+        <p className="text-slate-300 max-w-3xl" data-io="up">
+          Choose fully-managed or co-managed IT. If you need business IT support in Allentown, Macungie, or Emmaus —
+          including helpdesk support, Microsoft 365 hardening, cybersecurity, or backup planning — we can start quickly
+          and stabilize your environment.
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -516,7 +528,7 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3" data-reveal="up">
+        <div className="mt-8 flex flex-wrap gap-3" data-io="up">
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
@@ -542,11 +554,11 @@ export default function HomePage() {
       <Section id="wins" className="py-12 md:py-14">
         <Title k="Case Studies" sub="Outcomes your team actually feels" />
         <div className="grid md:grid-cols-3 gap-6">
-          <div data-reveal="up">
+          <div data-io="up">
             <Collage
               items={[
-                { src: "/media/work-1.jpg", alt: "Onsite IT cabling work" },
-                { src: "/media/rack.jpg", alt: "Network rack after cleanup" },
+                { src: "/media/work-1.jpg", alt: "Onsite IT support work for local businesses" },
+                { src: "/media/rack.jpg", alt: "Network rack cleanup for managed IT clients" },
               ]}
             />
             <div className="mt-3">
@@ -555,19 +567,19 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div data-reveal="up">
-            <Collage items={[{ src: "/media/dashboard.jpg", alt: "Monitoring tools for managed IT services" }]} />
+          <div data-io="up">
+            <Collage items={[{ src: "/media/dashboard.jpg", alt: "Monitoring tools used for managed IT services" }]} />
             <div className="mt-3">
               <h3 className="font-medium">Fleet visibility</h3>
               <p className="text-sm text-slate-300">Endpoint visibility + leadership KPIs that tell the truth.</p>
             </div>
           </div>
 
-          <div data-reveal="up">
+          <div data-io="up">
             <Collage
               items={[
-                { src: "/media/team.jpg", alt: "IT support team collaborating" },
-                { src: "/media/work-2.jpg", alt: "Technician working onsite" },
+                { src: "/media/team.jpg", alt: "IT support team collaborating on tickets and projects" },
+                { src: "/media/work-2.jpg", alt: "Technician delivering onsite business IT support" },
               ]}
             />
             <div className="mt-3">
@@ -582,28 +594,12 @@ export default function HomePage() {
       <Section id="process" className="py-12 md:py-14">
         <Title k="Process" sub="A simple, measurable onboarding" />
         <div className="grid md:grid-cols-2 gap-10 items-start">
-          <ol className="relative border-s border-white/10 ps-6 space-y-7" data-reveal="up">
+          <ol className="relative border-s border-white/10 ps-6 space-y-7" data-io="up">
             {[
-              {
-                icon: Cpu,
-                title: "Assess",
-                text: "Discovery of users, devices, identity and risks in your IT environment.",
-              },
-              {
-                icon: Lock,
-                title: "Stabilize",
-                text: "Patch baseline, email protection, endpoint coverage and backup/DR planning.",
-              },
-              {
-                icon: LineChart,
-                title: "Optimize",
-                text: "Help desk workflows, SLAs, reporting and roadmap alignment with leadership.",
-              },
-              {
-                icon: Server,
-                title: "Grow",
-                text: "Projects, new hires, office moves, and cloud modernization with clear ownership.",
-              },
+              { icon: Cpu, title: "Assess", text: "Discovery of users, devices, identity and risks in your IT environment." },
+              { icon: Lock, title: "Stabilize", text: "Patch baseline, email protection, endpoint coverage and backup/DR planning." },
+              { icon: LineChart, title: "Optimize", text: "Help desk workflows, SLAs, reporting and roadmap alignment with leadership." },
+              { icon: Server, title: "Grow", text: "Projects, new hires, office moves, and cloud modernization with clear ownership." },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="ms-2">
                 <span className="absolute -start-3.5 mt-1 grid place-items-center size-6 rounded-full bg-cyan-400/20 border border-cyan-300/40">
@@ -621,7 +617,7 @@ export default function HomePage() {
             className="rounded-2xl overflow-hidden border border-white/10 group"
             data-parallax="y"
             data-speed="0.1"
-            data-reveal="up"
+            data-io="up"
           >
             <div className="relative w-full aspect-[16/16]">
               <Image
@@ -637,7 +633,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-reveal="up">
+        <p className="mt-6 text-sm text-slate-400 max-w-3xl" data-io="up">
           Have questions? Check our{" "}
           <Link href="/faqs" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
             FAQs
@@ -659,7 +655,7 @@ export default function HomePage() {
             ["Coverage", "Endpoint baselines plus monitored systems and reporting leadership reads"],
             ["Backups", "Backup planning, tested restores, and disaster recovery readiness"],
           ].map(([t, d]) => (
-            <div key={t} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5" data-reveal="up">
+            <div key={t} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5" data-io="up">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-cyan-300" />
                 <h3 className="font-medium">{t}</h3>
@@ -675,7 +671,7 @@ export default function HomePage() {
         <Title k="FAQs" sub="Quick answers before you book a call" />
         <div className="grid md:grid-cols-2 gap-4">
           {FAQS.map((f) => (
-            <div key={f.q} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5" data-reveal="up">
+            <div key={f.q} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5" data-io="up">
               <h3 className="font-semibold">{f.q}</h3>
               <p className="mt-2 text-sm text-slate-300">{f.a}</p>
             </div>
@@ -688,14 +684,14 @@ export default function HomePage() {
         <Title k="Gallery" sub="Real work. Real environments." />
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            ["/media/hero-1.jpg", "Fiber and cabling work for business networks"],
-            ["/media/rack.jpg", "Tidy network rack in a small business"],
-            ["/media/dashboard.jpg", "Monitoring dashboard for managed IT services"],
+            ["/media/hero-1.jpg", "Managed IT cabling and network work for business environments"],
+            ["/media/rack.jpg", "Clean, labeled network rack for small business IT support"],
+            ["/media/dashboard.jpg", "Monitoring dashboard used in managed IT services"],
           ].map(([src, cap]) => (
             <figure
               key={src}
               className="rounded-2xl overflow-hidden border border-white/10 bg-white/5"
-              data-reveal="up"
+              data-io="up"
             >
               <div className="relative w-full aspect-[3/2] md:aspect-[16/10] group">
                 <Image
@@ -715,7 +711,7 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-6" data-reveal="up">
+        <div className="mt-6" data-io="up">
           <Link
             href="/gallery"
             className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:border-cyan-300/30 hover:bg-cyan-400/10 hover:text-cyan-300 transition"
@@ -736,7 +732,7 @@ export default function HomePage() {
                 key={a}
                 href={href}
                 className="rounded-2xl border border-white/10 bg-white/5 p-5 text-center transition hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-cyan-400/5"
-                data-reveal="up"
+                data-io="up"
                 aria-label={`IT services in ${a}`}
               >
                 <h3 className="font-medium">{a}</h3>
@@ -749,11 +745,11 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* FINAL CTA (no WhatsApp/email here) */}
+      {/* FINAL CTA */}
       <Section id="cta" className="py-12 md:py-14">
         <div
           className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 md:p-10 overflow-hidden relative"
-          data-reveal="up"
+          data-io="up"
         >
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 -right-24 size-[360px] rounded-full bg-cyan-500/10 blur-3xl" />

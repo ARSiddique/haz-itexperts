@@ -19,16 +19,16 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
+  MapPin,
+  ExternalLink,
+  CheckCircle2,
 } from "lucide-react";
 
 // ---- SEO (server-side)
 export async function generateMetadata() {
   const brand = site?.name || "Supreme IT Experts";
 
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
-    /\/$/,
-    ""
-  );
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
 
   const titleBase = "Managed IT Services & Cybersecurity in Allentown, PA";
   const fullTitle = `${titleBase} | ${brand}`;
@@ -49,9 +49,7 @@ export async function generateMetadata() {
       type: "website",
       url: "/services",
       siteName: brand,
-      images: [
-        { url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Services` },
-      ],
+      images: [{ url: "/og-image.png?v=7", width: 1200, height: 630, alt: `${brand} — Services` }],
     },
 
     twitter: {
@@ -88,6 +86,25 @@ export default async function ServicesPage() {
 
   const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
   const canonical = `${baseUrl}/services`;
+
+  // ✅ Areas block (Services → Areas → Locations)
+  const AREAS_BLOCK = [
+    {
+      name: "Allentown, PA",
+      slug: "allentown-pa",
+      desc: "Managed IT services + help desk + cybersecurity for SMB teams. Fast remote response and clear deliverables.",
+    },
+    {
+      name: "Macungie, PA",
+      slug: "macungie-pa",
+      desc: "Business IT support near Macungie — proactive monitoring, Microsoft 365 support, and security-first baselines.",
+    },
+    {
+      name: "Emmaus, PA",
+      slug: "emmaus-pa",
+      desc: "IT support in Emmaus with predictable processes, patching, endpoint protection, and backup/recovery planning.",
+    },
+  ];
 
   const services = [
     {
@@ -219,6 +236,19 @@ export default async function ServicesPage() {
     })),
   };
 
+  // ✅ Optional: areas list schema (lightweight internal signal)
+  const areasItemListSchema = {
+    "@type": "ItemList",
+    "@id": `${canonical}#areas`,
+    name: "Areas served",
+    itemListElement: AREAS_BLOCK.map((a, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: a.name,
+      url: `${baseUrl}/locations/${a.slug}`,
+    })),
+  };
+
   const areaServed = ["Allentown, PA", "Macungie, PA", "Emmaus, PA"];
 
   const serviceSchemas = services.map((s) => ({
@@ -259,7 +289,14 @@ export default async function ServicesPage() {
 
   const pageSchema = {
     "@context": "https://schema.org",
-    "@graph": [breadcrumbsSchema, webPageSchema, itemListSchema, ...serviceSchemas, faqSchema],
+    "@graph": [
+      breadcrumbsSchema,
+      webPageSchema,
+      itemListSchema,
+      areasItemListSchema,
+      ...serviceSchemas,
+      faqSchema,
+    ],
   };
 
   return (
@@ -303,10 +340,7 @@ export default async function ServicesPage() {
               </Link>
             </span>
             . Or browse{" "}
-            <Link
-              href="/areas"
-              className="underline decoration-dotted underline-offset-2 hover:text-cyan-300"
-            >
+            <Link href="/areas" className="underline decoration-dotted underline-offset-2 hover:text-cyan-300">
               all service areas
             </Link>
             .
@@ -332,6 +366,12 @@ export default async function ServicesPage() {
               Compare services
             </Link>
             <Link
+              href="#services-areas"
+              className="text-sm rounded-full px-3 py-1.5 border border-cyan-300/20 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+            >
+              Areas we serve
+            </Link>
+            <Link
               href="#services-pricing"
               className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
             >
@@ -342,12 +382,6 @@ export default async function ServicesPage() {
               className="text-sm rounded-full px-3 py-1.5 border border-white/10 bg-white/5 hover:bg-white/10"
             >
               FAQs
-            </Link>
-            <Link
-              href="/areas"
-              className="text-sm rounded-full px-3 py-1.5 border border-cyan-300/20 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
-            >
-              Areas we serve
             </Link>
           </div>
 
@@ -447,6 +481,86 @@ export default async function ServicesPage() {
                 </Link>
               </Reveal>
             ))}
+          </div>
+        </section>
+
+        {/* ✅ NEW: Areas we serve (internal links boost) */}
+        <section aria-labelledby="services-areas" className="mt-14">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-7">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-xs uppercase tracking-[0.18em] text-cyan-300/80">Areas we serve</div>
+                <h2 id="services-areas" className="text-2xl md:text-3xl font-semibold">
+                  Local pages for faster ranking
+                </h2>
+                <p className="mt-2 text-sm text-slate-300 max-w-3xl">
+                  If you searched “managed IT services” or “IT support near me”, open your city page. These pages are
+                  built to match local intent and connect to the right service pages.
+                </p>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <Link
+                  href="/areas"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  View all areas <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/contact?type=assessment&source=services-areas"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  Book a 20-min Assessment <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-3 gap-4">
+              {AREAS_BLOCK.map((a) => (
+                <Link
+                  key={a.slug}
+                  href={`/locations/${a.slug}`}
+                  className="group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-300/30 hover:bg-cyan-400/10 transition"
+                  aria-label={`Open ${a.name} location page`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 grid place-items-center size-10 rounded-xl bg-white/10 border border-white/10">
+                      <MapPin className="h-5 w-5 text-cyan-300" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-100">{a.name}</div>
+                      <p className="mt-1 text-sm text-slate-300 leading-6">{a.desc}</p>
+
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-200">
+                        {[
+                          "Managed IT services",
+                          "Help desk support",
+                          "Cybersecurity",
+                        ].map((t) => (
+                          <span key={t} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 inline-flex items-center gap-2 text-sm text-cyan-300">
+                        View location page <ExternalLink className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-xl border border-white/10 bg-black/10 p-4 text-sm text-slate-300">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-cyan-300 mt-0.5" />
+                <p>
+                  Tip: These city pages internally link back to the exact services (Managed IT, Cybersecurity, M365,
+                  MDM, Projects, Strategy) so Google gets a clean topic cluster.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
