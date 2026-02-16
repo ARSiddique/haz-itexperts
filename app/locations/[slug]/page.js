@@ -19,6 +19,8 @@ import {
   Sparkles,
   Laptop2,
   BriefcaseBusiness,
+  Building2,
+  Network,
 } from "lucide-react";
 import { BUSINESS_ID, BASE_URL } from "@/lib/seoIds";
 
@@ -32,7 +34,7 @@ export async function generateStaticParams() {
 }
 
 /**
- * ✅ Query-aligned snippets (based on your GSC screenshots)
+ * ✅ Query-aligned snippets (GSC intent pack)
  */
 function getQueryPack(slug, city, state) {
   const packs = {
@@ -65,13 +67,13 @@ function getQueryPack(slug, city, state) {
           href: "/services/projects-consulting",
         },
         {
-          term: `Cybersecurity testing in ${city}, ${state}`,
-          desc: "Security reviews, baselines, and risk reduction plan.",
-          href: "/services/cybersecurity",
+          term: `Microsoft 365 support ${city}`,
+          desc: "Email setup, security, and troubleshooting.",
+          href: "/services/cloud-workspace",
         },
       ],
       metaBoost:
-        "Managed IT services, cybersecurity, help desk solutions, IT support, backup planning in Allentown, PA.",
+        "Managed IT services, cybersecurity, help desk solutions, IT support, Microsoft 365 support, backup planning in Allentown, PA.",
     },
 
     "macungie-pa": {
@@ -97,8 +99,14 @@ function getQueryPack(slug, city, state) {
           desc: "Email issues, setup, security and troubleshooting.",
           href: "/services/cloud-workspace",
         },
+        {
+          term: `Device management (MDM) ${city}`,
+          desc: "Enrollment, security baselines, and compliance checks.",
+          href: "/services/device-management",
+        },
       ],
-      metaBoost: "Business IT support near Macungie, PA + managed IT and cybersecurity.",
+      metaBoost:
+        "Business IT support near Macungie, PA + managed IT, cybersecurity, Microsoft 365 and device management.",
     },
 
     "emmaus-pa": {
@@ -124,8 +132,14 @@ function getQueryPack(slug, city, state) {
           desc: "Small-business friendly managed support.",
           href: "/services/managed-it",
         },
+        {
+          term: `Microsoft 365 support ${city}`,
+          desc: "Security, sign-in, and email reliability help.",
+          href: "/services/cloud-workspace",
+        },
       ],
-      metaBoost: "Tech support in Emmaus, PA + managed IT and cybersecurity.",
+      metaBoost:
+        "Tech support in Emmaus, PA + managed IT, help desk, cybersecurity, and Microsoft 365 support.",
     },
   };
 
@@ -161,6 +175,58 @@ function findServiceHref(match, fallback) {
   return hit?.href || fallback;
 }
 
+/**
+ * ✅ City-specific pain points (more genuine + local)
+ * You can tune these later per your experience/GSC.
+ */
+function getIssuesByCity(slug, city) {
+  const map = {
+    "allentown-pa": [
+      "Microsoft 365 sign-in, mailbox syncing, and email deliverability issues",
+      "Slow PCs and recurring crashes that kill productivity",
+      "Wi-Fi dead zones + unstable connectivity (office + back rooms)",
+      "Phishing / invoice scams targeting local SMB inboxes",
+      "Outdated devices and patching gaps causing repeat outages",
+      "Backups that exist but haven’t been restore-tested",
+    ],
+    "macungie-pa": [
+      "Wi-Fi instability and inconsistent coverage across the workspace",
+      "Email access problems and Microsoft 365 configuration issues",
+      "Printers and shared devices breaking workflows",
+      "Password resets and account lockouts slowing teams down",
+      "No clear device standards (everyone set up differently)",
+      "Security basics missing (MFA not enforced, devices not hardened)",
+    ],
+    "emmaus-pa": [
+      "Remote work access issues (VPN / login / device compliance)",
+      "Microsoft 365 and email interruptions during busy hours",
+      "Recurring printer + scanner issues in daily operations",
+      "Weak identity security (no MFA, risky shared access)",
+      "Performance bottlenecks and old hardware slowing staff",
+      "Unclear disaster recovery plan when systems go down",
+    ],
+  };
+
+  return (
+    map[slug] || [
+      `Downtime from recurring IT issues in ${city}`,
+      "Wi-Fi/network instability and reliability problems",
+      "Email and Microsoft 365 setup/security issues",
+      "Security gaps (MFA, patching, endpoint protection)",
+      "Backup and recovery uncertainty",
+      "Slow PCs and inconsistent device setups",
+    ]
+  );
+}
+
+/**
+ * ✅ Automotive / dealership section (local niche)
+ * Shows only if we are in one of the 3 target cities
+ */
+function shouldShowAutomotive(slug) {
+  return ["allentown-pa", "macungie-pa", "emmaus-pa"].includes(slug);
+}
+
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const slug = normalizeSlug(awaitedParams?.slug);
@@ -169,13 +235,15 @@ export async function generateMetadata({ params }) {
   if (!loc) return {};
 
   const brand = site?.name || "Supreme IT Experts";
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
   const path = `/locations/${loc.slug}`;
   const canonical = `${baseUrl}${path}`;
 
   const pack = getQueryPack(loc.slug, loc.city, loc.state);
 
-  // ✅ Keep title CTR-friendly but city-focused
   const title = `Managed IT Services ${loc.city}, ${loc.state} | Help Desk + Cybersecurity — ${brand}`;
   const description =
     `Need business IT support in ${loc.city}, ${loc.state}? Managed IT, help desk, cybersecurity, Microsoft 365, backups & disaster recovery. ` +
@@ -194,10 +262,10 @@ export async function generateMetadata({ params }) {
       `cybersecurity near ${loc.city}`,
       `Microsoft 365 support ${loc.city}`,
       `backup planning services ${loc.city}`,
-      `IT management solutions ${loc.city}`,
+      `device management ${loc.city}`,
       `managed service provider ${loc.city}`,
     ],
-    alternates: { canonical }, // ✅ absolute canonical
+    alternates: { canonical },
     robots: {
       index: true,
       follow: true,
@@ -213,7 +281,7 @@ export async function generateMetadata({ params }) {
       title,
       description: `${description} ${pack.metaBoost}`,
       type: "website",
-      url: canonical, // ✅ absolute OG url
+      url: canonical,
       siteName: brand,
       images: [
         {
@@ -242,7 +310,10 @@ export default async function LocationPage({ params }) {
 
   const brand = site?.name || "Supreme IT Experts";
 
-  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(/\/$/, "");
+  const baseUrl = String(BASE_URL || site?.url || "https://supremeitexperts.com").replace(
+    /\/$/,
+    ""
+  );
   const canonical = `${baseUrl}/locations/${loc.slug}`;
 
   const WEBSITE_ID = `${baseUrl}/#website`;
@@ -254,15 +325,22 @@ export default async function LocationPage({ params }) {
   const faqs = Array.isArray(loc.faqs) ? loc.faqs : [];
   const localParas =
     Array.isArray(loc?.copy?.paragraphs) && loc.copy.paragraphs.length ? loc.copy.paragraphs : [];
-
   const serviceSections = Array.isArray(loc?.serviceSections) ? loc.serviceSections : [];
 
   const pack = getQueryPack(loc.slug, loc.city, loc.state);
+  const issues = getIssuesByCity(loc.slug, loc.city);
 
+  // ✅ JSON-LD graph
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "WebSite", "@id": WEBSITE_ID, url: `${baseUrl}/`, name: brand, inLanguage: "en-US" },
+      {
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        url: `${baseUrl}/`,
+        name: brand,
+        inLanguage: "en-US",
+      },
       {
         "@type": "BreadcrumbList",
         "@id": BREADCRUMB_ID,
@@ -295,7 +373,10 @@ export default async function LocationPage({ params }) {
           "@type": "ImageObject",
           url: new URL("/og-image.png?v=7", baseUrl).toString(),
         },
-        mainEntity: { "@id": SERVICE_ID },
+        mainEntity: [
+          { "@id": SERVICE_ID },
+          ...(faqs.length ? [{ "@id": FAQ_ID }] : []), // ✅ link FAQ entity to main page entity
+        ],
       },
       ...(faqs.length
         ? [
@@ -355,7 +436,7 @@ export default async function LocationPage({ params }) {
       icon: BriefcaseBusiness,
       title: "vCIO / IT Strategy",
       desc: "Roadmaps, budget planning, vendor alignment, and measurable IT leadership KPIs.",
-      link: findServiceHref(["vcio", "strategy"], "/services/vcio-strategy"), // ✅ fixed slug
+      link: findServiceHref(["vcio", "strategy"], "/services/vcio-strategy"),
       cta: "IT strategy",
     },
   ];
@@ -370,7 +451,6 @@ export default async function LocationPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* ✅ H1 should include primary keyword + city */}
       <PageHero
         eyebrow="Areas we serve"
         title={`Managed IT Services in ${loc.city}, ${loc.state}`}
@@ -378,7 +458,7 @@ export default async function LocationPage({ params }) {
       />
 
       <section className="max-w-6xl mx-auto px-4 pb-24">
-        {/* ✅ mini badges row */}
+        {/* badges */}
         <Reveal className="mt-4">
           <div className="flex flex-wrap gap-2">
             {[
@@ -398,6 +478,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
+        {/* intro */}
         <Reveal className="mt-4">
           <p className="text-sm text-slate-300">
             Looking for{" "}
@@ -432,7 +513,7 @@ export default async function LocationPage({ params }) {
           </p>
         </Reveal>
 
-        {/* ✅ Queries block */}
+        {/* queries */}
         <Reveal className="mt-7">
           <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/6 to-white/3 p-6 md:p-7">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -477,7 +558,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ CTA band */}
+        {/* CTA band */}
         <Reveal className="mt-7">
           <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-cyan-500/12 to-fuchsia-500/12 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -488,9 +569,7 @@ export default async function LocationPage({ params }) {
               <p className="text-slate-300 mt-2 max-w-2xl">{loc.lede}</p>
 
               {!!loc.nearby?.length && (
-                <p className="mt-2 text-sm text-slate-400">
-                  Nearby coverage focus: {loc.nearby.join(", ")}.
-                </p>
+                <p className="mt-2 text-sm text-slate-400">Nearby coverage focus: {loc.nearby.join(", ")}.</p>
               )}
             </div>
 
@@ -511,7 +590,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ Local paragraphs */}
+        {/* local paragraphs */}
         {localParas.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
@@ -530,8 +609,7 @@ export default async function LocationPage({ params }) {
                   href={`/contact?type=assessment&source=location-${loc.slug}`}
                   className="inline-flex items-center gap-2 text-sm rounded-lg px-3 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
                 >
-                  {loc?.copy?.primaryCtaText || "Free 20-min IT assessment"}{" "}
-                  <ArrowRight className="h-4 w-4" />
+                  {loc?.copy?.primaryCtaText || "Free 20-min IT assessment"} <ArrowRight className="h-4 w-4" />
                 </Link>
 
                 <Link
@@ -554,7 +632,7 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
-        {/* ✅ Services coverage (6 cards) */}
+        {/* services coverage */}
         <Reveal className="mt-10">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <h2 className="text-xl font-semibold">IT services we provide in {loc.city}</h2>
@@ -564,10 +642,7 @@ export default async function LocationPage({ params }) {
 
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
               {focusCards.map((c) => (
-                <div
-                  key={c.title}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/7 transition"
-                >
+                <div key={c.title} className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/7 transition">
                   <div className="flex items-start gap-3">
                     <c.icon className="h-5 w-5 text-cyan-300 mt-0.5" />
                     <div>
@@ -584,15 +659,13 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ NEW: Service Sections (SEO headings that match queries) */}
+        {/* service sections (SEO headings) */}
         {serviceSections.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
-              <h2 className="text-xl font-semibold">
-                Managed IT, help desk, cybersecurity & more — in {loc.city}
-              </h2>
+              <h2 className="text-xl font-semibold">Managed IT, help desk, cybersecurity & more — in {loc.city}</h2>
               <p className="mt-2 text-slate-300 max-w-3xl">
-                Below sections are written to match real search intent (like “IT support”, “help desk solutions”, “cybersecurity near me”, and “backup planning”).
+                Sections below are aligned with real search intent (like “IT support”, “help desk solutions”, “cybersecurity near me”, and “backup planning”).
               </p>
 
               <div className="mt-6 space-y-6">
@@ -648,19 +721,12 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
-        {/* ✅ Issues */}
+        {/* ✅ UPDATED: Common issues (city-specific) */}
         <Reveal className="mt-10">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <h3 className="text-xl font-semibold">Common issues we fix in {loc.city}</h3>
             <div className="mt-4 grid md:grid-cols-2 gap-3 text-slate-200">
-              {[
-                "Slow PCs, frequent crashes, and performance bottlenecks",
-                "Downtime from patching gaps and outdated systems",
-                "Wi-Fi / network instability and unreliable connectivity",
-                "Microsoft 365 / email issues, access problems, and security risks",
-                "Weak security posture (missing MFA, risky devices, poor baselines)",
-                "Backup failures and unclear disaster recovery steps",
-              ].map((x) => (
+              {issues.map((x) => (
                 <div key={x} className="flex gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-cyan-300 mt-0.5" />
                   {x}
@@ -670,7 +736,59 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ Services list */}
+        {/* ✅ NEW: Automotive / Dealerships block */}
+        {shouldShowAutomotive(loc.slug) && (
+          <Reveal className="mt-10">
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 p-6 md:p-7">
+              <div className="flex items-start gap-3">
+                <Building2 className="h-5 w-5 text-emerald-300 mt-0.5" />
+                <div>
+                  <h3 className="text-xl font-semibold">
+                    Automotive & dealership IT support near {loc.city}
+                  </h3>
+                  <p className="mt-2 text-slate-300 leading-7 max-w-4xl">
+                    Dealerships, service centers, and auto repair teams depend on stable networks.
+                    If the service bay Wi-Fi drops, printers fail, or shared PCs act up, the entire workflow slows down.
+                    We help stabilize connectivity, tighten security, and keep devices predictable — without getting in the way of day-to-day operations.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid md:grid-cols-2 gap-3 text-slate-200">
+                {[
+                  "Service-bay Wi-Fi coverage improvements (dead zones → stable signal)",
+                  "Network segmentation (staff vs guest vs cameras/IoT/printers)",
+                  "Shared PC baseline + safer sign-in practices",
+                  "Printer + scanner stability for paperwork-heavy workflows",
+                  "Backup + restore testing so recovery isn’t guesswork",
+                  "Security basics (MFA guidance + endpoint protection) for fewer incidents",
+                ].map((x) => (
+                  <div key={x} className="flex gap-2 text-sm">
+                    <Network className="h-4 w-4 text-emerald-300 mt-0.5" />
+                    {x}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/services/managed-it"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-emerald-300/30 text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20"
+                >
+                  Managed IT for operations <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/services/cybersecurity"
+                  className="inline-flex items-center gap-2 text-sm rounded-lg px-4 py-2 border border-cyan-300/30 text-cyan-300 bg-cyan-400/10 hover:bg-cyan-400/20"
+                >
+                  Cybersecurity options <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        )}
+
+        {/* services list */}
         <Reveal className="mt-10">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -704,7 +822,7 @@ export default async function LocationPage({ params }) {
           </div>
         </Reveal>
 
-        {/* ✅ Nearby */}
+        {/* nearby */}
         {otherLocations.length ? (
           <Reveal className="mt-10">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
@@ -733,7 +851,7 @@ export default async function LocationPage({ params }) {
           </Reveal>
         ) : null}
 
-        {/* ✅ FAQs */}
+        {/* FAQs */}
         {faqs.length > 0 && (
           <Reveal className="mt-10">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
@@ -753,7 +871,7 @@ export default async function LocationPage({ params }) {
           </Reveal>
         )}
 
-        {/* ✅ Next steps */}
+        {/* next steps */}
         <Reveal className="mt-10">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
             <h3 className="text-xl font-semibold">Next steps</h3>
