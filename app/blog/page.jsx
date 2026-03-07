@@ -24,7 +24,7 @@ export async function generateMetadata() {
 
   const title = `Blog | ${brand}`;
   const description =
-    "Practical playbooks for US SMBs: managed IT, cybersecurity, cloud, and vCIO strategy—field-tested, no fluff.";
+    "Practical SMB IT playbooks: real problems, real fixes — managed IT, cybersecurity, Microsoft 365, device management, and strategy.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -32,8 +32,8 @@ export async function generateMetadata() {
     description,
     alternates: { canonical: "/blog" },
 
-    // ✅ TEMP: blog ko index nahi karwana
-    robots: { index: false, follow: false },
+    // ✅ Blog index ON
+    robots: { index: true, follow: true },
 
     openGraph: {
       title,
@@ -52,30 +52,31 @@ export async function generateMetadata() {
   };
 }
 
-export default async function BlogIndexPage() {
+export default function BlogIndexPage() {
   const postsAll = POSTS.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // ✅ Sirf latest 2 posts show
-  const posts = postsAll.slice(0, 2);
+  // ✅ show latest 6 (SEO wise better than only 2)
+  const posts = postsAll.slice(0, 6);
 
   const featured = posts.find((p) => p.featured) || posts[0] || null;
   const rest = featured ? posts.filter((p) => p.slug !== featured.slug) : [];
 
-  // ✅ Clean internal links (12) — agar tum completely hide rakhna chahte ho, is section ko bhi remove kar sakte ho
   const quickLinks = [
     {
       title: "Services",
       links: [
-        { href: "/services", label: "Services Overview" },
         { href: "/services/managed-it", label: "Managed IT" },
         { href: "/services/cybersecurity", label: "Cybersecurity" },
-        { href: "/services/cloud-workspace", label: "Cloud Workspace" },
+        { href: "/services/cloud-workspace", label: "Cloud & Microsoft 365" },
+        { href: "/services/device-management", label: "Device Management" },
+        { href: "/services/projects-consulting", label: "Projects & Consulting" },
+        { href: "/services/vcio-strategy", label: "vCIO / Strategy" },
       ],
     },
     {
-      title: "Locations",
+      title: "Areas we serve",
       links: [
-        { href: "/areas", label: "Areas We Serve" },
+        { href: "/areas", label: "Lehigh Valley coverage" },
         { href: "/locations/allentown-pa", label: "Allentown, PA" },
         { href: "/locations/macungie-pa", label: "Macungie, PA" },
         { href: "/locations/emmaus-pa", label: "Emmaus, PA" },
@@ -84,10 +85,10 @@ export default async function BlogIndexPage() {
     {
       title: "Next steps",
       links: [
-        { href: "/about", label: "About" },
-        { href: "/faqs", label: "FAQs" },
-        { href: "/contact", label: "Contact" },
         { href: "/get-quote", label: "Pricing & Quote" },
+        { href: "/contact?type=assessment&source=blog", label: "Free IT Assessment" },
+        { href: "/faqs", label: "FAQs" },
+        { href: "/about", label: "About" },
       ],
     },
   ];
@@ -96,22 +97,19 @@ export default async function BlogIndexPage() {
     <>
       <PageHero
         eyebrow="Blog"
-        title="Practical playbooks for US SMBs"
-        sub="Managed IT, cybersecurity, cloud, and vCIO strategy — field-tested, no fluff."
+        title="Real SMB IT problems — and practical fixes"
+        sub="Problem → impact → solution → checklist. Written for Allentown / Lehigh Valley SMBs."
       />
 
       <main className="mx-auto max-w-6xl px-4 pb-16">
         {/* Featured */}
         {featured ? (
           <section className="mt-8">
-            {/* ✅ IMPORTANT: items-stretch + both columns full height */}
             <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
-              {/* IMAGE (full height) */}
               <Link
                 href={`/blog/${featured.slug}`}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5"
               >
-                {/* ✅ mobile: 16/9 | lg+: full height + min height */}
                 <div className="relative w-full aspect-[16/9] lg:aspect-auto lg:h-full min-h-[360px]">
                   <Image
                     src={featured.cover}
@@ -129,7 +127,6 @@ export default async function BlogIndexPage() {
                 </div>
               </Link>
 
-              {/* CONTENT (same height) */}
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 lg:p-7 lg:h-full flex flex-col">
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex items-center rounded-full border border-white/10 bg-black/25 px-3 py-1 text-xs text-white/75">
@@ -140,14 +137,11 @@ export default async function BlogIndexPage() {
                   </span>
                 </div>
 
-                <h2 className="mt-4 text-2xl font-semibold tracking-tight text-white">
-                  {featured.title}
-                </h2>
-
+                <h2 className="mt-4 text-2xl font-semibold tracking-tight text-white">{featured.title}</h2>
                 <p className="mt-3 text-sm leading-6 text-white/70">{featured.excerpt}</p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {(featured.tags || []).slice(0, 4).map((t) => (
+                  {(featured.tags || []).slice(0, 5).map((t) => (
                     <span
                       key={t}
                       className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/65"
@@ -157,13 +151,12 @@ export default async function BlogIndexPage() {
                   ))}
                 </div>
 
-                {/* ✅ pushes buttons to bottom if content small */}
                 <div className="mt-auto pt-6 flex flex-wrap gap-3">
                   <Link
                     href={`/blog/${featured.slug}`}
                     className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
                   >
-                    Read the post →
+                    Read →
                   </Link>
                   <Link
                     href="/contact?type=assessment&source=blog"
@@ -188,7 +181,7 @@ export default async function BlogIndexPage() {
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-white">Latest posts</h3>
             <p className="mt-1 text-sm text-white/60">
-              New guides drop regularly — short, practical, and action-first.
+              Short, practical, and action-first — written for SMB operators.
             </p>
           </div>
 
@@ -223,19 +216,19 @@ export default async function BlogIndexPage() {
               ))
             ) : (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70">
-                No additional posts yet. Add the second post and it will appear here.
+                No posts yet.
               </div>
             )}
           </div>
         </section>
 
-        {/* Start here */}
+        {/* Internal links */}
         <section className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6 lg:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h3 className="text-lg font-semibold text-white">Start here</h3>
               <p className="mt-1 max-w-2xl text-sm leading-6 text-white/65">
-                Helpful pages to understand deliverables and next steps — clean, no “spammy link” feel.
+                If you're deciding what to fix first (security, Microsoft 365, slow PCs, outages), these links help.
               </p>
             </div>
 
@@ -270,32 +263,6 @@ export default async function BlogIndexPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="mt-8 rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 via-white/5 to-violet-500/10 p-6 lg:p-8">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-white">Need help right now?</h3>
-              <p className="mt-1 text-sm text-white/70">
-                If your team is dealing with outages, slow PCs, phishing, or messy IT—book a quick assessment.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/contact?type=assessment&source=blog-cta"
-                className="inline-flex items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-2 text-sm text-cyan-100 hover:bg-cyan-400/15"
-              >
-                Book Free Assessment →
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-black/20 px-5 py-2 text-sm text-white/80 hover:bg-white/10"
-              >
-                Contact →
-              </Link>
-            </div>
           </div>
         </section>
       </main>

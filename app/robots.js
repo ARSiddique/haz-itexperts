@@ -13,10 +13,10 @@ export default function robots() {
   const ukOn = isUkRolloutOn();
 
   const disallow = [];
+  // UK rollout OFF ho to /uk/ block
   if (!ukOn) disallow.push("/uk/");
-  // ✅ blog OFF for now
-  disallow.push("/blog");
-  disallow.push("/blog/");
+
+  // ✅ Blog ko allow karna hai — so blog disallow REMOVE
 
   return {
     rules: [
